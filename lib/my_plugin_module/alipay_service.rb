@@ -144,7 +144,7 @@ module ::MyPluginModule
       true
     end
 
-    private
+    # ========== 内部辅助方法 ==========
 
     # 检查支付宝是否已配置
     def alipay_configured?
