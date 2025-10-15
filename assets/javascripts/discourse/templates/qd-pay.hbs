@@ -75,17 +75,13 @@
                     <p class="mock-tip">实际生产环境将显示真实支付宝二维码</p>
                   </div>
                 {{else}}
-                  {{! 方案1: 使用Canvas生成 }}
-                  <div id="qrcode-container" style="text-align: center; padding: 20px;">
-                    <canvas id="qrcode-canvas"></canvas>
-                  </div>
-                  
-                  {{! 方案2: 备用img标签（CSS设置为display:none） }}
-                  <div id="qrcode-img-fallback" style="display: none; text-align: center; padding: 20px;">
+                  {{! 直接使用img标签显示二维码 - 简单可靠 }}
+                  <div id="qrcode-img-container" style="text-align: center; padding: 20px; background: white; display: inline-block; border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&format=png&data={{this.qrCode}}" 
-                         alt="支付宝二维码" 
-                         style="border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);" 
-                         onerror="this.parentElement.innerHTML='<p style=color:red>二维码加载失败</p>'"/>
+                         alt="支付宝二维码"
+                         style="display: block; width: 250px; height: 250px;"
+                         onload="console.log('✅ 二维码图片加载成功')"
+                         onerror="console.error('❌ 二维码图片加载失败'); this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjUwIiBoZWlnaHQ9IjI1MCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+5Lqy57u056CB5Yqg6L296ZSl6K+vPC90ZXh0Pjwvc3ZnPg=='"/>
                   </div>
                   
                   <div style="margin-top: 10px; text-align: center;">

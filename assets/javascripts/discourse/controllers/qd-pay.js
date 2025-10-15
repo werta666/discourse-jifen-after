@@ -67,9 +67,7 @@ export default class QdPayController extends Controller {
 
         console.log("qrCode已设置:", this.qrCode);
         console.log("orderInfo已设置:", this.orderInfo);
-
-        // 使用更长的延迟确保DOM已更新，并重试机制
-        this.waitForCanvasAndGenerate(result.qr_code, 0);
+        console.log("✅ 二维码将使用img标签自动显示");
 
         // 开始轮询订单状态
         this.startPolling(result.out_trade_no);
@@ -148,100 +146,6 @@ export default class QdPayController extends Controller {
   @action
   goBack() {
     window.location.href = "/qd";
-  }
-
-  // 等待Canvas元素并生成二维码（带重试机制）
-  waitForCanvasAndGenerate(text, retryCount) {
-    const maxRetries = 20; // 最多重试20次
-    const retryDelay = 100; // 每次延迟100ms
-
-    console.log(`尝试生成二维码 (第 ${retryCount + 1} 次)`);
-
-    const canvas = document.getElementById("qrcode-canvas");
-    if (canvas) {
-      console.log("Canvas元素已找到，开始生成二维码");
-      this.generateQRCode(text);
-    } else if (retryCount < maxRetries) {
-      console.log(`Canvas元素未找到，${retryDelay}ms后重试...`);
-      setTimeout(() => {
-        this.waitForCanvasAndGenerate(text, retryCount + 1);
-      }, retryDelay);
-    } else {
-      console.error("达到最大重试次数，Canvas方案失败，切换到img备用方案");
-      this.useFallbackImage();
-    }
-  }
-
-  // 使用备用的img标签方案
-  useFallbackImage() {
-    const canvasContainer = document.getElementById("qrcode-container");
-    const imgFallback = document.getElementById("qrcode-img-fallback");
-    
-    if (canvasContainer) {
-      canvasContainer.style.display = "none";
-    }
-    
-    if (imgFallback) {
-      imgFallback.style.display = "block";
-      console.log("已切换到img备用方案");
-    } else {
-      console.error("img备用方案元素也不存在");
-    }
-  }
-
-  // 生成二维码
-  generateQRCode(text) {
-    const canvas = document.getElementById("qrcode-canvas");
-    if (!canvas) {
-      console.error("Canvas元素不存在");
-      return;
-    }
-
-    const ctx = canvas.getContext("2d");
-    const size = 250;
-    canvas.width = size;
-    canvas.height = size;
-
-    // 使用Google Chart API生成二维码图片
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, size, size);
-      console.log("二维码生成成功");
-    };
-    img.onerror = () => {
-      console.error("二维码图片加载失败，尝试备用方案");
-      // 备用方案：使用另一个二维码API
-      this.tryAlternativeQRCode(text, canvas, ctx, size);
-    };
-    
-    // 主要API：Google Chart API
-    img.src = `https://chart.googleapis.com/chart?chs=${size}x${size}&cht=qr&chl=${encodeURIComponent(text)}&choe=UTF-8`;
-  }
-
-  // 备用二维码生成方案
-  tryAlternativeQRCode(text, canvas, ctx, size) {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, size, size);
-      console.log("二维码生成成功(备用方案)");
-    };
-    img.onerror = () => {
-      console.error("备用方案也失败了，显示文本二维码");
-      // 最后的备用方案：显示文本
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, size, size);
-      ctx.fillStyle = "#000000";
-      ctx.font = "14px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText("请手动访问以下链接：", size / 2, size / 2 - 10);
-      ctx.font = "12px Arial";
-      ctx.fillText(text.substring(0, 30), size / 2, size / 2 + 10);
-    };
-    
-    // 备用API：qrserver.com
-    img.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
   }
 
   willDestroy() {
