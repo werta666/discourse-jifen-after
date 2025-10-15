@@ -6,18 +6,6 @@
       <p class="user-points">当前积分：<span class="points-value">{{model.userPoints}}</span></p>
     </div>
 
-    {{! DEBUG: 显示当前状态 }}
-    <div style="background: yellow; padding: 10px; margin: 10px 0; font-size: 12px;">
-      <strong>调试信息：</strong><br>
-      alipayEnabled: {{this.alipayEnabled}}<br>
-      qrCode: {{this.qrCode}}<br>
-      qrCode存在: {{if this.qrCode "是" "否"}}<br>
-      orderInfo: {{if this.orderInfo "存在" "不存在"}}<br>
-      isCreatingOrder: {{this.isCreatingOrder}}<br>
-      paymentSuccess: {{this.paymentSuccess}}<br>
-      orderExpired: {{this.orderExpired}}
-    </div>
-
     {{#if this.alipayEnabled}}
       {{#unless this.qrCode}}
         {{! 充值套餐选择 }}
@@ -87,11 +75,30 @@
                     <p class="mock-tip">实际生产环境将显示真实支付宝二维码</p>
                   </div>
                 {{else}}
+                  {{! 方案1: 使用Canvas生成 }}
                   <div id="qrcode-container" style="text-align: center; padding: 20px;">
                     <canvas id="qrcode-canvas"></canvas>
                   </div>
+                  
+                  {{! 方案2: 备用img标签（CSS设置为display:none） }}
+                  <div id="qrcode-img-fallback" style="display: none; text-align: center; padding: 20px;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&format=png&data={{this.qrCode}}" 
+                         alt="支付宝二维码" 
+                         style="border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);" 
+                         onerror="this.parentElement.innerHTML='<p style=color:red>二维码加载失败</p>'"/>
+                  </div>
+                  
                   <div style="margin-top: 10px; text-align: center;">
-                    <a href="{{this.qrCode}}" target="_blank" class="alipay-link">或点击此链接在手机上打开</a>
+                    <a href="{{this.qrCode}}" target="_blank" class="alipay-link">
+                      💰 点击此处在手机上打开支付宝
+                    </a>
+                  </div>
+                  
+                  <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #666;">
+                    <p>或者手动复制链接：</p>
+                    <input type="text" value="{{this.qrCode}}" readonly 
+                           style="width: 80%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center;"
+                           onclick="this.select()"/>
                   </div>
                 {{/if}}
               </div>
