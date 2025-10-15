@@ -173,6 +173,36 @@
       .qrcode-image {
         margin: 30px 0;
 
+        #qrcode-container {
+          display: inline-block;
+          padding: 20px;
+          background: white;
+          border: 5px solid #667eea;
+          border-radius: 15px;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #qrcode-canvas {
+          display: block;
+          margin: 0 auto;
+        }
+
+        .alipay-link {
+          display: inline-block;
+          margin-top: 15px;
+          padding: 10px 20px;
+          background: #1677ff;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #0958d9;
+            transform: translateY(-2px);
+          }
+        }
+
         img {
           border: 5px solid #667eea;
           border-radius: 15px;

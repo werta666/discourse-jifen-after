@@ -87,7 +87,12 @@
                     <p class="mock-tip">实际生产环境将显示真实支付宝二维码</p>
                   </div>
                 {{else}}
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{this.qrCode}}" alt="支付二维码" />
+                  <div id="qrcode-container" style="text-align: center; padding: 20px;">
+                    <canvas id="qrcode-canvas"></canvas>
+                  </div>
+                  <div style="margin-top: 10px; text-align: center;">
+                    <a href="{{this.qrCode}}" target="_blank" class="alipay-link">或点击此链接在手机上打开</a>
+                  </div>
                 {{/if}}
               </div>
 
