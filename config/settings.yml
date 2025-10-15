@@ -41,3 +41,31 @@ jifen:
       - mario
       - minecraft
     description: "积分排行榜主题风格。neo: 精致游戏风格，mario: 马里奥风格，minecraft: 我的世界像素风格"
+
+  jifen_alipay_enabled:
+    default: false
+    client: true
+    description: "启用支付宝充值功能（需同时配置下方的支付宝参数）"
+
+  jifen_alipay_app_id:
+    default: ''
+    client: false
+    description: "支付宝应用ID（APPID），从支付宝开放平台获取"
+
+  jifen_alipay_private_key:
+    default: ''
+    client: false
+    type: text
+    description: "支付宝商户私钥（RSA2私钥），用于签名，请妥善保管"
+
+  jifen_alipay_public_key:
+    default: ''
+    client: false
+    type: text
+    description: "支付宝公钥（RSA2公钥），用于验证签名，从支付宝开放平台获取"
+
+  jifen_recharge_packages:
+    default: '[{"amount":10,"points":100,"label":"体验装"},{"amount":50,"points":550,"bonus":50},{"amount":100,"points":1200,"bonus":200,"label":"热销"},{"amount":500,"points":6500,"bonus":1500}]'
+    client: true
+    type: text
+    description: "充值套餐配置（JSON数组），格式：[{\"amount\":10,\"points\":100,\"label\":\"体验装\",\"bonus\":0}]。amount=金额(元)，points=积分，label=标签(可选)，bonus=赠送积分(可选)"

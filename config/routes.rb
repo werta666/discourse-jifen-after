@@ -49,4 +49,12 @@ MyPluginModule::Engine.routes.draw do
   get "/shop/admin/orders" => "shop#admin_orders"
   patch "/shop/admin/orders/:id/status" => "shop#update_order_status"
   delete "/shop/admin/orders/:id" => "shop#delete_order"
+
+  # 支付宝充值路由
+  get "/pay" => "pay#index"                    # 充值页面
+  get "/pay/packages" => "pay#packages"        # 获取充值套餐
+  post "/pay/create_order" => "pay#create_order"  # 创建充值订单
+  get "/pay/query_order" => "pay#query_order"  # 查询订单状态
+  get "/pay/orders" => "pay#orders"            # 用户订单列表
+  post "/pay/notify" => "pay#notify"           # 支付宝异步通知回调
 end

@@ -34,6 +34,21 @@
           </div>
         </div>
 
+        <div class="qd-quick-nav">
+          <LinkTo @route="qd-pay" class="qd-nav-btn qd-nav-recharge">
+            <span class="qd-nav-icon">💰</span>
+            <span class="qd-nav-text">积分充值</span>
+          </LinkTo>
+          <LinkTo @route="qd-board" class="qd-nav-btn qd-nav-board">
+            <span class="qd-nav-icon">🏆</span>
+            <span class="qd-nav-text">排行榜</span>
+          </LinkTo>
+          <LinkTo @route="qd-shop" class="qd-nav-btn qd-nav-shop">
+            <span class="qd-nav-icon">🛒</span>
+            <span class="qd-nav-text">积分商店</span>
+          </LinkTo>
+        </div>
+
         {{#if this.model.consecutive_days}}
           <div class="qd-consecutive-info">
             <h4>🔥 连续签到奖励</h4>
