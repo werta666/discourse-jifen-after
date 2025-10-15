@@ -66,19 +66,25 @@ module ::MyPluginModule
     def request_qr_code(out_trade_no:, subject:, total_amount:)
       return generate_mock_qr_code(out_trade_no) unless alipay_configured?
 
+      Rails.logger.info "[支付宝] 开始创建预下单 - 订单号: #{out_trade_no}, 金额: #{total_amount}"
+
       biz_content = {
         out_trade_no: out_trade_no,
         total_amount: format("%.2f", total_amount),
-        subject: subject,
+        subject: subject.force_encoding("UTF-8"),
         timeout_express: "5m"
-      }.to_json
+      }.to_json(ascii_only: false)
 
       params = build_common_params("alipay.trade.precreate")
       params["biz_content"] = biz_content
       params["notify_url"] = notify_url
 
+      Rails.logger.info "[支付宝] 请求参数: #{params.inspect}"
+
       # 生成签名
       params["sign"] = generate_sign(params)
+
+      Rails.logger.info "[支付宝] 签名: #{params['sign'][0..20]}..."
 
       # 发送请求
       response = send_request(params)
@@ -89,16 +95,21 @@ module ::MyPluginModule
     def query_order(out_trade_no:)
       return mock_query_result(out_trade_no) unless alipay_configured?
 
+      Rails.logger.info "[支付宝] 查询订单状态 - 订单号: #{out_trade_no}"
+
       biz_content = {
         out_trade_no: out_trade_no
-      }.to_json
+      }.to_json(ascii_only: false)
 
       params = build_common_params("alipay.trade.query")
       params["biz_content"] = biz_content
       params["sign"] = generate_sign(params)
 
       response = send_request(params)
-      parse_query_response(response)
+      result = parse_query_response(response)
+
+      Rails.logger.info "[支付宝] 订单状态查询结果: #{result.inspect}"
+      result
     end
 
     # 验证异步通知签名
@@ -120,13 +131,20 @@ module ::MyPluginModule
 
     # 处理支付成功回调
     def handle_payment_success(out_trade_no:, trade_no:, notify_data: nil)
+      Rails.logger.info "[支付宝] 开始处理支付成功回调 - 订单号: #{out_trade_no}, 交易号: #{trade_no}"
+
       order = MyPluginModule::PaymentOrder.find_by(out_trade_no: out_trade_no)
       raise StandardError, "订单不存在" unless order
-      raise StandardError, "订单已处理" if order.status == MyPluginModule::PaymentOrder::STATUS_PAID
+
+      if order.status == MyPluginModule::PaymentOrder::STATUS_PAID
+        Rails.logger.warn "[支付宝] 订单 #{out_trade_no} 已处理，跳过重复处理"
+        return true
+      end
 
       ActiveRecord::Base.transaction do
         # 标记订单为已支付
         order.mark_as_paid!(trade_no, notify_data)
+        Rails.logger.info "[支付宝] 订单 #{out_trade_no} 状态已更新为已支付"
 
         # 增加用户积分
         user = User.find(order.user_id)
@@ -142,6 +160,9 @@ module ::MyPluginModule
       end
 
       true
+    rescue => e
+      Rails.logger.error "[支付宝] 处理支付成功回调失败: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+      raise
     end
 
     # ========== 内部辅助方法 ==========
@@ -169,15 +190,20 @@ module ::MyPluginModule
     # 生成签名
     def generate_sign(params)
       # 移除空值和sign字段
-      params_to_sign = params.reject { |_, v| v.nil? || v.to_s.empty? || _ == "sign" }
+      params_to_sign = params.reject { |k, v| v.nil? || v.to_s.strip.empty? || k == "sign" }
 
-      # 按key排序并拼接
-      sign_content = params_to_sign.sort.map { |k, v| "#{k}=#{v}" }.join("&")
+      # 按key排序并拼接，确保UTF-8编码
+      sign_content = params_to_sign.sort.map { |k, v| "#{k}=#{v}" }.join("&").force_encoding("UTF-8")
+
+      Rails.logger.debug "[支付宝] 待签名字符串: #{sign_content}"
 
       # RSA2签名
       private_key = OpenSSL::PKey::RSA.new(format_private_key(SiteSetting.jifen_alipay_private_key))
       signature = private_key.sign(OpenSSL::Digest::SHA256.new, sign_content)
       Base64.strict_encode64(signature)
+    rescue => e
+      Rails.logger.error "[支付宝] 签名生成失败: #{e.message}\n#{e.backtrace.join("\n")}"
+      raise
     end
 
     # 验证签名
@@ -200,42 +226,72 @@ module ::MyPluginModule
       http.open_timeout = 15
       http.read_timeout = 15
 
+      # 手动构建表单数据，确保编码正确
       request = Net::HTTP::Post.new(uri.path)
-      request.set_form_data(params)
+      request["Content-Type"] = "application/x-www-form-urlencoded;charset=#{CHARSET}"
+      request.body = URI.encode_www_form(params)
+
+      Rails.logger.info "[支付宝] 发送请求到: #{GATEWAY_URL}"
 
       response = http.request(request)
-      JSON.parse(response.body)
+      response_body = response.body.force_encoding("UTF-8")
+
+      Rails.logger.info "[支付宝] 响应状态: #{response.code}"
+      Rails.logger.debug "[支付宝] 响应内容: #{response_body[0..500]}"
+
+      JSON.parse(response_body)
+    rescue JSON::ParserError => e
+      Rails.logger.error "[支付宝] JSON解析失败: #{e.message}\n响应: #{response_body}"
+      raise StandardError, "支付宝返回数据格式错误"
     rescue => e
-      Rails.logger.error "[支付宝] 请求失败: #{e.message}"
-      raise StandardError, "支付宝接口调用失败"
+      Rails.logger.error "[支付宝] 请求失败: #{e.class} - #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+      raise StandardError, "支付宝接口调用失败: #{e.message}"
     end
 
     # 解析二维码响应
     def parse_qr_response(response)
+      Rails.logger.debug "[支付宝] 解析响应: #{response.inspect}"
+
       alipay_response = response["alipay_trade_precreate_response"]
       raise StandardError, "支付宝返回格式错误" unless alipay_response
 
-      if alipay_response["code"] == "10000"
-        alipay_response["qr_code"]
+      code = alipay_response["code"]
+      Rails.logger.info "[支付宝] 返回码: #{code}, 消息: #{alipay_response['msg']}"
+
+      if code == "10000"
+        qr_code = alipay_response["qr_code"]
+        Rails.logger.info "[支付宝] 二维码生成成功: #{qr_code}"
+        qr_code
       else
         error_msg = alipay_response["sub_msg"] || alipay_response["msg"] || "未知错误"
-        raise StandardError, "支付宝错误: #{error_msg}"
+        Rails.logger.error "[支付宝] 业务错误 - 代码: #{code}, 消息: #{error_msg}"
+        raise StandardError, "支付宝错误(#{code}): #{error_msg}"
       end
     end
 
     # 解析查询响应
     def parse_query_response(response)
+      Rails.logger.debug "[支付宝] 解析查询响应: #{response.inspect}"
+
       alipay_response = response["alipay_trade_query_response"]
       raise StandardError, "支付宝返回格式错误" unless alipay_response
 
-      if alipay_response["code"] == "10000"
+      code = alipay_response["code"]
+      Rails.logger.info "[支付宝] 查询返回码: #{code}, 消息: #{alipay_response['msg']}"
+
+      if code == "10000"
+        trade_status = alipay_response["trade_status"]
+        Rails.logger.info "[支付宝] 交易状态: #{trade_status}"
+
         {
-          trade_status: alipay_response["trade_status"],
+          trade_status: trade_status,
           trade_no: alipay_response["trade_no"],
           out_trade_no: alipay_response["out_trade_no"],
           total_amount: alipay_response["total_amount"]
         }
       else
+        error_msg = alipay_response["sub_msg"] || alipay_response["msg"]
+        Rails.logger.warn "[支付宝] 查询订单失败 - 代码: #{code}, 消息: #{error_msg}"
         { trade_status: "UNKNOWN" }
       end
     end
