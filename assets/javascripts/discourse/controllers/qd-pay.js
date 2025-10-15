@@ -54,11 +54,19 @@ export default class QdPayController extends Controller {
         }
       });
 
+      console.log("创建订单响应:", result);
+
       if (result.success) {
+        console.log("二维码:", result.qr_code);
+        console.log("订单信息:", result);
+
         this.qrCode = result.qr_code;
         this.orderInfo = result;
         this.orderExpired = false;
         this.paymentSuccess = false;
+
+        console.log("qrCode已设置:", this.qrCode);
+        console.log("orderInfo已设置:", this.orderInfo);
 
         // 开始轮询订单状态
         this.startPolling(result.out_trade_no);

@@ -6,6 +6,18 @@
       <p class="user-points">当前积分：<span class="points-value">{{model.userPoints}}</span></p>
     </div>
 
+    {{! DEBUG: 显示当前状态 }}
+    <div style="background: yellow; padding: 10px; margin: 10px 0; font-size: 12px;">
+      <strong>调试信息：</strong><br>
+      alipayEnabled: {{this.alipayEnabled}}<br>
+      qrCode: {{this.qrCode}}<br>
+      qrCode存在: {{if this.qrCode "是" "否"}}<br>
+      orderInfo: {{if this.orderInfo "存在" "不存在"}}<br>
+      isCreatingOrder: {{this.isCreatingOrder}}<br>
+      paymentSuccess: {{this.paymentSuccess}}<br>
+      orderExpired: {{this.orderExpired}}
+    </div>
+
     {{#if this.alipayEnabled}}
       {{#unless this.qrCode}}
         {{! 充值套餐选择 }}
