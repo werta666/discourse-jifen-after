@@ -1,0 +1,43 @@
+jifen:
+  jifen_makeup_ratio_percent:
+    default: 100
+    client: false
+    description: "补签积分占基础积分的百分比（0-100）。例如基础积分 8 分、设置 50 则补签得 4 分；默认 100 表示与正常签到相同。"
+
+  jifen_enabled:
+    default: true
+    client: true
+    description: "启用积分系统插件（开启后在 /qd 提供每日签到与连续签到奖励功能）"
+
+  jifen_base_points_per_signin:
+    default: 5
+    client: true
+    description: "每日签到的基础积分（不含连续签到额外奖励），请输入整数，例如 5"
+
+  jifen_consecutive_rewards_json:
+    default: '{"3":10,"5":20}'
+    client: true
+    type: text
+    description: "连续签到额外奖励映射（JSON）。键为连续天数，值为额外积分；例如 {\"3\":10,\"5\":20} 表示连续 3 天 +10 分、连续 5 天 +20 分"
+
+  jifen_makeup_card_price:
+    default: 20
+    client: true
+    description: "补签卡单价（积分）。购买后会从可用积分中扣除相应积分，并增加 1 张补签卡"
+
+  jifen_leaderboard_update_minutes:
+    default: 3
+    min: 1
+    max: 60
+    client: true
+    description: "积分排行榜缓存更新间隔（分钟）。设置后台任务多久更新一次排行榜数据，范围 1-60 分钟"
+
+  jifen_board_theme:
+    default: 'neo'
+    client: true
+    type: enum
+    choices:
+      - neo
+      - mario
+      - minecraft
+    description: "积分排行榜主题风格。neo: 精致游戏风格，mario: 马里奥风格，minecraft: 我的世界像素风格"

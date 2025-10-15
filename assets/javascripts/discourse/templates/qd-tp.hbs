@@ -1,0 +1,173 @@
+<div class="qd-tp-container">
+  <!-- 头部区域 -->
+  <div class="header-section">
+    <h2>🎮 电竞赛事投票</h2>
+    <div class="user-stats">
+      {{#if this.model.isLoggedIn}}
+        <span class="points">💰 积分: {{this.model.userBalance}}</span>
+      {{else}}
+        <span class="points">请先登录</span>
+      {{/if}}
+      <button class="refresh-btn" {{on "click" this.refreshData}}>
+        {{#if this.isLoading}}
+          <span class="loading-spinner"></span>
+        {{else}}
+          🔄 刷新
+        {{/if}}
+      </button>
+    </div>
+  </div>
+
+  <!-- 赛事列表 -->
+  {{#if this.model.events.length}}
+    <div class="events-grid">
+      {{#each this.model.events as |event|}}
+        <div class="event-card">
+          <div class="event-header">
+            <h3>{{event.title}}</h3>
+            {{#if event.subtitle}}
+              <p class="event-subtitle">{{event.subtitle}}</p>
+            {{/if}}
+            <span class="event-status {{event.status}}">
+              {{#if (eq event.status "active")}}
+                🟢 进行中
+              {{else if (eq event.status "finished")}}
+                🔴 已结束
+              {{else}}
+                🟡 即将开始
+              {{/if}}
+            </span>
+          </div>
+
+          <div class="event-meta">
+            <div class="event-time">
+              <span>⏰</span>
+              <span>{{this.getTimeRemaining event.end_time}}</span>
+            </div>
+            <div class="total-bets">
+              📊 总投注: {{event.total_votes}} 人 | 💰 奖池: {{event.total_pool}}
+            </div>
+          </div>
+
+          {{#if (eq event.status "active")}}
+            <div class="betting-options">
+              {{#each event.options as |option|}}
+                <div 
+                  class="betting-option {{if (eq this.selectedOption.id option.id) 'selected'}}"
+                  {{on "click" (fn this.openBetModal event option)}}
+                >
+                  <div class="team-info">
+                    <div class="team-logo">{{option.logo}}</div>
+                    <div class="team-name">{{option.name}}</div>
+                    <div class="team-odds">赔率: {{option.odds}}</div>
+                    <div class="team-stats">
+                      <small>{{option.votes}} 票 | {{option.pool}} 积分</small>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          {{else if (eq event.status "finished")}}
+            <div class="betting-options">
+              {{#each event.options as |option|}}
+                <div class="betting-option disabled {{if option.winner 'winner'}}">
+                  <div class="team-info">
+                    <div class="team-logo">{{option.logo}}</div>
+                    <div class="team-name">
+                      {{option.name}}
+                      {{#if option.winner}}🏆{{/if}}
+                    </div>
+                    <div class="team-odds">赔率: {{option.odds}}</div>
+                    <div class="team-stats">
+                      <small>{{option.votes}} 票 | {{option.pool}} 积分</small>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          {{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <div class="empty-icon">🎮</div>
+      <h3>暂无赛事</h3>
+      <p>当前没有可投注的电竞赛事，请稍后再来查看</p>
+    </div>
+  {{/if}}
+</div>
+
+<!-- 投注模态框 -->
+{{#if this.showBetModal}}
+  <div class="bet-modal-overlay" {{on "click" this.closeBetModal}}>
+    <div class="bet-modal" {{on "click" this.stopPropagation}}>
+      <div class="modal-header">
+        <h3>🎯 确认投注</h3>
+        <button class="close-btn" {{on "click" this.closeBetModal}}>×</button>
+      </div>
+
+      <div class="modal-content">
+        <div class="bet-info">
+          <div class="selected-team">
+            {{this.selectedOption.logo}} {{this.selectedOption.name}}
+          </div>
+          <div class="odds-info">
+            赔率: {{this.selectedOption.odds}}
+          </div>
+          <div class="event-info">
+            <small>{{this.selectedEvent.title}}</small>
+          </div>
+        </div>
+
+        <div class="amount-input">
+          <label>💰 投注金额</label>
+          <input 
+            type="number" 
+            value={{this.betAmount}} 
+            {{on "input" this.updateBetAmount}}
+            placeholder="请输入投注金额"
+            min="1"
+            max={{this.model.userBalance}}
+          />
+        </div>
+
+        <div class="quick-amounts">
+          <button {{on "click" (fn this.setQuickAmount 10)}}>10</button>
+          <button {{on "click" (fn this.setQuickAmount 50)}}>50</button>
+          <button {{on "click" (fn this.setQuickAmount 100)}}>100</button>
+          <button {{on "click" (fn this.setQuickAmount 500)}}>500</button>
+        </div>
+
+        {{#if this.potentialWin}}
+          <div class="potential-win">
+            <div class="label">🏆 预计获得</div>
+            <div class="amount">{{this.potentialWin}} 积分</div>
+          </div>
+        {{/if}}
+
+        <div class="balance-info">
+          <small>💳 当前余额: {{this.model.userBalance}} 积分</small>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" {{on "click" this.closeBetModal}}>
+          ❌ 取消
+        </button>
+        <button 
+          class="confirm-btn" 
+          {{on "click" this.placeBet}}
+          disabled={{this.isLoading}}
+        >
+          {{#if this.isLoading}}
+            <span class="loading-spinner"></span>
+            投注中...
+          {{else}}
+            ✅ 确认投注
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}

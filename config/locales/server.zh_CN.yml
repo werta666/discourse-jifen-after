@@ -1,0 +1,8 @@
+zh_CN:
+  site_settings:
+    jifen_enabled: "启用积分系统插件"
+    jifen_base_points_per_signin: "每日签到基础积分"
+    jifen_consecutive_rewards_json: "连续签到奖励（JSON）"
+    jifen_makeup_card_price: "补签卡价格（积分）"
+    jifen_makeup_ratio_percent: "补签得分比例（0-100%）"
+    jifen_leaderboard_update_minutes: "排行榜缓存更新间隔（分钟）"

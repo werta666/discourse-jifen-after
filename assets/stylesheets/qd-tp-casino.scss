@@ -1,0 +1,491 @@
+/* 轻量化电竞投票界面 - 基于panda.md设计原则 */
+
+.qd-tp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--secondary-very-low);
+  border-radius: 8px;
+  font-family: var(--font-family);
+}
+
+/* 头部区域 */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--primary-low);
+
+  h2 {
+    color: var(--primary);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .user-stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .points {
+      background: var(--tertiary-low);
+      color: var(--tertiary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .refresh-btn {
+      background: var(--tertiary);
+      color: var(--secondary);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+/* 赛事网格 */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* 赛事卡片 */
+.event-card {
+  background: var(--secondary);
+  border: 1px solid var(--primary-low);
+  border-radius: 8px;
+  padding: 20px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .event-header {
+    margin-bottom: 16px;
+
+    h3 {
+      color: var(--primary);
+      margin: 0 0 4px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .event-subtitle {
+      color: var(--primary-medium);
+      margin: 0 0 8px 0;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    .event-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+
+      &.active {
+        background: var(--success-low);
+        color: var(--success);
+      }
+
+      &.finished {
+        background: var(--primary-low);
+        color: var(--primary-medium);
+      }
+
+      &.upcoming {
+        background: var(--tertiary-low);
+        color: var(--tertiary);
+      }
+    }
+  }
+
+  .event-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: var(--primary-medium);
+
+    .event-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .total-bets {
+      font-weight: 500;
+    }
+  }
+
+  .betting-options {
+    display: flex;
+    gap: 12px;
+
+    .betting-option {
+      flex: 1;
+      background: var(--primary-very-low);
+      border: 1px solid var(--primary-low);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+
+      &:hover {
+        border-color: var(--tertiary);
+        background: var(--tertiary-very-low);
+      }
+
+      &.selected {
+        border-color: var(--tertiary);
+        background: var(--tertiary-low);
+      }
+
+      &.winner {
+        border-color: var(--success);
+        background: var(--success-low);
+        
+        .team-name {
+          color: var(--success);
+          font-weight: 600;
+        }
+      }
+
+      &.disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        
+        &:hover {
+          border-color: var(--primary-low);
+          background: var(--primary-very-low);
+        }
+      }
+
+      .team-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+
+        .team-logo {
+          font-size: 1.5rem;
+        }
+
+        .team-name {
+          color: var(--primary);
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        .team-odds {
+          color: var(--tertiary);
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+
+        .team-stats {
+          color: var(--primary-medium);
+          font-size: 0.75rem;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+}
+
+/* 投注模态框 */
+.bet-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.bet-modal {
+  background: var(--secondary);
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--primary-low);
+
+    h3 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--primary-medium);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+
+      &:hover {
+        color: var(--primary);
+      }
+    }
+  }
+
+  .modal-content {
+    padding: 20px;
+
+    .bet-info {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--primary-very-low);
+      border-radius: 6px;
+
+      .selected-team {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .odds-info {
+        color: var(--tertiary);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .event-info {
+        color: var(--primary-medium);
+        font-size: 0.8rem;
+      }
+    }
+
+    .amount-input {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        color: var(--primary);
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--primary-low);
+        border-radius: 6px;
+        background: var(--secondary);
+        color: var(--primary);
+        font-size: 1rem;
+        text-align: center;
+
+        &:focus {
+          outline: none;
+          border-color: var(--tertiary);
+        }
+      }
+    }
+
+    .quick-amounts {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+
+      button {
+        flex: 1;
+        background: var(--primary-very-low);
+        border: 1px solid var(--primary-low);
+        color: var(--primary);
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--tertiary-low);
+          border-color: var(--tertiary);
+        }
+      }
+    }
+
+    .potential-win {
+      background: var(--success-low);
+      border: 1px solid var(--success);
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+
+      .label {
+        color: var(--success);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .amount {
+        color: var(--success);
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+    }
+
+    .balance-info {
+      text-align: center;
+      padding: 8px;
+      background: var(--primary-very-low);
+      border-radius: 4px;
+      margin-top: 12px;
+
+      small {
+        color: var(--primary-medium);
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 20px;
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+
+      &.cancel-btn {
+        background: var(--primary-low);
+        color: var(--primary);
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      &.confirm-btn {
+        background: var(--tertiary);
+        color: var(--secondary);
+
+        &:hover {
+          opacity: 0.9;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--primary-medium);
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .qd-tp-container {
+    padding: 16px;
+  }
+
+  .header-section {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+
+    .user-stats {
+      justify-content: center;
+    }
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .event-card {
+    padding: 16px;
+
+    .betting-options {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  .bet-modal {
+    width: 95%;
+    margin: 10px;
+  }
+}
+
+/* 加载状态 */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary-low);
+  border-radius: 50%;
+  border-top-color: var(--tertiary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

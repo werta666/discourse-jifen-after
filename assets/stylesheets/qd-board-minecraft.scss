@@ -1,0 +1,778 @@
+/* 积分排行榜 - Minecraft 像素风格样式 */
+
+/* 导入像素字体 */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* 整体容器：Minecraft 世界背景 */
+.qd-board--minecraft {
+  background: 
+    linear-gradient(0deg, #2d5016 0%, #4a7c59 20%, #87ceeb 50%, #87ceeb 100%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 15px,
+      rgba(255,255,255,0.03) 16px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 15px,
+      rgba(255,255,255,0.03) 16px
+    );
+  min-height: 100vh;
+  padding: 20px 0;
+  position: relative;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* 像素化云朵 */
+.qd-board--minecraft::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  width: 64px;
+  height: 32px;
+  background: 
+    linear-gradient(to right, 
+      transparent 0px, transparent 8px,
+      #ffffff 8px, #ffffff 56px,
+      transparent 56px, transparent 64px
+    ),
+    linear-gradient(to bottom,
+      transparent 0px, transparent 8px,
+      #ffffff 8px, #ffffff 24px,
+      transparent 24px, transparent 32px
+    );
+  box-shadow: 
+    80px 16px 0 0 #ffffff,
+    96px 0px 0 0 #ffffff,
+    112px 8px 0 0 #ffffff,
+    200px 32px 0 0 #ffffff,
+    216px 16px 0 0 #ffffff,
+    232px 24px 0 0 #ffffff;
+  opacity: 0.9;
+  animation: pixelCloudFloat 25s linear infinite;
+}
+
+@keyframes pixelCloudFloat {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+.qd-board--minecraft .qd-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.qd-board--minecraft .qd-card {
+  background: 
+    linear-gradient(145deg, #8B7355 0%, #A0522D 50%, #654321 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 4px solid #654321;
+  border-radius: 0;
+  padding: 24px;
+  box-shadow: 
+    4px 4px 0 #3d2817,
+    8px 8px 0 #2d1e0f,
+    8px 8px 16px rgba(0,0,0,0.5);
+  position: relative;
+  image-rendering: pixelated;
+}
+
+/* 像素化边框效果 */
+.qd-board--minecraft .qd-card::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      #654321 0px, #654321 4px,
+      #8B7355 4px, #8B7355 8px
+    );
+  z-index: -1;
+}
+
+/* 标题区域 - Minecraft 风格 */
+.board-header {
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.board-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: #FFFF00;
+  text-shadow: 
+    2px 2px 0 #000000,
+    4px 4px 0 #333333;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  animation: pixelGlow 2s ease-in-out infinite alternate;
+  line-height: 1.4;
+}
+
+@keyframes pixelGlow {
+  0% { 
+    text-shadow: 
+      2px 2px 0 #000000,
+      4px 4px 0 #333333;
+  }
+  100% { 
+    text-shadow: 
+      2px 2px 0 #000000,
+      4px 4px 0 #333333,
+      0 0 8px #FFFF00;
+  }
+}
+
+.board-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  margin: 0;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+/* 未登录状态 - 像素化提示框 */
+.board-login-prompt {
+  text-align: center;
+  padding: 32px;
+  background: 
+    linear-gradient(145deg, #FF6B6B 0%, #CC0000 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 4px solid #990000;
+  margin: 20px 0;
+  box-shadow: 
+    4px 4px 0 #660000,
+    8px 8px 0 #330000,
+    8px 8px 16px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.login-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  animation: pixelBounce 1s ease-in-out infinite;
+  filter: contrast(2) brightness(1.2);
+}
+
+@keyframes pixelBounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.login-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 0 #000000;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.login-message {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+/* Minecraft 风格按钮 */
+.qd-board--minecraft .login-button {
+  display: inline-block;
+  background: 
+    linear-gradient(145deg, #4CAF50 0%, #2E7D32 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  color: #FFFFFF;
+  padding: 12px 24px;
+  border: 4px solid #1B5E20;
+  text-decoration: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  box-shadow: 
+    4px 4px 0 #0D4E14,
+    8px 8px 0 #0A3D10,
+    8px 8px 16px rgba(0,0,0,0.3);
+  transition: all 0.1s ease;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 1px;
+}
+
+.qd-board--minecraft .login-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 
+    2px 2px 0 #0D4E14,
+    4px 4px 0 #0A3D10,
+    4px 4px 8px rgba(0,0,0,0.3);
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.qd-board--minecraft .login-button:active {
+  transform: translate(4px, 4px);
+  box-shadow: 
+    0px 0px 0 #0D4E14,
+    2px 2px 0 #0A3D10,
+    2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 舞台区域 - 像素化领奖台 */
+.board-stage {
+  margin: 32px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 32px;
+  min-height: 160px;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 20px;
+}
+
+.podium-position {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.podium-position:hover {
+  transform: translateY(-4px);
+}
+
+/* 冠军位置 - 钻石块风格 */
+.podium-position--first {
+  order: 2;
+  transform: scale(1.2);
+  flex: 1;
+  max-width: 140px;
+}
+
+.podium-position--second {
+  order: 1;
+  flex: 1;
+  max-width: 120px;
+}
+
+.podium-position--third {
+  order: 3;
+  flex: 1;
+  max-width: 110px;
+}
+
+/* Minecraft 风格奖牌 - 方块设计 */
+.board-medal {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 0 #000000;
+  margin-bottom: 12px;
+  position: relative;
+  border: 4px solid;
+  image-rendering: pixelated;
+  box-shadow: 
+    4px 4px 0 rgba(0,0,0,0.5),
+    inset -2px -2px 0 rgba(0,0,0,0.3),
+    inset 2px 2px 0 rgba(255,255,255,0.3);
+}
+
+.podium-position--first .board-medal {
+  width: 80px;
+  height: 80px;
+  font-size: 20px;
+}
+
+/* 金块 */
+.board-medal--gold {
+  background: 
+    linear-gradient(135deg, 
+      #FFD700 0%, #FFD700 25%,
+      #FFA500 25%, #FFA500 50%,
+      #FFD700 50%, #FFD700 75%,
+      #FFA500 75%, #FFA500 100%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(255,255,255,0.1) 4px,
+      rgba(255,255,255,0.1) 8px
+    );
+  border-color: #B8860B;
+  animation: goldPixelGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes goldPixelGlow {
+  0% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3);
+  }
+  100% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3),
+      0 0 16px #FFD700;
+  }
+}
+
+/* 铁块 */
+.board-medal--silver {
+  background: 
+    linear-gradient(135deg, 
+      #E6E6FA 0%, #E6E6FA 25%,
+      #C0C0C0 25%, #C0C0C0 50%,
+      #E6E6FA 50%, #E6E6FA 75%,
+      #C0C0C0 75%, #C0C0C0 100%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(255,255,255,0.1) 4px,
+      rgba(255,255,255,0.1) 8px
+    );
+  border-color: #808080;
+  animation: silverPixelGlow 2s ease-in-out infinite alternate 0.5s;
+}
+
+@keyframes silverPixelGlow {
+  0% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3);
+  }
+  100% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3),
+      0 0 12px #C0C0C0;
+  }
+}
+
+/* 铜块 */
+.board-medal--bronze {
+  background: 
+    linear-gradient(135deg, 
+      #CD853F 0%, #CD853F 25%,
+      #A0522D 25%, #A0522D 50%,
+      #CD853F 50%, #CD853F 75%,
+      #A0522D 75%, #A0522D 100%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(255,255,255,0.1) 4px,
+      rgba(255,255,255,0.1) 8px
+    );
+  border-color: #8B4513;
+  animation: bronzePixelGlow 2s ease-in-out infinite alternate 1s;
+}
+
+@keyframes bronzePixelGlow {
+  0% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3);
+  }
+  100% { 
+    box-shadow: 
+      4px 4px 0 rgba(0,0,0,0.5),
+      inset -2px -2px 0 rgba(0,0,0,0.3),
+      inset 2px 2px 0 rgba(255,255,255,0.3),
+      0 0 10px #CD853F;
+  }
+}
+
+/* 用户信息 - 像素字体 */
+.podium-user {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+
+.podium-position--first .podium-user {
+  font-size: 12px;
+}
+
+.podium-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  background: 
+    linear-gradient(145deg, #4CAF50 0%, #2E7D32 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  padding: 8px 12px;
+  border: 2px solid #1B5E20;
+  box-shadow: 
+    2px 2px 0 #0D4E14,
+    4px 4px 0 #0A3D10;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.podium-position--first .podium-score {
+  font-size: 10px;
+  padding: 10px 14px;
+}
+
+/* 其余榜单 - 像素化列表 */
+.board-list {
+  background: 
+    linear-gradient(145deg, #8B7355 0%, #654321 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 4px solid #3d2817;
+  padding: 16px;
+  box-shadow: 
+    4px 4px 0 #2d1e0f,
+    8px 8px 0 #1d140b,
+    8px 8px 16px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+}
+
+.board-list .board-item {
+  background: 
+    linear-gradient(145deg, #A0522D 0%, #8B4513 100%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 2px solid #654321;
+  margin-bottom: 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.1s ease;
+  box-shadow: 
+    2px 2px 0 #3d2817,
+    4px 4px 0 #2d1e0f;
+}
+
+.board-list .board-item:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 
+    1px 1px 0 #3d2817,
+    2px 2px 0 #2d1e0f;
+}
+
+.board-list .board-item:last-child {
+  margin-bottom: 0;
+}
+
+.board-list .board-rank {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #FFFF00;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000000;
+}
+
+.board-list .board-user {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 #000000;
+  line-height: 1.4;
+}
+
+.board-list .board-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 1px;
+  padding: 6px 10px;
+  background: 
+    linear-gradient(145deg, #4CAF50 0%, #2E7D32 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 2px solid #1B5E20;
+  box-shadow: 
+    2px 2px 0 #0D4E14,
+    4px 4px 0 #0A3D10;
+  line-height: 1.2;
+}
+
+/* 底部区域 - 像素化信息栏 */
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding: 16px;
+  background: 
+    linear-gradient(145deg, #2E7D32 0%, #1B5E20 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  border: 4px solid #0D4E14;
+  box-shadow: 
+    4px 4px 0 #0A3D10,
+    8px 8px 0 #072A0C,
+    8px 8px 16px rgba(0,0,0,0.4);
+}
+
+.board-info {
+  flex: 1;
+}
+
+.countdown-info {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+.countdown-minutes {
+  display: inline-block;
+  background: 
+    linear-gradient(145deg, #FFD700 0%, #FFA500 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    );
+  color: #000000;
+  padding: 4px 8px;
+  border: 2px solid #B8860B;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  text-shadow: none;
+  box-shadow: 
+    2px 2px 0 #8B7355,
+    4px 4px 0 #654321;
+  animation: pixelPulse 1.5s ease-in-out infinite alternate;
+  letter-spacing: 1px;
+}
+
+@keyframes pixelPulse {
+  0% { 
+    transform: scale(1);
+    box-shadow: 
+      2px 2px 0 #8B7355,
+      4px 4px 0 #654321;
+  }
+  100% { 
+    transform: scale(1.05);
+    box-shadow: 
+      2px 2px 0 #8B7355,
+      4px 4px 0 #654321,
+      0 0 8px #FFD700;
+  }
+}
+
+/* 管理员按钮 - 红石块风格 */
+.qd-board--minecraft .admin-refresh-btn {
+  background: 
+    linear-gradient(145deg, #FF6B6B 0%, #CC0000 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    ) !important;
+  border: 4px solid #990000 !important;
+  color: #FFFFFF !important;
+  padding: 12px 16px !important;
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 8px !important;
+  text-shadow: 1px 1px 0 #000000 !important;
+  box-shadow: 
+    4px 4px 0 #660000,
+    8px 8px 0 #330000,
+    8px 8px 16px rgba(0,0,0,0.3) !important;
+  transition: all 0.1s ease !important;
+  cursor: pointer !important;
+  letter-spacing: 1px !important;
+  line-height: 1.4 !important;
+}
+
+.qd-board--minecraft .admin-refresh-btn:hover:not(:disabled) {
+  background: 
+    linear-gradient(145deg, #FF8888 0%, #FF6B6B 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.1) 2px,
+      rgba(0,0,0,0.1) 4px
+    ) !important;
+  transform: translate(2px, 2px) !important;
+  box-shadow: 
+    2px 2px 0 #660000,
+    4px 4px 0 #330000,
+    4px 4px 8px rgba(0,0,0,0.3) !important;
+}
+
+.qd-board--minecraft .admin-refresh-btn:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: 
+    0px 0px 0 #660000,
+    2px 2px 0 #330000,
+    2px 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+.qd-board--minecraft .admin-refresh-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .qd-board--minecraft .qd-card {
+    padding: 16px;
+    margin: 0 8px;
+  }
+  
+  .board-title {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .podium {
+    gap: 8px;
+  }
+  
+  .podium-position--first {
+    transform: scale(1.1);
+  }
+  
+  .board-medal {
+    width: 48px;
+    height: 48px;
+    font-size: 12px;
+  }
+  
+  .podium-position--first .board-medal {
+    width: 56px;
+    height: 56px;
+    font-size: 14px;
+  }
+
+  .board-footer {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .countdown-info {
+    font-size: 7px;
+    line-height: 1.8;
+  }
+
+  .admin-refresh-btn {
+    width: 100%;
+    font-size: 7px !important;
+  }
+  
+  .podium-user {
+    font-size: 8px;
+    line-height: 1.6;
+  }
+  
+  .podium-score {
+    font-size: 7px;
+    line-height: 1.4;
+  }
+}
+
+/* 加载动画 - 像素化跳跃 */
+@keyframes minecraftJump {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.qd-board--minecraft .loading {
+  animation: minecraftJump 0.6s ease-in-out infinite;
+}
