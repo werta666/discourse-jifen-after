@@ -1,0 +1,461 @@
+// 充值订单管理页面样式
+.qd-pay-admin-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 40px 20px;
+
+  .qd-pay-admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  // 页面标题
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    .header-left {
+      h1 {
+        font-size: 2.5em;
+        margin: 0 0 10px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+
+        i {
+          margin-right: 15px;
+        }
+      }
+
+      .subtitle {
+        color: #6c757d;
+        font-size: 1.1em;
+        margin: 0;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 15px;
+
+      .btn {
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s;
+
+        i {
+          margin-right: 8px;
+        }
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+
+  // 统计卡片网格
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8em;
+      }
+
+      .stat-content {
+        flex: 1;
+
+        .stat-value {
+          font-size: 2em;
+          font-weight: 700;
+          line-height: 1;
+          margin-bottom: 8px;
+        }
+
+        .stat-label {
+          font-size: 0.95em;
+          color: #6c757d;
+          font-weight: 500;
+        }
+      }
+
+      &.total {
+        border-color: #667eea;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #667eea;
+        }
+      }
+
+      &.success {
+        border-color: #00b894;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #00b894 0%, #00d2d3 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #00b894;
+        }
+      }
+
+      &.pending {
+        border-color: #fdcb6e;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #f39c12;
+        }
+      }
+
+      &.cancelled {
+        border-color: #d63031;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #d63031 0%, #e17055 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #d63031;
+        }
+      }
+
+      &.amount {
+        border-color: #00cec9;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #00cec9 0%, #0984e3 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #0984e3;
+        }
+      }
+
+      &.points {
+        border-color: #ffd700;
+
+        .stat-icon {
+          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+          color: white;
+        }
+
+        .stat-value {
+          color: #ff8c00;
+        }
+      }
+    }
+  }
+
+  // 操作按钮区域
+  .admin-actions {
+    text-align: center;
+    margin-bottom: 40px;
+
+    .btn-large {
+      font-size: 1.3em;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-weight: 700;
+      transition: all 0.3s;
+      box-shadow: 0 5px 20px rgba(214, 48, 49, 0.3);
+
+      i {
+        margin-right: 10px;
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(214, 48, 49, 0.4);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
+  // 订单列表区域
+  .orders-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    .section-header {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f1f3f5;
+
+      h2 {
+        font-size: 1.8em;
+        margin: 0;
+        color: #212529;
+        font-weight: 700;
+
+        i {
+          margin-right: 12px;
+          color: #667eea;
+        }
+      }
+    }
+
+    .orders-table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #e9ecef;
+
+      .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+
+          th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+
+            &:first-child {
+              border-top-left-radius: 12px;
+            }
+
+            &:last-child {
+              border-top-right-radius: 12px;
+            }
+          }
+        }
+
+        tbody {
+          .order-row {
+            transition: background 0.2s;
+            border-bottom: 1px solid #f1f3f5;
+
+            &:hover {
+              background: #f8f9fa;
+            }
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            td {
+              padding: 18px 20px;
+              font-size: 0.95em;
+              vertical-align: middle;
+
+              &.order-no {
+                code {
+                  background: #f8f9fa;
+                  padding: 5px 10px;
+                  border-radius: 6px;
+                  font-size: 0.9em;
+                  color: #495057;
+                  font-family: 'Courier New', monospace;
+                }
+              }
+
+              &.username {
+                color: #495057;
+                font-weight: 500;
+
+                i {
+                  color: #667eea;
+                  margin-right: 6px;
+                }
+              }
+
+              &.amount {
+                strong {
+                  color: #0984e3;
+                  font-size: 1.1em;
+                }
+              }
+
+              &.points {
+                color: #f39c12;
+                font-weight: 600;
+
+                i {
+                  margin-right: 5px;
+                }
+              }
+
+              &.status {
+                .status-badge {
+                  display: inline-block;
+                  padding: 6px 14px;
+                  border-radius: 20px;
+                  font-size: 0.9em;
+                  font-weight: 600;
+                  letter-spacing: 0.3px;
+
+                  &.status-paid {
+                    background: #d4edda;
+                    color: #155724;
+                    border: 1px solid #c3e6cb;
+                  }
+
+                  &.status-pending {
+                    background: #fff3cd;
+                    color: #856404;
+                    border: 1px solid #ffeaa7;
+                  }
+
+                  &.status-cancelled {
+                    background: #f8d7da;
+                    color: #721c24;
+                    border: 1px solid #f5c6cb;
+                  }
+
+                  &.status-refunded {
+                    background: #d1ecf1;
+                    color: #0c5460;
+                    border: 1px solid #bee5eb;
+                  }
+                }
+              }
+
+              &.created-at,
+              &.paid-at {
+                color: #6c757d;
+                font-size: 0.9em;
+                font-family: 'Courier New', monospace;
+                white-space: nowrap;
+              }
+
+              .text-muted {
+                color: #adb5bd;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .no-orders {
+      text-align: center;
+      padding: 80px 20px;
+      color: #adb5bd;
+
+      i {
+        font-size: 5em;
+        display: block;
+        margin-bottom: 20px;
+        color: #dee2e6;
+      }
+
+      p {
+        font-size: 1.3em;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 1024px) {
+  .qd-pay-admin-page {
+    .admin-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+
+      .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .qd-pay-admin-page {
+    padding: 20px 10px;
+
+    .admin-header {
+      padding: 20px;
+
+      .header-left h1 {
+        font-size: 2em;
+      }
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .orders-section {
+      padding: 20px;
+
+      .orders-table-container {
+        .orders-table {
+          font-size: 0.85em;
+
+          thead th,
+          tbody td {
+            padding: 12px 10px;
+          }
+        }
+      }
+    }
+  }
+}

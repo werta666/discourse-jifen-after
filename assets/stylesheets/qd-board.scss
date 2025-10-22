@@ -1,0 +1,155 @@
+/* 排行榜通用布局（继承 qd 风格） */
+.qd-board .board-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.qd-board .board-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--primary-medium);
+}
+
+/* 前三名展示区 */
+.board-top3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.board-top3-item {
+  background: var(--primary-very-low);
+  border: 1px solid var(--primary-low);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.board-top3-item--1 { transform: translateY(6px); } /* 亚军微降 */
+.board-top3-item--2 { transform: translateY(-4px); } /* 冠军微升突出 */
+.board-top3-item--3 { transform: translateY(6px); } /* 季军微降 */
+
+.board-top3-meta .board-name {
+  font-weight: 700;
+  color: var(--primary);
+}
+.board-top3-meta .board-points {
+  font-size: 12px;
+  color: var(--success);
+  margin-top: 2px;
+}
+
+/* 其余榜单 */
+.board-list {
+  background: var(--secondary-very-high);
+  border: 1px solid var(--primary-low);
+  border-radius: 8px;
+  padding: 8px;
+}
+.board-item {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--primary-low);
+}
+.board-item:last-child { border-bottom: none; }
+.board-rank {
+  font-weight: 800;
+  color: var(--primary);
+  text-align: center;
+}
+.board-user { color: var(--primary); font-weight: 600; }
+.board-score { color: var(--success); font-size: 13px; }
+
+/* 勋章基类（高性能动画） */
+.board-medal {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  will-change: transform, opacity;
+  animation: medal-float 3s ease-in-out infinite;
+  overflow: hidden;
+}
+
+/* 流光高光 */
+.board-medal::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -60%;
+  width: 60%;
+  height: 140%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: rotate(25deg) translateX(-100%);
+  animation: medal-shine 2.8s linear infinite;
+  pointer-events: none;
+}
+
+/* 金牌 */
+.board-medal--gold {
+  background: linear-gradient(135deg, #FFD700 0%, #FFB300 50%, #FFC533 100%);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.65), 0 6px 14px rgba(0,0,0,0.15);
+  animation: medal-float 3.2s ease-in-out infinite, glow-gold 2.4s ease-in-out infinite;
+}
+
+/* 银牌 */
+.board-medal--silver {
+  background: linear-gradient(135deg, #D7D7D7 0%, #BFBFBF 50%, #E9E9E9 100%);
+  box-shadow: 0 0 10px rgba(180, 200, 255, 0.5), 0 6px 14px rgba(0,0,0,0.12);
+  animation: medal-float 3s ease-in-out infinite, glow-silver 2.6s ease-in-out infinite;
+  color: #253040;
+}
+
+/* 铜牌 */
+.board-medal--bronze {
+  background: linear-gradient(135deg, #CD7F32 0%, #B46B2E 50%, #DE9350 100%);
+  box-shadow: 0 0 10px rgba(255, 150, 80, 0.45), 0 6px 14px rgba(0,0,0,0.12);
+  animation: medal-float 3.1s ease-in-out infinite, glow-bronze 2.8s ease-in-out infinite;
+}
+
+/* 无勋章占位 */
+.board-medal--none {
+  background: var(--primary-low);
+  color: var(--primary);
+}
+
+/* 动画定义：仅使用 transform/opacity */
+@keyframes medal-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes medal-shine {
+  0% { transform: rotate(25deg) translateX(-120%); opacity: 0.0; }
+  10% { opacity: 0.85; }
+  100% { transform: rotate(25deg) translateX(260%); opacity: 0; }
+}
+@keyframes glow-gold {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.45), 0 6px 14px rgba(0,0,0,0.15); }
+  50% { box-shadow: 0 0 18px rgba(255, 215, 0, 0.85), 0 6px 14px rgba(0,0,0,0.15); }
+}
+@keyframes glow-silver {
+  0%, 100% { box-shadow: 0 0 10px rgba(180, 200, 255, 0.35), 0 6px 14px rgba(0,0,0,0.12); }
+  50% { box-shadow: 0 0 16px rgba(180, 200, 255, 0.7), 0 6px 14px rgba(0,0,0,0.12); }
+}
+@keyframes glow-bronze {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 150, 80, 0.35), 0 6px 14px rgba(0,0,0,0.12); }
+  50% { box-shadow: 0 0 16px rgba(255, 150, 80, 0.7), 0 6px 14px rgba(0,0,0,0.12); }
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .board-top3 { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,157 @@
+<div class="qd-betting-my-records-container">
+  {{! 页面头部 }}
+  <div class="records-header">
+    <div class="header-left">
+      <button class="btn-back" {{action "goBack"}}>
+        <i class="fa-solid fa-arrow-left"></i>
+        返回
+      </button>
+      <h1>
+        <i class="fa-solid fa-rectangle-list"></i>
+        我的投注记录
+      </h1>
+    </div>
+  </div>
+
+  {{! 统计卡片 }}
+  <div class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.model.stats.total_bets}}</div>
+        <div class="stat-label">总投注次数</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon wagered">
+        <i class="fa-solid fa-coins"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.model.stats.total_wagered}}</div>
+        <div class="stat-label">总投注积分</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon won">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.model.stats.total_won}}</div>
+        <div class="stat-label">总获胜积分</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon rate">
+        <i class="fa-solid fa-percent"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.model.stats.win_rate}}%</div>
+        <div class="stat-label">胜率</div>
+      </div>
+    </div>
+  </div>
+
+  {{! 筛选器 }}
+  <div class="records-filters">
+    <button class="filter-btn {{if (eq this.filterStatus 'all') 'active'}}" {{action "setFilter" "all"}}>
+      全部 ({{this.model.records.length}})
+    </button>
+    <button class="filter-btn {{if (eq this.filterStatus 'pending') 'active'}}" {{action "setFilter" "pending"}}>
+      <i class="fa-solid fa-clock"></i> 待结算
+    </button>
+    <button class="filter-btn {{if (eq this.filterStatus 'won') 'active'}}" {{action "setFilter" "won"}}>
+      <i class="fa-solid fa-trophy"></i> 已赢
+    </button>
+    <button class="filter-btn {{if (eq this.filterStatus 'lost') 'active'}}" {{action "setFilter" "lost"}}>
+      <i class="fa-solid fa-xmark"></i> 已输
+    </button>
+    <button class="filter-btn {{if (eq this.filterStatus 'refunded') 'active'}}" {{action "setFilter" "refunded"}}>
+      <i class="fa-solid fa-rotate-left"></i> 已退款
+    </button>
+  </div>
+
+  {{! 记录列表 }}
+  <div class="records-list">
+    {{#if this.filteredRecords.length}}
+      {{#each this.filteredRecords as |record|}}
+        <div class="record-card status-{{record.status}}">
+          <div class="record-header">
+            <div class="event-title">
+              <i class="fa-solid fa-trophy"></i>
+              {{record.event_title}}
+            </div>
+            {{#if (eq record.status "pending")}}
+              <div class="status-badge pending">待结算</div>
+            {{else if (eq record.status "won")}}
+              <div class="status-badge won">已赢</div>
+            {{else if (eq record.status "lost")}}
+              <div class="status-badge lost">已输</div>
+            {{else if (eq record.status "refunded")}}
+              <div class="status-badge refunded">已退款</div>
+            {{else}}
+              <div class="status-badge">{{record.status}}</div>
+            {{/if}}
+          </div>
+
+          <div class="record-body">
+            <div class="option-info">
+              <span class="option-logo">{{record.option_logo}}</span>
+              <span class="option-name">{{record.option_name}}</span>
+              {{#if record.is_winner}}
+                <span class="winner-badge">
+                  <i class="fa-solid fa-crown"></i> 获胜
+                </span>
+              {{/if}}
+            </div>
+
+            <div class="bet-info">
+              <div class="info-item">
+                <i class="fa-solid fa-coins"></i>
+                <span class="label">投注:</span>
+                <span class="value">{{record.bet_amount}}</span>
+              </div>
+
+              {{#if record.odds_at_bet}}
+                <div class="info-item">
+                  <i class="fa-solid fa-chart-line"></i>
+                  <span class="label">赔率:</span>
+                  <span class="value">{{record.odds_at_bet}}x</span>
+                </div>
+              {{/if}}
+
+              {{#if record.win_amount}}
+                <div class="info-item win">
+                  <i class="fa-solid fa-trophy"></i>
+                  <span class="label">获胜:</span>
+                  <span class="value">+{{record.win_amount}}</span>
+                </div>
+              {{/if}}
+            </div>
+
+            <div class="time-info">
+              <i class="fa-regular fa-clock"></i>
+              {{record.created_at}}
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fa-solid fa-inbox"></i>
+        </div>
+        <h3>暂无记录</h3>
+        <p>{{#if (eq this.filterStatus 'all')}}您还没有参与任何投注{{else}}该筛选条件下暂无记录{{/if}}</p>
+        <a href="/qd/betting" class="btn-go-betting">
+          <i class="fa-solid fa-rocket"></i>
+          去参与竞猜
+        </a>
+      </div>
+    {{/if}}
+  </div>
+</div>

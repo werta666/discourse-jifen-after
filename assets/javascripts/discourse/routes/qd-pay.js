@@ -1,0 +1,28 @@
+import Route from "@ember/routing/route";
+import { ajax } from "discourse/lib/ajax";
+
+export default class QdPayRoute extends Route {
+  async model() {
+    try {
+      const data = await ajax("/qd/pay/packages.json");
+      return {
+        packages: data.packages || [],
+        alipayEnabled: data.alipay_enabled || false,
+        wechatEnabled: data.wechat_enabled || false,
+        userPoints: data.user_points || 0,
+        qrCodeApi: data.qr_code_api || "https://api.pwmqr.com/qrcode/create/?url=",
+        loadTime: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error("加载充值套餐失败:", error);
+      return {
+        packages: [],
+        alipayEnabled: false,
+        wechatEnabled: false,
+        userPoints: 0,
+        qrCodeApi: "https://api.pwmqr.com/qrcode/create/?url=",
+        error: "加载充值套餐失败"
+      };
+    }
+  }
+}

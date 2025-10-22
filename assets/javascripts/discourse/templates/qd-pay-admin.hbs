@@ -1,0 +1,167 @@
+<div class="qd-page qd-pay-admin-page">
+  <div class="qd-pay-admin-container">
+    
+    {{! 页面标题 }}
+    <div class="admin-header">
+      <div class="header-left">
+        <h1><i class="fa-solid fa-chart-line"></i> 充值订单管理</h1>
+        <p class="subtitle">查看和管理所有充值订单</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-default" {{on "click" this.refreshData}}>
+          <i class="fa-solid fa-rotate"></i> 刷新数据
+        </button>
+        <button class="btn btn-default" {{on "click" this.goBack}}>
+          <i class="fa-solid fa-arrow-left"></i> 返回充值页
+        </button>
+      </div>
+    </div>
+
+    {{! 统计卡片 }}
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-icon">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.totalOrders}}</div>
+          <div class="stat-label">总订单数</div>
+        </div>
+      </div>
+
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.paidOrders}}</div>
+          <div class="stat-label">已支付</div>
+        </div>
+      </div>
+
+      <div class="stat-card pending">
+        <div class="stat-icon">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.pendingOrders}}</div>
+          <div class="stat-label">待支付</div>
+        </div>
+      </div>
+
+      <div class="stat-card cancelled">
+        <div class="stat-icon">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.cancelledOrders}}</div>
+          <div class="stat-label">已取消</div>
+        </div>
+      </div>
+
+      <div class="stat-card amount">
+        <div class="stat-icon">
+          <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">¥{{this.formattedStats.totalAmount}}</div>
+          <div class="stat-label">总收入</div>
+        </div>
+      </div>
+
+      <div class="stat-card points">
+        <div class="stat-icon">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.totalPoints}}</div>
+          <div class="stat-label">总积分</div>
+        </div>
+      </div>
+    </div>
+
+    {{! 操作按钮 }}
+    <div class="admin-actions">
+      <button class="btn btn-danger btn-large" {{on "click" this.clearUnpaidOrders}} disabled={{this.isClearing}}>
+        <i class="fa-solid fa-trash-can"></i>
+        {{#if this.isClearing}}
+          清理中...
+        {{else}}
+          一键删除未付款订单
+        {{/if}}
+      </button>
+    </div>
+
+    {{! 订单列表 }}
+    <div class="orders-section">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-list"></i> 最近订单（最多100条）</h2>
+      </div>
+
+      {{#if this.hasOrders}}
+        <div class="orders-table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>用户</th>
+                <th>金额</th>
+                <th>积分</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>支付时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.model.orders as |order|}}
+                <tr class="order-row">
+                  <td class="order-no">
+                    <code>{{order.out_trade_no}}</code>
+                  </td>
+                  <td class="username">
+                    <i class="fa-solid fa-user"></i> {{order.username}}
+                  </td>
+                  <td class="amount">
+                    <strong>¥{{order.amount}}</strong>
+                  </td>
+                  <td class="points">
+                    <i class="fa-solid fa-star"></i> {{order.points}}
+                  </td>
+                  <td class="status">
+                    {{#if (eq order.status "paid")}}
+                      <span class="status-badge status-paid">已支付</span>
+                    {{else if (eq order.status "pending")}}
+                      <span class="status-badge status-pending">待支付</span>
+                    {{else if (eq order.status "cancelled")}}
+                      <span class="status-badge status-cancelled">已取消</span>
+                    {{else if (eq order.status "refunded")}}
+                      <span class="status-badge status-refunded">已退款</span>
+                    {{else}}
+                      <span class="status-badge">{{order.status}}</span>
+                    {{/if}}
+                  </td>
+                  <td class="created-at">
+                    {{order.created_at}}
+                  </td>
+                  <td class="paid-at">
+                    {{#if order.paid_at}}
+                      {{order.paid_at}}
+                    {{else}}
+                      <span class="text-muted">-</span>
+                    {{/if}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <div class="no-orders">
+          <i class="fa-solid fa-inbox"></i>
+          <p>暂无订单数据</p>
+        </div>
+      {{/if}}
+    </div>
+
+  </div>
+</div>

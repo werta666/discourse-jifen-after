@@ -1,0 +1,63 @@
+// FontAwesome 6.5.1 最新版本 - 完整引用
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+// 确保图标正确显示的额外样式
+.product-placeholder {
+  i {
+    font-size: 36px !important;
+    color: #6b7280 !important;
+    display: inline-block !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+  }
+}
+
+// 商品卡片图标样式优化
+.qd-product-card {
+  .product-image {
+    .product-placeholder {
+      i {
+        transition: all 0.3s ease !important;
+        
+        // 确保图标居中显示
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+  }
+}
+
+// 购买模态框图标样式
+.product-thumb-placeholder {
+  i {
+    font-size: 24px !important;
+    color: #6b7280 !important;
+    display: inline-block !important;
+  }
+}
+
+// 兼容性支持 - 同时支持 FA4 和 FA6 语法
+.fa {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 5 Free", "Font Awesome 5 Pro", FontAwesome !important;
+  font-weight: 900 !important;
+}
+
+.fas {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
+}
+
+.far {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 400 !important;
+}
+
+.fab {
+  font-family: "Font Awesome 6 Brands" !important;
+  font-weight: 400 !important;
+}
