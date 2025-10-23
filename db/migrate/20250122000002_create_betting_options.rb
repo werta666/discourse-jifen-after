@@ -6,7 +6,7 @@ class CreateBettingOptions < ActiveRecord::Migration[6.0]
       create_table :jifen_betting_options do |t|
         t.integer  :event_id,          null: false
         t.string   :name,              null: false, limit: 255
-        t.string   :logo,              limit: 10
+        t.string   :logo,              limit: 100
         t.text     :description
         t.integer  :sort_order,        default: 0
         
