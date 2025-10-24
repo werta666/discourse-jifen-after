@@ -202,25 +202,65 @@
         background: #f3f4f6;
         border: 2px dashed #d1d5db;
         border-radius: 12px;
-        padding: 20px;
+        padding: 24px;
         margin-bottom: 24px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
+        
+        .form-row {
+          margin-bottom: 16px;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+        
+        .style-label {
+          display: block;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 8px;
+          font-size: 14px;
+        }
         
         .form-control {
-          flex: 1;
-          min-width: 200px;
+          width: 100%;
           padding: 10px 16px;
           border: 2px solid #e5e7eb;
           border-radius: 8px;
           font-size: 14px;
+          background: white;
           
           &:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
           }
+        }
+        
+        .style-preset-select {
+          cursor: pointer;
+        }
+        
+        .style-textarea {
+          font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+          font-size: 12px;
+          resize: vertical;
+        }
+        
+        .badge-preview-section {
+          background: white;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 16px;
+          text-align: center;
+          
+          .badge-preview-display {
+            display: inline-block;
+            margin-top: 8px;
+          }
+        }
+        
+        .btn-block {
+          width: 100%;
         }
       }
       

@@ -91,47 +91,79 @@
 
       {{#if this.isAdmin}}
         <div class="badge-upload-form">
-          <input
-            type="text"
-            placeholder="勋章名称"
-            value={{this.badgeUploadName}}
-            {{on "input" (fn (mut this.badgeUploadName) value="target.value")}}
-            class="form-control"
-          />
+          <div class="form-row">
+            <Input
+              @type="text"
+              @value={{this.badgeUploadName}}
+              placeholder="勋章名称"
+              class="form-control"
+            />
+          </div>
 
           {{#if (eq this.badgeUploadType "text")}}
-            <input
-              type="text"
-              placeholder="显示文字"
-              value={{this.badgeUploadText}}
-              {{on "input" (fn (mut this.badgeUploadText) value="target.value")}}
-              class="form-control"
-            />
-            <input
-              type="text"
-              placeholder="CSS 样式（可选）"
-              value={{this.badgeUploadStyle}}
-              {{on "input" (fn (mut this.badgeUploadStyle) value="target.value")}}
-              class="form-control"
-            />
-            <button
-              class="btn btn-primary"
-              {{on "click" this.uploadTextBadge}}
-              disabled={{this.uploadingBadge}}
-            >
-              <i class="fa fa-upload"></i>
-              {{if this.uploadingBadge "上传中..." "上传文字勋章"}}
-            </button>
-          {{else}}
-            <label class="btn btn-primary">
-              <i class="fa fa-upload"></i> 上传图片勋章
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/jpg"
-                {{on "change" this.uploadBadge}}
-                style="display:none"
+            <div class="form-row">
+              <Input
+                @type="text"
+                @value={{this.badgeUploadText}}
+                placeholder="显示文字（如：VIP、管理员）"
+                class="form-control"
               />
-            </label>
+            </div>
+            
+            <div class="form-row">
+              <label class="style-label">样式预设：</label>
+              <select 
+                class="form-control style-preset-select"
+                {{on "change" this.selectStylePreset}}
+              >
+                {{#each this.stylePresets as |preset|}}
+                  <option value={{preset.id}} selected={{eq this.selectedStylePreset preset.id}}>
+                    {{preset.name}}
+                  </option>
+                {{/each}}
+              </select>
+            </div>
+            
+            <div class="form-row">
+              <Textarea
+                @value={{this.badgeUploadStyle}}
+                placeholder="CSS 样式（可选，或使用上方预设）"
+                class="form-control style-textarea"
+                rows="3"
+              />
+            </div>
+            
+            {{#if this.badgeUploadText}}
+              <div class="badge-preview-section">
+                <label class="style-label">预览效果：</label>
+                <span class="badge-preview-display" style={{this.previewStyle}}>
+                  {{this.badgeUploadText}}
+                </span>
+              </div>
+            {{/if}}
+            
+            <div class="form-row">
+              <button
+                class="btn btn-primary btn-block"
+                {{on "click" this.uploadTextBadge}}
+                disabled={{this.uploadingBadge}}
+              >
+                <i class="fa fa-upload"></i>
+                {{if this.uploadingBadge "上传中..." "上传文字勋章"}}
+              </button>
+            </div>
+          {{else}}
+            <div class="form-row">
+              <label class="btn btn-primary btn-block">
+                <i class="fa fa-upload"></i> 上传图片勋章
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  {{on "change" this.uploadBadge}}
+                  style="display:none"
+                />
+              </label>
+            </div>
           {{/if}}
         </div>
       {{/if}}

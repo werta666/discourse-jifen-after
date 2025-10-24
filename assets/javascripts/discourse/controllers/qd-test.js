@@ -15,9 +15,27 @@ export default class QdTestController extends Controller {
   @tracked badgeUploadName = "";
   @tracked badgeUploadText = "";
   @tracked badgeUploadStyle = "";
+  @tracked selectedStylePreset = "";
+  
+  // 勋章样式预设
+  stylePresets = [
+    { id: "", name: "自定义", style: "" },
+    { id: "vip-gold", name: "VIP金色", style: "background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "admin-red", name: "管理员红", style: "background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "mod-blue", name: "版主蓝", style: "background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "mvp-purple", name: "MVP紫", style: "background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "supporter-green", name: "支持者绿", style: "background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "pro-black", name: "Pro黑金", style: "background: linear-gradient(135deg, #1f2937 0%, #111827 100%); color: #fbbf24; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 1px solid #fbbf24;" },
+    { id: "premium-pink", name: "Premium粉", style: "background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" },
+    { id: "expert-cyan", name: "专家青", style: "background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; font-weight: 700; padding: 3px 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" }
+  ];
   
   get isAdmin() {
     return this.currentUser?.admin;
+  }
+  
+  get previewStyle() {
+    return this.badgeUploadStyle || "";
   }
   
   get availableFrames() {
@@ -167,5 +185,16 @@ export default class QdTestController extends Controller {
   @action
   switchBadgeType(type) {
     this.badgeUploadType = type;
+  }
+  
+  @action
+  selectStylePreset(event) {
+    const presetId = event.target.value;
+    this.selectedStylePreset = presetId;
+    
+    const preset = this.stylePresets.find(p => p.id === presetId);
+    if (preset) {
+      this.badgeUploadStyle = preset.style;
+    }
   }
 }
