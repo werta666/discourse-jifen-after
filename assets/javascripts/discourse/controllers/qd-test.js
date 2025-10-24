@@ -36,14 +36,6 @@ export default class QdTestController extends Controller {
     return this.model?.equippedBadgeId;
   }
   
-  isFrameEquipped(frameId) {
-    return this.equippedFrameId === frameId;
-  }
-  
-  isBadgeEquipped(badgeId) {
-    return this.equippedBadgeId === badgeId;
-  }
-  
   @action
   async uploadFrame(event) {
     const file = event.target.files[0];

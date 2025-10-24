@@ -249,22 +249,65 @@
           font-size: 24px;
           font-weight: 600;
           color: #111827;
-          margin: 0 0 20px 0;
+          margin: 0 0 24px 0;
         }
         
-        ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
+        .instruction-block {
+          margin-bottom: 28px;
+          padding: 20px;
+          background: #f9fafb;
+          border-radius: 12px;
+          border-left: 4px solid #667eea;
           
-          li {
-            padding: 12px 0;
-            font-size: 16px;
-            color: #374151;
-            border-bottom: 1px solid #f3f4f6;
+          &.warning {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+          }
+          
+          h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 12px 0;
+          }
+          
+          ul {
+            list-style: disc;
+            padding-left: 24px;
+            margin: 0;
             
-            &:last-child {
-              border-bottom: none;
+            li {
+              padding: 6px 0;
+              font-size: 15px;
+              color: #374151;
+              line-height: 1.6;
+              
+              strong {
+                color: #111827;
+                font-weight: 600;
+              }
+              
+              ul {
+                margin-top: 8px;
+                list-style: circle;
+              }
+            }
+          }
+          
+          ol {
+            padding-left: 24px;
+            margin: 8px 0 0 0;
+            
+            li {
+              padding: 4px 0;
+              font-size: 15px;
+              color: #374151;
+              line-height: 1.6;
+              
+              strong {
+                color: #dc2626;
+                font-weight: 700;
+              }
             }
           }
         }
@@ -290,10 +333,9 @@
   }
 }
 
-// 确保头像容器是相对定位
-.topic-avatar,
-.user-card-avatar,
-.avatar {
+// 确保头像容器是相对定位（仅当有头像框时）
+.topic-avatar:has(.qd-avatar-frame-overlay),
+.user-card-avatar:has(.qd-avatar-frame-overlay) {
   position: relative !important;
 }
 
