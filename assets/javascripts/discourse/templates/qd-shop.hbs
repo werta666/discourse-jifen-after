@@ -10,12 +10,12 @@
       <div class="qd-user-balance">
         <div class="qd-user-points">
           <span class="points-label"><i class="fa-solid fa-coins"></i> 我的积分</span>
-          <span class="points-value">{{model.userPoints}}</span>
+          <span class="points-value">{{this.model.userPoints}}</span>
         </div>
         
         <div class="qd-user-paid-coins">
-          <span class="points-label"><i class="fa-solid fa-gem"></i> {{model.paidCoinName}}</span>
-          <span class="points-value paid-coins-value">{{model.userPaidCoins}}</span>
+          <span class="points-label"><i class="fa-solid fa-gem"></i> {{this.model.paidCoinName}}</span>
+          <span class="points-value paid-coins-value">{{this.model.userPaidCoins}}</span>
         </div>
       </div>
       
@@ -95,7 +95,7 @@
                   {{#if (eq product.currency_type "paid_coins")}}
                     <i class="fa-solid fa-gem"></i>
                     <span class="price-value">{{product.price}}</span>
-                    <span class="price-unit">{{model.paidCoinName}}</span>
+                    <span class="price-unit">{{this.model.paidCoinName}}</span>
                   {{else}}
                     <i class="fa-solid fa-coins"></i>
                     <span class="price-value">{{product.price}}</span>
@@ -186,7 +186,7 @@
               <div class="qd-product-name">{{this.selectedProduct.name}}</div>
               <div class="qd-product-price">
                 {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
-                  {{this.selectedProduct.price}} {{model.paidCoinName}}
+                  {{this.selectedProduct.price}} {{this.model.paidCoinName}}
                 {{else}}
                   {{this.selectedProduct.price}} 积分
                 {{/if}}
@@ -237,7 +237,7 @@
               <span>单价：</span>
               <span>
                 {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
-                  {{this.selectedProduct.price}} {{model.paidCoinName}}
+                  {{this.selectedProduct.price}} {{this.model.paidCoinName}}
                 {{else}}
                   {{this.selectedProduct.price}} 积分
                 {{/if}}
@@ -245,13 +245,13 @@
             </div>
             <div class="qd-total-row">
               <span>数量：</span>
-              <span>{{this.purchaseQuantity}} 件</span>
+              <span>×{{this.quantity}}</span>
             </div>
             <div class="qd-total-row">
               <span>总计：</span>
               <span>
                 {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
-                  {{this.totalPrice}} {{model.paidCoinName}}
+                  {{this.totalPrice}} {{this.model.paidCoinName}}
                 {{else}}
                   {{this.totalPrice}} 积分
                 {{/if}}
@@ -261,9 +261,9 @@
             {{#unless this.canAfford}}
               <div class="qd-insufficient-warning">
                 {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
-                  {{model.paidCoinName}}不足！还需要 {{sub this.totalPrice model.userPaidCoins}} {{model.paidCoinName}}
+                  {{this.model.paidCoinName}}不足！还需要 {{sub this.totalPrice this.model.userPaidCoins}} {{this.model.paidCoinName}}
                 {{else}}
-                  积分不足！还需要 {{sub this.totalPrice model.userPoints}} 积分
+                  积分不足！还需要 {{sub this.totalPrice this.model.userPoints}} 积分
                 {{/if}}
               </div>
             {{/unless}}
@@ -402,10 +402,11 @@
                 <div class="form-group">
                   <label>货币类型</label>
                   <select 
+                    class="form-control"
                     value={{this.newProduct.currency_type}}
                     {{on "change" (fn this.updateNewProduct "currency_type")}}>
                     <option value="points">积分</option>
-                    <option value="paid_coins">{{model.paidCoinName}}</option>
+                    <option value="paid_coins">{{this.model.paidCoinName}}</option>
                   </select>
                 </div>
               </div>
@@ -723,21 +724,21 @@
         <div class="exchange-info-box">
           <div class="info-row">
             <span class="label">兑换比例：</span>
-            <span class="value">1 {{model.paidCoinName}} = {{model.exchangeRatio}} 积分</span>
+            <span class="value">1 {{this.model.paidCoinName}} = {{this.model.exchangeRatio}} 积分</span>
           </div>
           <div class="info-row">
             <span class="label">当前余额：</span>
-            <span class="value">{{model.userPaidCoins}} {{model.paidCoinName}}</span>
+            <span class="value">{{this.model.userPaidCoins}} {{this.model.paidCoinName}}</span>
           </div>
         </div>
         
         <div class="form-group">
-          <label>兑换数量</label>
+          <label>输入要兑换的{{this.model.paidCoinName}}数量：</label>
           <input 
             type="number" 
             class="form-control" 
             min="1"
-            max={{model.userPaidCoins}}
+            max={{this.model.userPaidCoins}}
             value={{this.exchangeAmount}}
             {{on "input" this.updateExchangeAmount}} />
         </div>
