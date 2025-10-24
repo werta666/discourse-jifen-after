@@ -89,45 +89,45 @@
                 </div>
               </div>
               
-              {{! 价格和备注信息区域 }}
-              <div class="price-notes-section">
-                <div class="price-info">
-                  <div class="price-row">
-                    <span class="price-label">数量:</span>
-                    <span class="price-value">{{order.quantity}} 件</span>
-                  </div>
-                  <div class="price-row">
-                    <span class="price-label">单价:</span>
-                    <span class="price-value">
-                      {{order.unit_price}} 
-                      {{#if (eq order.currency_type "paid_coins")}}
-                        {{model.paid_coin_name}}
-                      {{else}}
-                        积分
-                      {{/if}}
-                    </span>
-                  </div>
-                  <div class="price-row total-price">
-                    <span class="price-label">总价:</span>
-                    <span class="price-value">
-                      {{order.total_price}} 
-                      {{#if (eq order.currency_type "paid_coins")}}
-                        {{model.paid_coin_name}}
-                      {{else}}
-                        积分
-                      {{/if}}
-                    </span>
-                  </div>
+              {{! 价格信息区域 }}
+              <div class="price-info">
+                <div class="price-row">
+                  <span class="price-label">数量:</span>
+                  <span class="price-value">{{order.quantity}} 件</span>
                 </div>
-                
-                {{#if order.notes}}
-                  <div class="notes-info">
-                    <span class="notes-label">管理员备注</span>
-                    <div class="notes-content">{{order.notes}}</div>
-                  </div>
-                {{/if}}
+                <div class="price-row">
+                  <span class="price-label">单价:</span>
+                  <span class="price-value">
+                    {{order.unit_price}} 
+                    {{#if (eq order.currency_type "paid_coins")}}
+                      {{model.paid_coin_name}}
+                    {{else}}
+                      积分
+                    {{/if}}
+                  </span>
+                </div>
+                <div class="price-row total-price">
+                  <span class="price-label">总价:</span>
+                  <span class="price-value">
+                    {{order.total_price}} 
+                    {{#if (eq order.currency_type "paid_coins")}}
+                      {{model.paid_coin_name}}
+                    {{else}}
+                      积分
+                    {{/if}}
+                  </span>
+                </div>
               </div>
             </div>
+            
+            {{! 备注信息单独一行 }}
+            {{#if order.notes}}
+              <div class="order-notes-row">
+                <i class="fa-solid fa-note-sticky"></i>
+                <span class="notes-label">备注：</span>
+                <span class="notes-content">{{order.notes}}</span>
+              </div>
+            {{/if}}
             
             <div class="order-footer">
               <div class="order-time-info">

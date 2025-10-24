@@ -680,20 +680,28 @@
 {{! 兑换成功提示框 }}
 {{#if this.showExchangeSuccess}}
   <div class="qd-success-popup-backdrop">
-    <div class="qd-success-popup">
-      <button class="qd-success-close" {{on "click" (fn (mut this.showExchangeSuccess) false)}}>
+    <div class="qd-success-popup qd-exchange-success-popup">
+      <button type="button" class="qd-success-close" {{on "click" (fn (mut this.showExchangeSuccess) false)}}>
         <i class="fa fa-times"></i>
       </button>
       <div class="qd-success-icon">
-        <i class="fa fa-check-circle"></i>
+        <i class="fa-solid fa-circle-check"></i>
       </div>
       <div class="qd-success-message">
-        💱 兑换成功！
+        <i class="fa-solid fa-coins"></i> 兑换成功！
       </div>
       {{#if this.exchangeResult}}
         <div class="qd-success-details">
-          <p>消耗：<strong>{{this.exchangeResult.paidCoinsUsed}} {{this.exchangeResult.paidCoinName}}</strong></p>
-          <p>获得：<strong class="highlight-points">{{this.exchangeResult.pointsGained}} 积分</strong></p>
+          <div class="detail-row consumed">
+            <i class="fa-solid fa-gem"></i>
+            <span class="label">消耗</span>
+            <span class="value">{{this.exchangeResult.paidCoinsUsed}} {{this.exchangeResult.paidCoinName}}</span>
+          </div>
+          <div class="detail-row gained">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span class="label">获得</span>
+            <span class="value highlight-points">{{this.exchangeResult.pointsGained}} 积分</span>
+          </div>
         </div>
       {{/if}}
     </div>

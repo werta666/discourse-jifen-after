@@ -84,86 +84,90 @@
   }
 }
 
-// 价格和备注信息区域
-.price-notes-section {
+// 价格信息区域
+.price-info {
   background: var(--primary-very-low, #f8f9fa);
-  margin: 8px -15px -15px -15px;
+  margin: 8px -15px 0 -15px;
   padding: 15px;
-  border-radius: 0 0 8px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  border-radius: 8px;
   
-  .price-info {
-    flex: 1;
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
     
-    .price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      
-      &:last-child {
-        margin-bottom: 0;
-      }
-      
-      &.total-price {
-        font-weight: 600;
-        font-size: 16px;
-        color: var(--tertiary, #0088cc);
-        padding-top: 8px;
-        border-top: 1px solid #e3f2fd;
-      }
+    &:last-child {
+      margin-bottom: 0;
     }
     
-    .price-label {
-      font-weight: 500;
-      color: var(--primary-medium, #666666);
-    }
-    
-    .price-value {
-      color: var(--primary, #333333);
+    &.total-price {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--tertiary, #0088cc);
+      padding-top: 8px;
+      border-top: 1px solid #e3f2fd;
     }
   }
   
-  .notes-info {
+  .price-label {
+    font-weight: 500;
+    color: var(--primary-medium, #666666);
+  }
+  
+  .price-value {
+    color: var(--primary, #333333);
+  }
+}
+
+// 备注信息单独一行
+.order-notes-row {
+  padding: 10px 15px;
+  margin: 10px 0 0 0;
+  background: #fafafa;
+  border-left: 3px solid #9ca3af;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7280;
+  
+  i {
+    margin-top: 2px;
+    color: #9ca3af;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  
+  .notes-label {
+    font-weight: 600;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+  
+  .notes-content {
+    color: #6b7280;
+    line-height: 1.5;
+    word-break: break-word;
     flex: 1;
-    background: #f0f8ff;
-    border: 1px solid #e3f2fd;
-    border-radius: 8px;
-    padding: 12px;
-    
-    .notes-label {
-      color: #1976d2;
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 6px;
-      display: block;
-    }
-    
-    .notes-content {
-      color: #333;
-      font-size: 13px;
-      line-height: 1.4;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 80px;
-      overflow-y: auto;
-    }
   }
 }
 
 // 移动端适配
 @media (max-width: 768px) {
-  .price-notes-section {
+  .price-info {
+    margin: 8px 0 0 0;
+    padding: 12px;
+  }
+  
+  .order-notes-row {
     flex-direction: column;
-    gap: 15px;
+    gap: 4px;
+    font-size: 11px;
     
-    .price-info,
-    .notes-info {
-      flex: none;
-      width: 100%;
+    i {
+      font-size: 12px;
     }
   }
 }
