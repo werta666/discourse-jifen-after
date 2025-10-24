@@ -194,11 +194,16 @@ module ::MyPluginModule
 
     # ========== 内部辅助方法 ==========
 
-    # 检查微信支付是否已配置
+    # 检查微信支付是否已配置（Native扫码支付）
     def wechat_configured?
       SiteSetting.jifen_wechat_app_id.present? &&
         SiteSetting.jifen_wechat_mch_id.present? &&
         SiteSetting.jifen_wechat_api_key.present?
+    end
+
+    # 检查JSAPI支付是否已配置（需要额外的AppSecret）
+    def jsapi_configured?
+      wechat_configured? && SiteSetting.jifen_wechat_app_secret.present?
     end
 
     # 生成随机字符串

@@ -75,12 +75,7 @@ jifen:
     client: false
     type: text
   
-  jifen_wechat_apiclient_cert:
-    default: ''
-    client: false
-    type: text
-  
-  jifen_wechat_apiclient_key:
+  jifen_wechat_app_secret:
     default: ''
     client: false
     type: text
