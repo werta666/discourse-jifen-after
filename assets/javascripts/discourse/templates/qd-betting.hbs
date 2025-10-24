@@ -72,7 +72,7 @@
             <div class="pending-duel-card">
               <div class="duel-info">
                 <div class="challenger-info">
-                  <img src={{duel.challenger.avatar_template}} alt={{duel.challenger.username}} class="avatar" />
+                  <img src={{this.getUserAvatar duel.challenger.avatar_template}} alt={{duel.challenger.username}} class="avatar" />
                   <span class="username">{{duel.challenger.username}}</span>
                 </div>
                 <div class="duel-details">
@@ -111,12 +111,12 @@
             <div class="active-duel-card">
               <div class="duel-participants">
                 <div class="participant">
-                  <img src={{duel.challenger.avatar_template}} alt={{duel.challenger.username}} class="avatar" />
+                  <img src={{this.getUserAvatar duel.challenger.avatar_template}} alt={{duel.challenger.username}} class="avatar" />
                   <span class="username">{{duel.challenger.username}}</span>
                 </div>
                 <div class="vs-badge">VS</div>
                 <div class="participant">
-                  <img src={{duel.opponent.avatar_template}} alt={{duel.opponent.username}} class="avatar" />
+                  <img src={{this.getUserAvatar duel.opponent.avatar_template}} alt={{duel.opponent.username}} class="avatar" />
                   <span class="username">{{duel.opponent.username}}</span>
                 </div>
               </div>

@@ -34,6 +34,8 @@ module MyPluginModule
         '处理中'
       when 'cancelled'
         '已取消'
+      when 'refunded'
+        '已退款'
       else
         status
       end

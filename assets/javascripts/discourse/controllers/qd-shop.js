@@ -20,6 +20,8 @@ export default class QdShopController extends Controller {
   // 付费币相关
   @tracked showExchangeModal = false;
   @tracked exchangeAmount = 1;
+  @tracked showExchangeSuccess = false;
+  @tracked exchangeResult = null;
   
   // 管理员添加商品表单
   @tracked newProduct = {
@@ -568,6 +570,11 @@ export default class QdShopController extends Controller {
     this.exchangeAmount = 1;
   }
 
+  @action
+  updateExchangeAmount(event) {
+    this.exchangeAmount = parseInt(event.target.value) || 1;
+  }
+
   get exchangePointsGain() {
     const ratio = this.model.exchangeRatio || 100;
     return this.exchangeAmount * ratio;
@@ -602,13 +609,27 @@ export default class QdShopController extends Controller {
       });
 
       if (result.status === "success") {
-        alert(`兑换成功！\n消耗: ${result.paid_coins_used} ${paidCoinName}\n获得: ${result.points_gained} 积分`);
+        // 保存兑换结果
+        this.exchangeResult = {
+          paidCoinsUsed: result.paid_coins_used,
+          pointsGained: result.points_gained,
+          paidCoinName: paidCoinName
+        };
         
         // 更新余额
         this.model.userPaidCoins = result.new_paid_coins;
         this.model.userPoints = result.new_points;
         
+        // 关闭兑换模态框
         this.closeExchangeModal();
+        
+        // 显示成功提示框
+        this.showExchangeSuccess = true;
+        
+        // 3秒后自动关闭
+        setTimeout(() => {
+          this.showExchangeSuccess = false;
+        }, 3000);
       }
     } catch (error) {
       console.error("兑换失败:", error);

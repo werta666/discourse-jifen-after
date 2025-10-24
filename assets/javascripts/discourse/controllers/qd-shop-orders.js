@@ -76,6 +76,8 @@ export default class QdShopOrdersController extends Controller {
         return "status-pending";
       case "cancelled":
         return "status-cancelled";
+      case "refunded":
+        return "status-refunded";
       default:
         return "status-unknown";
     }
@@ -90,6 +92,8 @@ export default class QdShopOrdersController extends Controller {
         return "处理中";
       case "cancelled":
         return "已取消";
+      case "refunded":
+        return "已退款";
       default:
         return status || "未知";
     }

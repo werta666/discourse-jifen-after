@@ -152,6 +152,12 @@
           color: var(--danger);
         }
         
+        &.status-refunded {
+          background: #fff3e0;
+          color: #e65100;
+          border: 1px solid #ffb74d;
+        }
+        
         &.status-unknown {
           background: var(--primary-low);
           color: var(--primary-medium);

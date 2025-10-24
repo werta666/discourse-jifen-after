@@ -83,6 +83,15 @@ export default class QdBettingController extends Controller {
     return this.siteSettings.jifen_betting_vote_creation_cost || 100;
   }
 
+  // 获取用户头像URL
+  getUserAvatar(avatarTemplate) {
+    if (!avatarTemplate) {
+      return "/images/avatar.png";
+    }
+    // 将模板中的 {size} 替换为实际尺寸
+    return avatarTemplate.replace("{size}", "48");
+  }
+
   // 筛选后的事件
   get filteredEvents() {
     let events = this.model.events || [];

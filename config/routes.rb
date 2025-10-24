@@ -81,6 +81,7 @@ MyPluginModule::Engine.routes.draw do
   get "/shop/admin/orders" => "shop#admin_orders"
   patch "/shop/admin/orders/:id/status" => "shop#update_order_status"
   delete "/shop/admin/orders/:id" => "shop#delete_order"
+  post "/shop/admin/orders/:id/refund" => "shop#refund_order"
 
   # 支付宝充值路由（付费币系统）
   get "/pay" => "pay#index"                    # 充值页面

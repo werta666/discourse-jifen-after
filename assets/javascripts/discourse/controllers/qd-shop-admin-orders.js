@@ -194,6 +194,47 @@ export default class QdShopAdminOrdersController extends Controller {
   }
 
   @action
+  async refundOrder(order) {
+    const currencyName = order.currency_type === "paid_coins" 
+      ? this.model.paid_coin_name 
+      : "积分";
+    
+    if (!confirm(`确定要退款订单 #${order.id} 吗？\n\n将返还 ${order.total_price} ${currencyName} 给用户 ${order.username}`)) {
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      const response = await ajax(`/qd/shop/admin/orders/${order.id}/refund`, {
+        type: "POST"
+      });
+
+      if (response.status === "success") {
+        // 更新本地订单状态
+        const orderIndex = this.model.orders.findIndex(o => o.id === order.id);
+        if (orderIndex !== -1) {
+          this.model.orders[orderIndex].status = "refunded";
+          this.notifyPropertyChange('model');
+        }
+        
+        this.statusMessage = "✅ 退款成功！已返还 " + currencyName;
+        
+        setTimeout(() => {
+          this.statusMessage = "";
+        }, 3000);
+      } else {
+        this.statusMessage = "❌ " + (response.message || "退款失败");
+      }
+    } catch (error) {
+      console.error("退款失败:", error);
+      this.statusMessage = "❌ 退款失败：" + (error.jqXHR?.responseJSON?.message || error.message || "网络错误");
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  @action
   async deleteOrder(order) {
     if (!confirm(`确定要删除订单 #${order.id} 吗？此操作不可恢复。`)) {
       return;
@@ -282,6 +323,8 @@ export default class QdShopAdminOrdersController extends Controller {
         return "status-pending";
       case "cancelled":
         return "status-cancelled";
+      case "refunded":
+        return "status-refunded";
       default:
         return "status-unknown";
     }
@@ -296,6 +339,8 @@ export default class QdShopAdminOrdersController extends Controller {
         return "处理中";
       case "cancelled":
         return "已取消";
+      case "refunded":
+        return "已退款";
       default:
         return status || "未知";
     }

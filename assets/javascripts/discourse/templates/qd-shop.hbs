@@ -553,7 +553,7 @@
                       />
                     </div>
                     <div class="form-group">
-                      <label>价格 (积分)</label>
+                      <label>价格</label>
                       <input 
                         type="number" 
                         value={{this.editingProduct.price}}
@@ -677,10 +677,33 @@
   </style>
 {{/if}}
 
+{{! 兑换成功提示框 }}
+{{#if this.showExchangeSuccess}}
+  <div class="qd-success-popup-backdrop">
+    <div class="qd-success-popup">
+      <button class="qd-success-close" {{on "click" (fn (mut this.showExchangeSuccess) false)}}>
+        <i class="fa fa-times"></i>
+      </button>
+      <div class="qd-success-icon">
+        <i class="fa fa-check-circle"></i>
+      </div>
+      <div class="qd-success-message">
+        💱 兑换成功！
+      </div>
+      {{#if this.exchangeResult}}
+        <div class="qd-success-details">
+          <p>消耗：<strong>{{this.exchangeResult.paidCoinsUsed}} {{this.exchangeResult.paidCoinName}}</strong></p>
+          <p>获得：<strong class="highlight-points">{{this.exchangeResult.pointsGained}} 积分</strong></p>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+{{/if}}
+
 {{! 付费币兑换模态框 }}
 {{#if this.showExchangeModal}}
-  <div class="modal-overlay" {{on "click" this.closeExchangeModal}}>
-    <div class="modal-dialog qd-exchange-modal" {{on "click" this.stopPropagation}}>
+  <div class="qd-purchase-modal" {{on "click" this.closeExchangeModal}}>
+    <div class="qd-modal-content qd-exchange-modal" {{on "click" this.stopPropagation}}>
       <div class="modal-header">
         <h3><i class="fa-solid fa-exchange-alt"></i> 付费币兑换积分</h3>
         <button class="close-btn" {{on "click" this.closeExchangeModal}}>
@@ -708,7 +731,7 @@
             min="1"
             max={{model.userPaidCoins}}
             value={{this.exchangeAmount}}
-            {{on "input" (fn (mut this.exchangeAmount) value="target.value")}} />
+            {{on "input" this.updateExchangeAmount}} />
         </div>
         
         <div class="exchange-result-box">

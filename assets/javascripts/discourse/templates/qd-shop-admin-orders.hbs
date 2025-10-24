@@ -57,6 +57,15 @@
                   {{this.getStatusText order.status}}
                 </span>
                 <div class="order-actions">
+                  {{#unless (eq order.status "refunded")}}
+                    <button 
+                      class="btn btn-small btn-warning refund-order-btn" 
+                      {{on "click" (action "refundOrder" order)}}
+                    >
+                      <i class="fa fa-undo"></i>
+                      退款
+                    </button>
+                  {{/unless}}
                   <button 
                     class="btn btn-small update-status-btn" 
                     {{on "click" (action "showUpdateStatusModal" order)}}

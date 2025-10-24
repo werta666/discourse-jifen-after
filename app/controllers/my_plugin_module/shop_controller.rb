@@ -823,6 +823,87 @@ class MyPluginModule::ShopController < ApplicationController
     end
   end
 
+  # 管理员功能 - 退款
+  def refund_order
+    ensure_logged_in
+    ensure_admin
+    
+    begin
+      order_id = params[:id]&.to_i
+      
+      if order_id.nil? || order_id <= 0
+        render json: {
+          status: "error",
+          message: "无效的订单ID"
+        }, status: 400
+        return
+      end
+      
+      if ActiveRecord::Base.connection.table_exists?('qd_shop_orders')
+        order = MyPluginModule::ShopOrder.find_by(id: order_id)
+        
+        unless order
+          render json: {
+            status: "error",
+            message: "订单不存在"
+          }, status: 404
+          return
+        end
+        
+        # 检查订单状态
+        if order.status == "refunded"
+          render json: {
+            status: "error",
+            message: "该订单已经退款过了"
+          }, status: 400
+          return
+        end
+        
+        # 执行退款
+        ActiveRecord::Base.transaction do
+          # 根据货币类型返还
+          if order.currency_type == "paid_coins"
+            # 返还付费币
+            MyPluginModule::PaidCoinService.add_coins!(
+              User.find(order.user_id),
+              order.total_price,
+              reason: "订单退款 ##{order.id}"
+            )
+          else
+            # 返还积分
+            MyPluginModule::JifenService.adjust_points!(
+              current_user,
+              User.find(order.user_id),
+              order.total_price
+            )
+          end
+          
+          # 更新订单状态
+          order.update!(status: "refunded")
+        end
+        
+        Rails.logger.info "🔙 管理员#{current_user.username} 退款订单##{order.id}"
+        
+        render json: {
+          status: "success",
+          message: "退款成功",
+          order_id: order.id
+        }
+      else
+        render json: {
+          status: "error",
+          message: "订单表不存在"
+        }, status: 500
+      end
+    rescue => e
+      Rails.logger.error "退款订单失败: #{e.message}"
+      render json: {
+        status: "error",
+        message: "退款失败: #{e.message}"
+      }, status: 500
+    end
+  end
+
   private
   
   def ensure_admin
