@@ -81,8 +81,9 @@ MyPluginModule::Engine.routes.draw do
   patch "/shop/admin/orders/:id/status" => "shop#update_order_status"
   delete "/shop/admin/orders/:id" => "shop#delete_order"
 
-  # 支付宝充值路由
+  # 支付宝充值路由（付费币系统）
   get "/pay" => "pay#index"                    # 充值页面
+  get "/pay/balance" => "pay#balance"          # 获取付费币余额
   get "/pay/packages" => "pay#packages"        # 获取充值套餐
   post "/pay/create_order" => "pay#create_order"  # 创建充值订单
   get "/pay/query_order" => "pay#query_order"  # 查询订单状态

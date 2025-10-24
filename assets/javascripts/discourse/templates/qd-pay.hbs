@@ -2,8 +2,8 @@
   <div class="qd-pay-container">
     {{! 页面标题 }}
     <div class="qd-pay-header">
-      <h1><i class="fa-solid fa-coins"></i> 积分充值</h1>
-      <p class="user-points">当前积分：<span class="points-value"><i class="fa-solid fa-gem"></i> {{this.model.userPoints}}</span></p>
+      <h1><i class="fa-solid fa-coins"></i> 付费币充值</h1>
+      <p class="user-points">当前付费币：<span class="points-value"><i class="fa-solid fa-gem"></i> {{this.model.userPaidCoins}}</span></p>
     </div>
 
     {{#if this.alipayEnabled}}
@@ -11,7 +11,7 @@
         {{! 充值套餐选择 }}
         <div class="qd-pay-packages">
           <h2><i class="fa-solid fa-box-open"></i> 选择充值套餐</h2>
-          <p class="subtitle">选择适合您的充值套餐，即刻获得积分</p>
+          <p class="subtitle">选择适合您的充值套餐，即刻获得付费币</p>
           
           {{#if this.hasPackages}}
             <div class="packages-grid">
@@ -19,9 +19,9 @@
                 <div class="package-card {{if (eq this.selectedPackage pkg) 'selected'}}" {{on "click" (fn this.selectPackage pkg)}}>
                   <div class="package-icon"><i class="fa-solid fa-gift"></i></div>
                   <div class="package-amount">¥{{pkg.amount}}</div>
-                  <div class="package-points"><i class="fa-solid fa-star"></i> {{pkg.points}} 积分</div>
+                  <div class="package-points"><i class="fa-solid fa-star"></i> {{pkg.points}} 付费币</div>
                   {{#if pkg.bonus}}
-                    <div class="package-bonus">赠送 {{pkg.bonus}} 积分</div>
+                    <div class="package-bonus">赠送 {{pkg.bonus}} 付费币</div>
                   {{/if}}
                   {{#if pkg.label}}
                     <div class="package-label">{{pkg.label}}</div>
@@ -56,8 +56,8 @@
             <div class="payment-success">
               <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
               <h2>支付成功！</h2>
-              <p>积分已充值到您的账户</p>
-              <p class="success-points"><i class="fa-solid fa-coins"></i> + {{this.orderInfo.points}} 积分</p>
+              <p>付费币已充值到您的账户</p>
+              <p class="success-points"><i class="fa-solid fa-coins"></i> + {{this.orderInfo.points}} 付费币</p>
               <p class="redirect-tip">3秒后自动跳转...</p>
             </div>
           {{else if this.orderExpired}}
@@ -81,7 +81,7 @@
               <div class="order-details">
                 <p><strong><i class="fa-solid fa-receipt"></i> 订单号：</strong>{{this.orderInfo.out_trade_no}}</p>
                 <p><strong><i class="fa-solid fa-money-bill"></i> 支付金额：</strong>¥{{this.orderInfo.amount}}</p>
-                <p><strong><i class="fa-solid fa-star"></i> 获得积分：</strong>{{this.orderInfo.points}}</p>
+                <p><strong><i class="fa-solid fa-star"></i> 获得付费币：</strong>{{this.orderInfo.points}}</p>
                 <p class="expire-tip"><i class="fa-solid fa-hourglass-half"></i> 订单将在 2 分钟后过期</p>
               </div>
 

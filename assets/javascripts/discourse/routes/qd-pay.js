@@ -9,7 +9,7 @@ export default class QdPayRoute extends Route {
         packages: data.packages || [],
         alipayEnabled: data.alipay_enabled || false,
         wechatEnabled: data.wechat_enabled || false,
-        userPoints: data.user_points || 0,
+        userPaidCoins: data.user_paid_coins || 0,
         qrCodeApi: data.qr_code_api || "https://api.pwmqr.com/qrcode/create/?url=",
         loadTime: new Date().toISOString()
       };
@@ -19,7 +19,7 @@ export default class QdPayRoute extends Route {
         packages: [],
         alipayEnabled: false,
         wechatEnabled: false,
-        userPoints: 0,
+        userPaidCoins: 0,
         qrCodeApi: "https://api.pwmqr.com/qrcode/create/?url=",
         error: "加载充值套餐失败"
       };

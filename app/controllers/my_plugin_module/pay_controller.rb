@@ -12,6 +12,19 @@ module ::MyPluginModule
       render "default/empty"
     end
 
+    # 获取用户付费币余额详情
+    def balance
+      summary = MyPluginModule::PaidCoinService.summary_for(current_user)
+      
+      render_json_dump({
+        success: true,
+        balance: summary
+      })
+    rescue => e
+      Rails.logger.error "[付费币] 获取余额失败: #{e.message}"
+      render_json_error("获取余额失败: #{e.message}", status: 500)
+    end
+
     # 获取充值套餐配置
     def packages
       packages = parse_recharge_packages
@@ -21,7 +34,7 @@ module ::MyPluginModule
         packages: packages,
         alipay_enabled: alipay_enabled?,
         wechat_enabled: SiteSetting.jifen_wechat_enabled,
-        user_points: current_user ? MyPluginModule::JifenService.available_total_points(current_user) : 0,
+        user_paid_coins: current_user ? MyPluginModule::PaidCoinService.available_coins(current_user) : 0,
         qr_code_api: SiteSetting.jifen_qrcode_api
       })
     end
@@ -290,7 +303,7 @@ module ::MyPluginModule
       cancelled_orders = all_orders.where(status: "cancelled").count
       
       total_amount = all_orders.where(status: "paid").sum(:amount).to_f
-      total_points = all_orders.where(status: "paid").sum(:points)
+      total_paid_coins = all_orders.where(status: "paid").sum(:points)
       
       # 最近订单（最多20条）
       recent_orders = all_orders.order(created_at: :desc).limit(20).map do |order|
@@ -319,7 +332,7 @@ module ::MyPluginModule
           pending_orders: pending_orders,
           cancelled_orders: cancelled_orders,
           total_amount: total_amount,
-          total_points: total_points
+          total_paid_coins: total_paid_coins
         },
         orders: recent_orders
       })

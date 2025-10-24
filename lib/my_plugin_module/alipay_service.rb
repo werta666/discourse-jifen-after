@@ -22,11 +22,11 @@ module ::MyPluginModule
       raise StandardError, "积分必须大于0" if points.to_i <= 0
 
       user = User.find(user_id)
-      Rails.logger.info "[支付宝] 创建订单 - 用户: #{user.username}, 金额: #{amount}, 积分: #{points}"
+      Rails.logger.info "[支付宝] 创建订单 - 用户: #{user.username}, 金额: #{amount}, 付费币: #{points}"
 
       # 生成订单号
       out_trade_no = MyPluginModule::PaymentOrder.generate_out_trade_no
-      subject = "积分充值 #{points}积分"
+      subject = "付费币充值 #{points}个"
 
       # 创建订单记录
       order = MyPluginModule::PaymentOrder.create!(
@@ -124,20 +124,36 @@ module ::MyPluginModule
       verify_sign(sign_content, sign, sign_type)
     end
 
-    # 处理支付成功回调
+    # 处理支付成功回调（充值付费币）
     def handle_payment_success(out_trade_no:, trade_no:, notify_data: nil)
+      Rails.logger.info "[支付宝] 开始处理支付成功回调 - 订单号: #{out_trade_no}"
+      
       order = MyPluginModule::PaymentOrder.find_by(out_trade_no: out_trade_no)
       raise StandardError, "订单不存在" unless order
 
-      return true if order.status == MyPluginModule::PaymentOrder::STATUS_PAID
+      # 防止重复处理
+      if order.status == MyPluginModule::PaymentOrder::STATUS_PAID
+        Rails.logger.warn "[支付宝] 订单 #{out_trade_no} 已处理，跳过"
+        return true
+      end
 
       ActiveRecord::Base.transaction do
+        # 1. 标记订单为已支付
         order.mark_as_paid!(trade_no, notify_data)
         
+        # 2. 给用户增加付费币（而不是免费积分）
         user = User.find(order.user_id)
-        acting_user = Discourse.system_user
         
-        MyPluginModule::JifenService.adjust_points!(acting_user, user, order.points)
+        # 使用新的付费币服务，传递关联订单信息
+        MyPluginModule::PaidCoinService.add_coins!(
+          user,
+          order.points,  # 付费币数量 = 订单积分数（已包含基础+赠送）
+          reason: "支付宝充值订单 #{out_trade_no}",
+          related_id: order.id,
+          related_type: "PaymentOrder"
+        )
+        
+        Rails.logger.info "[支付宝] 订单 #{out_trade_no} 支付成功处理完成 - 用户 #{user.username} 获得 #{order.points} 付费币"
       end
 
       true
