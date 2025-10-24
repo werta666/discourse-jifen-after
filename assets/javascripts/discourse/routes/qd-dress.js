@@ -17,11 +17,20 @@ export default DiscourseRoute.extend({
         // 从后端获取可用的头像框
         availableFrames: framesData.frames || [],
         // 用户拥有的头像框
-        ownedFrames: framesData.owned_frames || [1],
+        ownedFrames: framesData.owned_frames || [],
+        // 已装备的头像框
+        equippedFrameId: framesData.equipped_frame_id,
         // 装饰品列表
         availableDecorations: this.getAvailableDecorations()
       };
     });
+  },
+
+  setupController(controller, model) {
+    this._super(controller, model);
+    // 初始化控制器的 ownedFrames
+    controller.set("ownedFrames", model.ownedFrames || []);
+    controller.set("selectedFrameId", model.equippedFrameId);
   },
 
   getAvailableDecorations() {

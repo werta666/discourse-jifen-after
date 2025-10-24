@@ -86,12 +86,12 @@
           <div class="frames-grid">
             {{#each this.availableFrames as |frame|}}
               <div 
-                class="frame-card {{if (isFrameOwned frame.id) 'owned'}} {{if (isFrameEquipped frame.id) 'equipped'}}"
+                class="frame-card {{if (this.isFrameOwned frame.id) 'owned'}} {{if (this.isFrameEquipped frame.id) 'equipped'}}"
                 {{on "mouseenter" (fn this.previewFrame frame.id)}}
                 {{on "mouseleave" this.clearPreview}}>
                 <div class="frame-preview">
                   <img src={{frame.image}} alt={{frame.name}} />
-                  {{#if (isFrameEquipped frame.id)}}
+                  {{#if (this.isFrameEquipped frame.id)}}
                     <div class="equipped-badge">
                       <i class="fa-solid fa-check"></i> 使用中
                     </div>
@@ -108,8 +108,8 @@
                   </div>
                 </div>
                 <div class="frame-actions">
-                  {{#if (isFrameOwned frame.id)}}
-                    {{#if (isFrameEquipped frame.id)}}
+                  {{#if (this.isFrameOwned frame.id)}}
+                    {{#if (this.isFrameEquipped frame.id)}}
                       <button class="btn-equipped" disabled>
                         <i class="fa-solid fa-check"></i> 已装备
                       </button>

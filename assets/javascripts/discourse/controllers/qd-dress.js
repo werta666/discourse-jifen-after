@@ -8,7 +8,7 @@ export default class QdDressController extends Controller {
   @tracked selectedTab = "avatar-frame";
   @tracked selectedFrameId = null;
   @tracked previewFrameId = null;
-  @tracked ownedFrames = [1];
+  @tracked ownedFrames = [];
   @tracked isLoading = false;
   @tracked showPurchaseModal = false;
   @tracked selectedItem = null;

@@ -2003,6 +2003,7 @@
       transform: translateY(0);
     }
   }
+}
 
 @keyframes pulse {
   0%, 100% {
@@ -2037,10 +2038,8 @@
 // ========================================
 // 兑换积分模态框 - 特殊样式
 // ========================================
-.qd-modal-backdrop {
-  // 兑换模态框特殊样式
-  .qd-modal-content.qd-exchange-modal {
-    max-width: 500px;
+.qd-modal-backdrop .qd-modal-content.qd-exchange-modal {
+  max-width: 500px;
     
     // 绿色渐变头部
     .qd-modal-header.qd-exchange-header {
@@ -2151,6 +2150,4 @@
         }
       }
     }
-  }
-}
 }
