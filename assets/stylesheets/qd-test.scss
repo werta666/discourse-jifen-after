@@ -359,17 +359,19 @@
 // 头像框在帖子中的显示（全局样式）
 .qd-avatar-frame-overlay {
   position: absolute !important;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 52px !important;
+  height: 52px !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
   
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
   }
 }
 
@@ -377,6 +379,31 @@
 .topic-avatar:has(.qd-avatar-frame-overlay),
 .user-card-avatar:has(.qd-avatar-frame-overlay) {
   position: relative !important;
+}
+
+// 针对不同尺寸的头像适配
+.topic-avatar {
+  // 主题列表中的头像 (45x45)
+  .qd-avatar-frame-overlay {
+    width: 50px !important;
+    height: 50px !important;
+  }
+}
+
+// 帖子中的大头像
+.topic-body .topic-avatar {
+  .qd-avatar-frame-overlay {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}
+
+// 用户卡片中的头像
+.user-card-avatar {
+  .qd-avatar-frame-overlay {
+    width: 130px !important;
+    height: 130px !important;
+  }
 }
 
 // 装饰勋章样式（全局）
