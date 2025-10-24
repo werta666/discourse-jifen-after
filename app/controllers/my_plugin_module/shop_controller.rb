@@ -290,6 +290,7 @@ class MyPluginModule::ShopController < ApplicationController
             quantity: order.quantity,
             unit_price: order.unit_price,
             total_price: order.total_price,
+            currency_type: order.currency_type || "points",
             status: order.status,
             created_at: order.created_at,
             notes: order.notes
@@ -298,7 +299,8 @@ class MyPluginModule::ShopController < ApplicationController
         
         render json: {
           status: "success",
-          data: orders
+          data: orders,
+          paid_coin_name: SiteSetting.jifen_paid_coin_name
         }
       else
         # 使用模拟订单数据
@@ -796,10 +798,10 @@ class MyPluginModule::ShopController < ApplicationController
         )
         
         # 增加积分
-        MyPluginModule::JifenService.add_points!(
+        MyPluginModule::JifenService.adjust_points!(
           current_user,
-          points_to_add,
-          reason: "付费币兑换"
+          current_user,
+          points_to_add
         )
       end
       

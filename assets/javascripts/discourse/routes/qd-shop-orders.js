@@ -10,6 +10,7 @@ export default class QdShopOrdersRoute extends DiscourseRoute {
       return {
         orders: response.data || [],
         total_count: response.data ? response.data.length : 0,
+        paid_coin_name: response.paid_coin_name || "付费币",
         status: response.status,
         message: response.message || ""
       };

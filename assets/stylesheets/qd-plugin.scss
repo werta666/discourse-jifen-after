@@ -81,8 +81,8 @@
 
 .qd-quick-nav {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 30px;
   justify-content: space-between;
 }
 
@@ -92,70 +92,165 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 14px 8px;
-  background: var(--primary-very-low);
-  border: 2px solid var(--primary-low);
-  border-radius: 10px;
+  padding: 24px 16px;
+  background: white;
+  border: none;
+  border-radius: 16px;
   text-decoration: none;
   color: var(--primary);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+
+  // 背景渐变层
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 16px;
+  }
 
   &:hover {
-    background: var(--primary-low);
-    border-color: var(--primary-medium);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .qd-nav-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .qd-nav-text {
+      color: white;
+    }
   }
 
   .qd-nav-icon {
-    font-size: 24px;
-    margin-bottom: 6px;
-    display: block;
+    font-size: 42px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+
+    i {
+      position: relative;
+      z-index: 1;
+    }
   }
 
   .qd-nav-text {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
   }
 
+  // 积分充值 - 紫色渐变
   &.qd-nav-recharge {
-    border-color: #667eea;
-    
-    &:hover {
+    &::before {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-color: #667eea;
-      
-      .qd-nav-text {
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      color: #667eea;
+    }
+
+    .qd-nav-text {
+      color: #667eea;
+    }
+
+    &:hover {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
         color: white;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
       }
     }
   }
 
+  // 排行榜 - 金色渐变
   &.qd-nav-board {
-    border-color: #ffd700;
-    
+    &::before {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+      color: #f59e0b;
+    }
+
+    .qd-nav-text {
+      color: #f59e0b;
+    }
+
     &:hover {
-      background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
-      border-color: #ffd700;
-      
-      .qd-nav-text {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
         color: white;
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
       }
     }
   }
 
+  // 积分商店 - 绿色渐变
   &.qd-nav-shop {
-    border-color: #4caf50;
-    
+    &::before {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+      color: #10b981;
+    }
+
+    .qd-nav-text {
+      color: #10b981;
+    }
+
     &:hover {
-      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-      border-color: #4caf50;
-      
-      .qd-nav-text {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
         color: white;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
       }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .qd-quick-nav {
+    gap: 12px;
+  }
+
+  .qd-nav-btn {
+    padding: 20px 12px;
+
+    .qd-nav-icon {
+      font-size: 36px;
+      width: 60px;
+      height: 60px;
+    }
+
+    .qd-nav-text {
+      font-size: 13px;
     }
   }
 }

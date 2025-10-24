@@ -53,7 +53,14 @@
                   
                   <div class="product-meta">
                     <span class="quantity">数量: {{order.quantity}}</span>
-                    <span class="unit-price">单价: {{order.unit_price}} 积分</span>
+                    <span class="unit-price">
+                      单价: {{order.unit_price}} 
+                      {{#if (eq order.currency_type "paid_coins")}}
+                        {{model.paid_coin_name}}
+                      {{else}}
+                        积分
+                      {{/if}}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -61,7 +68,14 @@
               <div class="order-summary">
                 <div class="total-price">
                   <span class="price-label">总计</span>
-                  <span class="price-value">{{order.total_price}} 积分</span>
+                  <span class="price-value">
+                    {{order.total_price}} 
+                    {{#if (eq order.currency_type "paid_coins")}}
+                      {{model.paid_coin_name}}
+                    {{else}}
+                      积分
+                    {{/if}}
+                  </span>
                 </div>
               </div>
             </div>

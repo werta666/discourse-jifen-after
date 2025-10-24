@@ -184,7 +184,13 @@
             </div>
             <div class="qd-product-details">
               <div class="qd-product-name">{{this.selectedProduct.name}}</div>
-              <div class="qd-product-price">{{this.selectedProduct.price}} 积分</div>
+              <div class="qd-product-price">
+                {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
+                  {{this.selectedProduct.price}} {{model.paidCoinName}}
+                {{else}}
+                  {{this.selectedProduct.price}} 积分
+                {{/if}}
+              </div>
             </div>
           </div>
           
@@ -229,7 +235,13 @@
           <div class="qd-total-section">
             <div class="qd-total-row">
               <span>单价：</span>
-              <span>{{this.selectedProduct.price}} 积分</span>
+              <span>
+                {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
+                  {{this.selectedProduct.price}} {{model.paidCoinName}}
+                {{else}}
+                  {{this.selectedProduct.price}} 积分
+                {{/if}}
+              </span>
             </div>
             <div class="qd-total-row">
               <span>数量：</span>
@@ -237,12 +249,22 @@
             </div>
             <div class="qd-total-row">
               <span>总计：</span>
-              <span>{{this.totalPrice}} 积分</span>
+              <span>
+                {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
+                  {{this.totalPrice}} {{model.paidCoinName}}
+                {{else}}
+                  {{this.totalPrice}} 积分
+                {{/if}}
+              </span>
             </div>
             
             {{#unless this.canAfford}}
               <div class="qd-insufficient-warning">
-                积分不足！还需要 {{sub this.totalPrice model.userPoints}} 积分
+                {{#if (eq this.selectedProduct.currency_type "paid_coins")}}
+                  {{model.paidCoinName}}不足！还需要 {{sub this.totalPrice model.userPaidCoins}} {{model.paidCoinName}}
+                {{else}}
+                  积分不足！还需要 {{sub this.totalPrice model.userPoints}} 积分
+                {{/if}}
               </div>
             {{/unless}}
           </div>

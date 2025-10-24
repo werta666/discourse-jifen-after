@@ -188,7 +188,13 @@ export default class QdShopController extends Controller {
   }
 
   get canAfford() {
-    return this.model.userPoints >= this.totalPrice;
+    if (!this.selectedProduct) return true;
+    
+    if (this.selectedProduct.currency_type === "paid_coins") {
+      return (this.model.userPaidCoins || 0) >= this.totalPrice;
+    } else {
+      return this.model.userPoints >= this.totalPrice;
+    }
   }
 
   get filteredProducts() {
