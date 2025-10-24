@@ -26,6 +26,7 @@ register_asset "stylesheets/qd-shop-orders.scss"
 register_asset "stylesheets/qd-shop-admin-orders.scss"
 register_asset "stylesheets/qd-pay-modern.scss"
 register_asset "stylesheets/qd-pay-admin.scss"
+register_asset "stylesheets/qd-dress.scss"
 
 # 插件命名空间（沿用现有 MyPluginModule 以避免大规模重命名）
 module ::MyPluginModule

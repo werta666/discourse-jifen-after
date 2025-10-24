@@ -10,4 +10,5 @@ export default function () {
   this.route("qd-shop-admin-orders", { path: "/qd/shop/admin/orders" });
   this.route("qd-pay", { path: "/qd/pay" });
   this.route("qd-pay-admin", { path: "/qd/pay/admin" });
+  this.route("qd-dress", { path: "/qd/dress" });
 }

@@ -711,7 +711,7 @@
 
 {{! 付费币兑换模态框 }}
 {{#if this.showExchangeModal}}
-  <div class="qd-purchase-modal" {{on "click" this.closeExchangeModal}}>
+  <div class="qd-modal-backdrop" {{on "click" this.closeExchangeModal}}>
     <div class="qd-modal-content qd-exchange-modal" {{on "click" this.stopPropagation}}>
       <div class="qd-modal-header qd-exchange-header">
         <h3><i class="fa-solid fa-exchange-alt"></i> 付费币兑换积分</h3>

@@ -2035,51 +2035,36 @@
 }
 
 // ========================================
-// 兑换积分模态框 - 强制居中样式
+// 兑换积分模态框 - 特殊样式
 // ========================================
-.qd-purchase-modal {
-  // 确保背景层完全覆盖并居中
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 1000 !important;
-  background: rgba(0, 0, 0, 0.5) !important;
-
-  // 兑换模态框内容样式
+.qd-modal-backdrop {
+  // 兑换模态框特殊样式
   .qd-modal-content.qd-exchange-modal {
-    max-width: 500px !important;
-    width: 90% !important;
-    position: relative !important;
-    margin: 0 !important;
+    max-width: 500px;
     
     // 绿色渐变头部
     .qd-modal-header.qd-exchange-header {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-      padding: 20px 24px !important;
-      margin: 0 !important;
-      border-bottom: none !important;
-      border-radius: 12px 12px 0 0 !important;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      padding: 20px 24px;
+      margin: 0;
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
       
       h3 {
-        color: white !important;
-        margin: 0 !important;
+        color: white;
+        margin: 0;
         
         i {
-          margin-right: 10px !important;
+          margin-right: 10px;
         }
       }
       
       .qd-close-btn {
-        background: rgba(255, 255, 255, 0.2) !important;
-        color: white !important;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
         
         &:hover {
-          background: rgba(255, 255, 255, 0.3) !important;
+          background: rgba(255, 255, 255, 0.3);
         }
       }
     }
@@ -2088,80 +2073,80 @@
     .qd-modal-body {
       // 兑换信息框
       .exchange-info-box {
-        background: #f0fdf4 !important;
-        border: 2px solid #86efac !important;
-        border-radius: 8px !important;
-        padding: 16px !important;
-        margin-bottom: 20px !important;
+        background: #f0fdf4;
+        border: 2px solid #86efac;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
 
         .info-row {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: center !important;
-          padding: 8px 0 !important;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
 
           &:not(:last-child) {
-            border-bottom: 1px solid #d1fae5 !important;
+            border-bottom: 1px solid #d1fae5;
           }
 
           .label {
-            font-weight: 600 !important;
-            color: #065f46 !important;
+            font-weight: 600;
+            color: #065f46;
           }
 
           .value {
-            font-weight: 700 !important;
-            color: #047857 !important;
+            font-weight: 700;
+            color: #047857;
           }
         }
       }
 
       // 表单组
       .form-group {
-        margin-bottom: 20px !important;
+        margin-bottom: 20px;
 
         label {
-          display: block !important;
-          font-weight: 600 !important;
-          color: #374151 !important;
-          margin-bottom: 8px !important;
+          display: block;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 8px;
         }
 
         .form-control {
-          width: 100% !important;
-          padding: 12px !important;
-          border: 2px solid #d1d5db !important;
-          border-radius: 8px !important;
-          font-size: 16px !important;
-          transition: all 0.3s !important;
-          box-sizing: border-box !important;
+          width: 100%;
+          padding: 12px;
+          border: 2px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 16px;
+          transition: all 0.3s;
+          box-sizing: border-box;
 
           &:focus {
-            outline: none !important;
-            border-color: #10b981 !important;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
           }
         }
       }
 
       // 兑换结果框
       .exchange-result-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        border-radius: 8px !important;
-        padding: 16px !important;
-        text-align: center !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        padding: 16px;
+        text-align: center;
 
         .result-text {
-          color: white !important;
-          font-size: 16px !important;
-          margin: 0 !important;
+          color: white;
+          font-size: 16px;
+          margin: 0;
 
           .highlight-points {
-            font-size: 24px !important;
-            font-weight: 700 !important;
-            display: inline-block !important;
-            padding: 0 8px !important;
-            animation: pulse 1.5s ease-in-out infinite !important;
+            font-size: 24px;
+            font-weight: 700;
+            display: inline-block;
+            padding: 0 8px;
+            animation: pulse 1.5s ease-in-out infinite;
           }
         }
       }

@@ -99,4 +99,14 @@ MyPluginModule::Engine.routes.draw do
   get "/pay/admin/stats" => "pay#admin_stats"
   delete "/pay/admin/clear_unpaid" => "pay#clear_unpaid_orders"
   post "/pay/admin/adjust_coins" => "pay#adjust_coins"
+
+  # 个人装饰系统路由
+  get "/dress" => "dress#index"                           # 装饰页面
+  get "/dress/frames" => "dress#frames"                   # 获取所有头像框
+  post "/dress/equip-frame" => "dress#equip_frame"        # 装备头像框
+  post "/dress/purchase-frame" => "dress#purchase_frame"  # 购买头像框
+  post "/dress/upload-frame" => "dress#upload_frame"      # 上传头像框（管理员）
+  delete "/dress/frames/:id" => "dress#delete_frame"      # 删除头像框（管理员）
+  get "/dress/my-frames" => "dress#my_frames"             # 我的头像框
+  get "/dress/my-decorations" => "dress#my_decorations"   # 我的装饰
 end

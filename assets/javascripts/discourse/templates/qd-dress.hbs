@@ -1,0 +1,358 @@
+<div class="qd-dress-page">
+  {{! 页面头部 }}
+  <div class="qd-dress-header">
+    <div class="header-content">
+      <h1>✨ 个人装饰</h1>
+      <p class="subtitle">装扮你的个人形象</p>
+    </div>
+    
+    <div class="user-balance">
+      <div class="balance-item">
+        <i class="fa-solid fa-coins"></i>
+        <span class="label">积分：</span>
+        <span class="value">{{this.userPoints}}</span>
+      </div>
+      <div class="balance-item">
+        <i class="fa-solid fa-gem"></i>
+        <span class="label">付费币：</span>
+        <span class="value">{{this.userPaidCoins}}</span>
+      </div>
+    </div>
+  </div>
+
+  {{! 标签页导航 }}
+  <div class="qd-dress-tabs">
+    <button 
+      class="tab-btn {{if (eq this.selectedTab 'avatar-frame') 'active'}}"
+      {{on "click" (fn this.switchTab "avatar-frame")}}>
+      <i class="fa-solid fa-border-all"></i>
+      头像框
+    </button>
+    <button 
+      class="tab-btn {{if (eq this.selectedTab 'badges') 'active'}}"
+      {{on "click" (fn this.switchTab "badges")}}>
+      <i class="fa-solid fa-award"></i>
+      我的勋章
+    </button>
+    <button 
+      class="tab-btn {{if (eq this.selectedTab 'decorations') 'active'}}"
+      {{on "click" (fn this.switchTab "decorations")}}>
+      <i class="fa-solid fa-star"></i>
+      装饰徽章
+    </button>
+  </div>
+
+  {{! 内容区域 }}
+  <div class="qd-dress-content">
+    {{#if (eq this.selectedTab "avatar-frame")}}
+      <div class="avatar-frame-section">
+        {{! 预览区域 }}
+        <div class="preview-area">
+          <h3>🖼️ 头像预览</h3>
+          <div class="avatar-preview-box">
+            <div class="avatar-wrapper">
+              <img src={{this.currentAvatarUrl}} alt="头像" class="user-avatar" />
+              {{#if this.previewFrame}}
+                <img src={{this.previewFrame.image}} alt="头像框" class="avatar-frame-overlay" />
+              {{/if}}
+            </div>
+            <div class="preview-info">
+              {{#if this.previewFrame}}
+                <p class="frame-name">{{this.previewFrame.name}}</p>
+                <p class="frame-price">
+                  {{#if (eq this.previewFrame.currency "points")}}
+                    <i class="fa-solid fa-coins"></i> {{this.previewFrame.price}} 积分
+                  {{else}}
+                    <i class="fa-solid fa-gem"></i> {{this.previewFrame.price}} 付费币
+                  {{/if}}
+                </p>
+              {{else}}
+                <p class="no-preview">悬停查看效果</p>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+
+        {{! 头像框列表 }}
+        <div class="frames-list">
+          <div class="frames-list-header">
+            <h3>🎨 可用头像框</h3>
+            {{#if this.isAdmin}}
+              <button class="btn-admin-upload" {{on "click" this.openUploadModal}}>
+                <i class="fa-solid fa-upload"></i> 上传头像框
+              </button>
+            {{/if}}
+          </div>
+          <div class="frames-grid">
+            {{#each this.availableFrames as |frame|}}
+              <div 
+                class="frame-card {{if (isFrameOwned frame.id) 'owned'}} {{if (isFrameEquipped frame.id) 'equipped'}}"
+                {{on "mouseenter" (fn this.previewFrame frame.id)}}
+                {{on "mouseleave" this.clearPreview}}>
+                <div class="frame-preview">
+                  <img src={{frame.image}} alt={{frame.name}} />
+                  {{#if (isFrameEquipped frame.id)}}
+                    <div class="equipped-badge">
+                      <i class="fa-solid fa-check"></i> 使用中
+                    </div>
+                  {{/if}}
+                </div>
+                <div class="frame-info">
+                  <h4>{{frame.name}}</h4>
+                  <div class="frame-price">
+                    {{#if (eq frame.currency "points")}}
+                      <i class="fa-solid fa-coins"></i> {{frame.price}}
+                    {{else}}
+                      <i class="fa-solid fa-gem"></i> {{frame.price}}
+                    {{/if}}
+                  </div>
+                </div>
+                <div class="frame-actions">
+                  {{#if (isFrameOwned frame.id)}}
+                    {{#if (isFrameEquipped frame.id)}}
+                      <button class="btn-equipped" disabled>
+                        <i class="fa-solid fa-check"></i> 已装备
+                      </button>
+                    {{else}}
+                      <button class="btn-equip" {{on "click" (fn this.equipFrame frame.id)}}>
+                        <i class="fa-solid fa-user-check"></i> 装备
+                      </button>
+                    {{/if}}
+                  {{else}}
+                    <button class="btn-purchase" {{on "click" (fn this.openPurchaseModal frame)}}>
+                      <i class="fa-solid fa-shopping-cart"></i> 购买
+                    </button>
+                  {{/if}}
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if (eq this.selectedTab "badges")}}
+      <div class="badges-section">
+        <h3>🏆 我的勋章</h3>
+        {{#if this.userBadges.length}}
+          <div class="badges-grid">
+            {{#each this.userBadges as |badge|}}
+              <div class="badge-card">
+                <div class="badge-icon">
+                  {{#if badge.image_url}}
+                    <img src={{badge.image_url}} alt={{badge.name}} />
+                  {{else}}
+                    <i class="fa-solid fa-award"></i>
+                  {{/if}}
+                </div>
+                <div class="badge-info">
+                  <h4>{{badge.name}}</h4>
+                  <p class="badge-description">{{badge.description}}</p>
+                  <p class="badge-count">获得 {{badge.count}} 次</p>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa-solid fa-award fa-3x"></i>
+            <p>你还没有获得任何勋章</p>
+            <p class="hint">在论坛中积极活动以获得勋章！</p>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{#if (eq this.selectedTab "decorations")}}
+      <div class="decorations-section">
+        <h3>⭐ 装饰徽章</h3>
+        <div class="decorations-grid">
+          {{#each this.availableDecorations as |decoration|}}
+            <div class="decoration-card {{if decoration.unlocked 'unlocked' 'locked'}}">
+              <div class="decoration-icon">
+                <i class="fa-solid {{decoration.icon}}"></i>
+              </div>
+              <div class="decoration-info">
+                <h4>{{decoration.name}}</h4>
+                <p class="decoration-description">{{decoration.description}}</p>
+                {{#if decoration.unlocked}}
+                  <span class="status unlocked-status">
+                    <i class="fa-solid fa-check"></i> 已解锁
+                  </span>
+                {{else}}
+                  <span class="status locked-status">
+                    <i class="fa-solid fa-lock"></i> {{decoration.requirement}}
+                  </span>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+{{! 购买确认弹窗 }}
+{{#if this.showPurchaseModal}}
+  <div class="qd-modal-backdrop" {{on "click" this.closePurchaseModal}}>
+    <div class="qd-modal-content" {{on "click" this.stopPropagation}}>
+      <div class="qd-modal-header">
+        <h3>💳 购买确认</h3>
+        <button type="button" class="qd-close-btn" {{on "click" this.closePurchaseModal}}>
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="qd-modal-body">
+        {{#if this.selectedItem}}
+          <div class="purchase-summary">
+            <div class="item-preview">
+              <img src={{this.selectedItem.image}} alt={{this.selectedItem.name}} />
+            </div>
+            <div class="item-details">
+              <h4>{{this.selectedItem.name}}</h4>
+              <p class="item-price">
+                {{#if (eq this.selectedItem.currency "points")}}
+                  <i class="fa-solid fa-coins"></i> {{this.selectedItem.price}} 积分
+                {{else}}
+                  <i class="fa-solid fa-gem"></i> {{this.selectedItem.price}} 付费币
+                {{/if}}
+              </p>
+            </div>
+          </div>
+          
+          <div class="balance-check">
+            <div class="balance-row">
+              <span>当前余额：</span>
+              <span>
+                {{#if (eq this.selectedItem.currency "points")}}
+                  {{this.userPoints}} 积分
+                {{else}}
+                  {{this.userPaidCoins}} 付费币
+                {{/if}}
+              </span>
+            </div>
+            <div class="balance-row">
+              <span>购买后余额：</span>
+              <span>
+                {{#if (eq this.selectedItem.currency "points")}}
+                  {{sub this.userPoints this.selectedItem.price}} 积分
+                {{else}}
+                  {{sub this.userPaidCoins this.selectedItem.price}} 付费币
+                {{/if}}
+              </span>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+      
+      <div class="qd-modal-actions">
+        <button type="button" class="qd-cancel-btn" {{on "click" this.closePurchaseModal}}>
+          <i class="fa fa-times"></i>
+          取消
+        </button>
+        <button 
+          class="qd-confirm-btn {{if this.isLoading 'loading'}}" 
+          {{on "click" this.confirmPurchase}}
+          disabled={{this.isLoading}}>
+          {{#if this.isLoading}}
+            <i class="fa fa-spinner fa-spin"></i>
+            处理中...
+          {{else}}
+            <i class="fa fa-check"></i>
+            确认购买
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+{{! 管理员上传头像框模态框 }}
+{{#if this.showUploadModal}}
+  <div class="qd-modal-backdrop" {{on "click" this.closeUploadModal}}>
+    <div class="qd-modal-content upload-modal-content" {{on "click" this.stopPropagation}}>
+      <div class="qd-modal-header">
+        <h3>📤 上传头像框</h3>
+        <button type="button" class="qd-close-btn" {{on "click" this.closeUploadModal}}>
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="qd-modal-body">
+        <div class="upload-form">
+          <div class="form-group">
+            <label>文件名 <span class="required">*</span></label>
+            <input 
+              type="text" 
+              class="form-control"
+              placeholder="例如：tx1"
+              value={{this.uploadFileName}}
+              {{on "input" (fn (mut this.uploadFileName) value="target.value")}} />
+            <p class="form-hint">文件将保存为：uploads/default/jifen/<strong>{{this.uploadFileName}}.png</strong></p>
+          </div>
+
+          <div class="form-group">
+            <label>选择文件 <span class="required">*</span></label>
+            <input 
+              type="file" 
+              class="form-control"
+              accept=".png"
+              {{on "change" this.handleFileChange}} />
+            <p class="form-hint">仅支持 PNG 格式图片</p>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>价格</label>
+              <input 
+                type="number" 
+                class="form-control"
+                min="0"
+                value={{this.uploadPrice}}
+                {{on "input" (fn (mut this.uploadPrice) value="target.value")}} />
+            </div>
+
+            <div class="form-group">
+              <label>货币类型</label>
+              <select 
+                class="form-control"
+                {{on "change" (fn (mut this.uploadCurrency) value="target.value")}}>
+                <option value="points" selected={{eq this.uploadCurrency "points"}}>积分</option>
+                <option value="paid_coins" selected={{eq this.uploadCurrency "paid_coins"}}>付费币</option>
+              </select>
+            </div>
+          </div>
+
+          {{#if this.uploadFile}}
+            <div class="file-preview">
+              <i class="fa-solid fa-file-image"></i>
+              <span>{{this.uploadFile.name}}</span>
+              <span class="file-size">({{this.uploadFile.size}} bytes)</span>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+      
+      <div class="qd-modal-actions">
+        <button type="button" class="qd-cancel-btn" {{on "click" this.closeUploadModal}}>
+          <i class="fa fa-times"></i>
+          取消
+        </button>
+        <button 
+          class="qd-confirm-btn {{if this.isUploading 'loading'}}" 
+          {{on "click" this.uploadFrame}}
+          disabled={{this.isUploading}}>
+          {{#if this.isUploading}}
+            <i class="fa fa-spinner fa-spin"></i>
+            上传中...
+          {{else}}
+            <i class="fa fa-upload"></i>
+            确认上传
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
