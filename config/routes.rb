@@ -90,6 +90,7 @@ MyPluginModule::Engine.routes.draw do
   post "/pay/cancel_order" => "pay#cancel_order"  # 取消订单
   get "/pay/orders" => "pay#orders"            # 用户订单列表
   post "/pay/notify" => "pay#notify"           # 支付宝异步通知回调
+  post "/pay/wechat_notify" => "pay#wechat_notify"  # 微信支付异步通知回调
   
   # 管理员订单管理
   get "/pay/admin" => "pay#admin"

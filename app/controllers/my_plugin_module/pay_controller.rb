@@ -35,6 +35,7 @@ module ::MyPluginModule
         alipay_enabled: alipay_enabled?,
         wechat_enabled: SiteSetting.jifen_wechat_enabled,
         user_paid_coins: current_user ? MyPluginModule::PaidCoinService.available_coins(current_user) : 0,
+        paid_coin_name: SiteSetting.jifen_paid_coin_name,
         qr_code_api: SiteSetting.jifen_qrcode_api
       })
     end
@@ -57,9 +58,9 @@ module ::MyPluginModule
         return
       end
 
-      # 微信支付功能未开发
-      if payment_method == "wechat"
-        render_json_error("微信支付功能开发中，敬请期待", status: 400)
+      # 检查微信支付配置
+      if payment_method == "wechat" && !wechat_enabled?
+        render_json_error("微信支付未启用，请联系管理员配置", status: 503)
         return
       end
 
@@ -75,18 +76,27 @@ module ::MyPluginModule
       bonus_points = package["bonus"].to_i || 0
       total_points = base_points + bonus_points
 
-      # 检查支付宝配置
-      unless alipay_enabled?
-        render_json_error("支付宝支付未启用，请联系管理员配置", status: 503)
-        return
-      end
-
       begin
-        result = MyPluginModule::AlipayService.create_qr_order(
-          user_id: current_user.id,
-          amount: amount,
-          points: total_points  # 使用总积分
-        )
+        # 根据支付方式选择不同的服务
+        result = if payment_method == "alipay"
+          # 检查支付宝配置
+          unless alipay_enabled?
+            render_json_error("支付宝支付未启用，请联系管理员配置", status: 503)
+            return
+          end
+
+          MyPluginModule::AlipayService.create_qr_order(
+            user_id: current_user.id,
+            amount: amount,
+            points: total_points
+          )
+        else  # wechat
+          MyPluginModule::WechatService.create_qr_order(
+            user_id: current_user.id,
+            amount: amount,
+            points: total_points
+          )
+        end
 
         render_json_dump(result)
       rescue => e
@@ -136,35 +146,68 @@ module ::MyPluginModule
         return
       end
 
-      # 查询支付宝订单状态
+      # 根据支付方式查询订单状态
       begin
-        alipay_result = MyPluginModule::AlipayService.query_order(out_trade_no: out_trade_no)
+        payment_method = order.payment_method || "alipay"
+        
+        if payment_method == "alipay"
+          # 查询支付宝订单
+          alipay_result = MyPluginModule::AlipayService.query_order(out_trade_no: out_trade_no)
 
-        if alipay_result && alipay_result[:trade_status] == "TRADE_SUCCESS"
-          # 支付成功，处理订单
-          begin
-            MyPluginModule::AlipayService.handle_payment_success(
-              out_trade_no: out_trade_no,
-              trade_no: alipay_result[:trade_no]
-            )
-            order.reload
-          rescue => process_error
-            Rails.logger.error "[支付] 处理支付成功回调失败: #{process_error.message}\n#{process_error.backtrace.join("\n")}"
+          if alipay_result && alipay_result[:trade_status] == "TRADE_SUCCESS"
+            # 支付成功，处理订单
+            begin
+              MyPluginModule::AlipayService.handle_payment_success(
+                out_trade_no: out_trade_no,
+                trade_no: alipay_result[:trade_no]
+              )
+              order.reload
+            rescue => process_error
+              Rails.logger.error "[支付] 处理支付成功回调失败: #{process_error.message}\n#{process_error.backtrace.join("\n")}"
+            end
+
+            render_json_dump({
+              success: true,
+              paid: true,
+              order: order_info(order)
+            })
+          else
+            render_json_dump({
+              success: true,
+              paid: false,
+              expired: false,
+              order: order_info(order)
+            })
           end
+        else  # wechat
+          # 查询微信订单
+          wechat_result = MyPluginModule::WechatService.query_order(out_trade_no: out_trade_no)
 
-          render_json_dump({
-            success: true,
-            paid: true,
-            order: order_info(order)
-          })
-        else
-          # 未支付或查询失败，返回当前状态
-          render_json_dump({
-            success: true,
-            paid: false,
-            expired: false,
-            order: order_info(order)
-          })
+          if wechat_result && wechat_result[:trade_state] == "SUCCESS"
+            # 支付成功，处理订单
+            begin
+              MyPluginModule::WechatService.handle_payment_success(
+                out_trade_no: out_trade_no,
+                transaction_id: wechat_result[:transaction_id]
+              )
+              order.reload
+            rescue => process_error
+              Rails.logger.error "[支付] 处理支付成功回调失败: #{process_error.message}\n#{process_error.backtrace.join("\n")}"
+            end
+
+            render_json_dump({
+              success: true,
+              paid: true,
+              order: order_info(order)
+            })
+          else
+            render_json_dump({
+              success: true,
+              paid: false,
+              expired: false,
+              order: order_info(order)
+            })
+          end
         end
       rescue => e
         Rails.logger.error "[支付] 查询订单异常: #{e.message}\n#{e.backtrace.join("\n")}"
@@ -280,6 +323,74 @@ module ::MyPluginModule
       end
     end
 
+    # 微信支付异步通知
+    def wechat_notify
+      # 读取XML数据
+      xml_data = request.body.read
+      Rails.logger.info "[微信支付] 收到异步通知: #{xml_data}"
+
+      # 解析XML
+      require "rexml/document"
+      doc = REXML::Document.new(xml_data)
+      notify_params = {}
+      doc.root.elements.each do |element|
+        notify_params[element.name] = element.text
+      end
+
+      # 验证签名
+      unless MyPluginModule::WechatService.verify_notify(notify_params)
+        Rails.logger.error "[微信支付] 签名验证失败"
+        render xml: MyPluginModule::WechatService.build_response_xml(return_code: "FAIL", return_msg: "签名验证失败")
+        return
+      end
+
+      return_code = notify_params["return_code"]
+      result_code = notify_params["result_code"]
+      out_trade_no = notify_params["out_trade_no"]
+      transaction_id = notify_params["transaction_id"]
+      total_fee = notify_params["total_fee"].to_i
+
+      order = MyPluginModule::PaymentOrder.find_by(out_trade_no: out_trade_no)
+
+      unless order
+        Rails.logger.error "[微信支付] 订单不存在: #{out_trade_no}"
+        render xml: MyPluginModule::WechatService.build_response_xml(return_code: "FAIL", return_msg: "订单不存在")
+        return
+      end
+
+      # 验证金额（微信支付金额单位为分）
+      expected_fee = (order.amount * 100).to_i
+      unless total_fee == expected_fee
+        Rails.logger.error "[微信支付] 金额不匹配: 订单金额#{expected_fee}分，通知金额#{total_fee}分"
+        render xml: MyPluginModule::WechatService.build_response_xml(return_code: "FAIL", return_msg: "金额不匹配")
+        return
+      end
+
+      # 处理支付成功
+      if return_code == "SUCCESS" && result_code == "SUCCESS"
+        begin
+          MyPluginModule::WechatService.handle_payment_success(
+            out_trade_no: out_trade_no,
+            transaction_id: transaction_id,
+            notify_data: xml_data
+          )
+
+          Rails.logger.info "[微信支付] 订单 #{out_trade_no} 处理成功"
+          render xml: MyPluginModule::WechatService.build_response_xml(return_code: "SUCCESS")
+        rescue => e
+          Rails.logger.error "[微信支付] 处理订单失败: #{e.message}"
+          render xml: MyPluginModule::WechatService.build_response_xml(return_code: "FAIL", return_msg: e.message)
+        end
+      else
+        error_msg = notify_params["err_code_des"] || "未知错误"
+        Rails.logger.warn "[微信支付] 订单 #{out_trade_no} 支付失败: #{error_msg}"
+        render xml: MyPluginModule::WechatService.build_response_xml(return_code: "SUCCESS")
+      end
+    rescue => e
+      Rails.logger.error "[微信支付] 处理异步通知异常: #{e.message}\n#{e.backtrace.join("\n")}"
+      render xml: MyPluginModule::WechatService.build_response_xml(return_code: "FAIL", return_msg: "系统错误")
+    end
+
     # 管理员订单管理页面
     def admin
       ensure_admin!
@@ -316,6 +427,7 @@ module ::MyPluginModule
           points: order.points,
           subject: order.subject,
           status: order.status,
+          payment_method: order.payment_method || "alipay",
           username: user&.username || "未知用户",
           user_id: order.user_id,
           created_at: order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
@@ -377,6 +489,14 @@ module ::MyPluginModule
         SiteSetting.jifen_alipay_app_id.present? &&
         SiteSetting.jifen_alipay_private_key.present? &&
         SiteSetting.jifen_alipay_public_key.present?
+    end
+
+    # 微信支付是否已启用
+    def wechat_enabled?
+      SiteSetting.jifen_wechat_enabled &&
+        SiteSetting.jifen_wechat_app_id.present? &&
+        SiteSetting.jifen_wechat_mch_id.present? &&
+        SiteSetting.jifen_wechat_api_key.present?
     end
 
     # 解析充值套餐

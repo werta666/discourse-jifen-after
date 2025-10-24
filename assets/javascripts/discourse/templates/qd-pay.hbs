@@ -2,8 +2,8 @@
   <div class="qd-pay-container">
     {{! 页面标题 }}
     <div class="qd-pay-header">
-      <h1><i class="fa-solid fa-coins"></i> 付费币充值</h1>
-      <p class="user-points">当前付费币：<span class="points-value"><i class="fa-solid fa-gem"></i> {{this.model.userPaidCoins}}</span></p>
+      <h1><i class="fa-solid fa-coins"></i> {{this.model.paidCoinName}}充值</h1>
+      <p class="user-points">当前{{this.model.paidCoinName}}：<span class="points-value"><i class="fa-solid fa-gem"></i> {{this.model.userPaidCoins}}</span></p>
     </div>
 
     {{#if this.alipayEnabled}}
@@ -11,7 +11,7 @@
         {{! 充值套餐选择 }}
         <div class="qd-pay-packages">
           <h2><i class="fa-solid fa-box-open"></i> 选择充值套餐</h2>
-          <p class="subtitle">选择适合您的充值套餐，即刻获得付费币</p>
+          <p class="subtitle">选择适合您的充值套餐，即刻获得{{this.model.paidCoinName}}</p>
           
           {{#if this.hasPackages}}
             <div class="packages-grid">
@@ -19,9 +19,9 @@
                 <div class="package-card {{if (eq this.selectedPackage pkg) 'selected'}}" {{on "click" (fn this.selectPackage pkg)}}>
                   <div class="package-icon"><i class="fa-solid fa-gift"></i></div>
                   <div class="package-amount">¥{{pkg.amount}}</div>
-                  <div class="package-points"><i class="fa-solid fa-star"></i> {{pkg.points}} 付费币</div>
+                  <div class="package-points"><i class="fa-solid fa-star"></i> {{pkg.points}} {{this.model.paidCoinName}}</div>
                   {{#if pkg.bonus}}
-                    <div class="package-bonus">赠送 {{pkg.bonus}} 付费币</div>
+                    <div class="package-bonus">赠送 {{pkg.bonus}} {{this.model.paidCoinName}}</div>
                   {{/if}}
                   {{#if pkg.label}}
                     <div class="package-label">{{pkg.label}}</div>
@@ -56,8 +56,8 @@
             <div class="payment-success">
               <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
               <h2>支付成功！</h2>
-              <p>付费币已充值到您的账户</p>
-              <p class="success-points"><i class="fa-solid fa-coins"></i> + {{this.orderInfo.points}} 付费币</p>
+              <p>{{this.model.paidCoinName}}已充值到您的账户</p>
+              <p class="success-points"><i class="fa-solid fa-coins"></i> + {{this.orderInfo.points}} {{this.model.paidCoinName}}</p>
               <p class="redirect-tip">3秒后自动跳转...</p>
             </div>
           {{else if this.orderExpired}}
@@ -69,19 +69,30 @@
             </div>
           {{else}}
             <div class="qrcode-display">
-              <h2><i class="fa-brands fa-alipay"></i> 请使用支付宝扫码支付</h2>
-              
-              <div class="qrcode-image">
-                <img id="alipay-qrcode" 
-                     src=""
-                     alt="支付宝二维码"
-                     style="width: 250px; height: 250px; border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);"/>
-              </div>
+              {{#if (eq this.currentPaymentMethod "wechat")}}
+                <h2><i class="fa-brands fa-weixin"></i> 请使用微信扫码支付</h2>
+                
+                <div class="qrcode-image">
+                  <img id="wechat-qrcode" 
+                       src=""
+                       alt="微信支付二维码"
+                       style="width: 250px; height: 250px; border: 5px solid #09BB07; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);"/>
+                </div>
+              {{else}}
+                <h2><i class="fa-brands fa-alipay"></i> 请使用支付宝扫码支付</h2>
+                
+                <div class="qrcode-image">
+                  <img id="alipay-qrcode" 
+                       src=""
+                       alt="支付宝二维码"
+                       style="width: 250px; height: 250px; border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);"/>
+                </div>
+              {{/if}}
 
               <div class="order-details">
                 <p><strong><i class="fa-solid fa-receipt"></i> 订单号：</strong>{{this.orderInfo.out_trade_no}}</p>
                 <p><strong><i class="fa-solid fa-money-bill"></i> 支付金额：</strong>¥{{this.orderInfo.amount}}</p>
-                <p><strong><i class="fa-solid fa-star"></i> 获得付费币：</strong>{{this.orderInfo.points}}</p>
+                <p><strong><i class="fa-solid fa-star"></i> 获得{{this.model.paidCoinName}}：</strong>{{this.orderInfo.points}}</p>
                 <p class="expire-tip"><i class="fa-solid fa-hourglass-half"></i> 订单将在 2 分钟后过期</p>
               </div>
 
@@ -110,10 +121,12 @@
       </div>
     {{/if}}
 
-    {{! 返回按钮 }}
-    <div class="qd-pay-footer">
-      <button class="btn btn-default" {{on "click" this.goBack}}><i class="fa-solid fa-arrow-left"></i> 返回签到页</button>
-    </div>
+    {{! 返回按钮 - 显示二维码时隐藏 }}
+    {{#unless this.qrCode}}
+      <div class="qd-pay-footer">
+        <button class="btn btn-default" {{on "click" this.goBack}}><i class="fa-solid fa-arrow-left"></i> 返回签到页</button>
+      </div>
+    {{/unless}}
   </div>
 
   {{! 支付方式选择弹窗 }}

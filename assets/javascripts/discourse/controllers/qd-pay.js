@@ -15,6 +15,7 @@ export default class QdPayController extends Controller {
   @tracked paymentSuccess = false;
   @tracked showPaymentMethodModal = false;
   @tracked selectedPaymentMethod = null;
+  @tracked currentPaymentMethod = null;
 
   get hasPackages() {
     return this.model?.packages?.length > 0;
@@ -56,12 +57,14 @@ export default class QdPayController extends Controller {
 
     // 只有一个支付方式，直接使用
     const paymentMethod = this.alipayEnabled ? "alipay" : "wechat";
+    this.currentPaymentMethod = paymentMethod;
     await this.doCreateOrder(paymentMethod);
   }
 
   @action
   selectPaymentMethod(method) {
     this.selectedPaymentMethod = method;
+    this.currentPaymentMethod = method;
     this.showPaymentMethodModal = false;
     this.doCreateOrder(method);
   }
@@ -74,6 +77,7 @@ export default class QdPayController extends Controller {
 
   async doCreateOrder(paymentMethod) {
     this.isCreatingOrder = true;
+    this.currentPaymentMethod = paymentMethod;
 
     try {
       const result = await ajax("/qd/pay/create_order.json", {
@@ -98,7 +102,7 @@ export default class QdPayController extends Controller {
 
         // 延迟设置二维码图片
         setTimeout(() => {
-          this.setQRCodeImage(this.qrCode);
+          this.setQRCodeImage(this.qrCode, paymentMethod);
         }, 300);
 
         // 开始轮询订单状态
@@ -150,9 +154,9 @@ export default class QdPayController extends Controller {
         this.paymentSuccess = true;
         this.stopPolling();
         
-        // 3秒后刷新页面
+        // 3秒后刷新充值页面
         setTimeout(() => {
-          window.location.href = "/qd";
+          window.location.href = "/qd/pay";
         }, 3000);
       } else if (result.expired) {
         // 订单过期
@@ -214,13 +218,14 @@ export default class QdPayController extends Controller {
   }
 
   // 设置二维码图片
-  setQRCodeImage(alipayUrl) {
-    const qrImg = document.getElementById("alipay-qrcode");
+  setQRCodeImage(paymentUrl, paymentMethod) {
+    const qrImgId = paymentMethod === "wechat" ? "wechat-qrcode" : "alipay-qrcode";
+    const qrImg = document.getElementById(qrImgId);
     if (!qrImg) return;
 
     // 从配置获取二维码API（如果有的话），否则使用默认值
     const qrApiBase = this.model.qrCodeApi || "https://api.pwmqr.com/qrcode/create/?url=";
-    const qrImageUrl = `${qrApiBase}${encodeURIComponent(alipayUrl)}&size=250`;
+    const qrImageUrl = `${qrApiBase}${encodeURIComponent(paymentUrl)}&size=250`;
     
     qrImg.src = qrImageUrl;
   }

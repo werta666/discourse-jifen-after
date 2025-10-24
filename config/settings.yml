@@ -6,6 +6,11 @@ jifen:
   jifen_enabled:
     default: true
     client: true
+  
+  jifen_paid_coin_name:
+    default: '付费币'
+    client: true
+    type: text
 
   jifen_base_points_per_signin:
     default: 5
@@ -53,6 +58,29 @@ jifen:
     type: text
 
   jifen_alipay_public_key:
+    default: ''
+    client: false
+    type: text
+  
+  jifen_wechat_app_id:
+    default: ''
+    client: false
+  
+  jifen_wechat_mch_id:
+    default: ''
+    client: false
+  
+  jifen_wechat_api_key:
+    default: ''
+    client: false
+    type: text
+  
+  jifen_wechat_apiclient_cert:
+    default: ''
+    client: false
+    type: text
+  
+  jifen_wechat_apiclient_key:
     default: ''
     client: false
     type: text

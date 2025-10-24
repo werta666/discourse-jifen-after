@@ -26,7 +26,8 @@ module ::MyPluginModule
 
       # 生成订单号
       out_trade_no = MyPluginModule::PaymentOrder.generate_out_trade_no
-      subject = "付费币充值 #{points}个"
+      coin_name = SiteSetting.jifen_paid_coin_name
+      subject = "#{coin_name}充值 #{points}个"
 
       # 创建订单记录
       order = MyPluginModule::PaymentOrder.create!(
