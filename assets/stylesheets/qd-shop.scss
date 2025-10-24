@@ -2004,52 +2004,24 @@
     }
   }
 
-  // 兑换模态框样式
+  // 兑换模态框特殊样式
   .qd-exchange-modal {
-    max-width: 480px;
-    width: 90%;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
     
-    .modal-header {
+    .qd-exchange-header {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-
+      
       h3 {
-        margin: 0;
-        font-size: 1.3em;
-        font-weight: 700;
-
+        color: white;
+        
         i {
           margin-right: 10px;
         }
       }
-
-      .close-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        padding: 6px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-      }
     }
 
-    .modal-body {
-      padding: 24px;
-
+    .qd-modal-body {
       .exchange-info-box {
         background: #f0fdf4;
         border: 2px solid #86efac;
@@ -2096,6 +2068,7 @@
           border-radius: 8px;
           font-size: 16px;
           transition: all 0.3s;
+          box-sizing: border-box;
 
           &:focus {
             outline: none;
@@ -2123,31 +2096,6 @@
             padding: 0 8px;
             animation: pulse 1.5s ease-in-out infinite;
           }
-        }
-      }
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      background: #f9fafb;
-      border-radius: 0 0 12px 12px;
-
-      .btn-primary {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        border: none;
-        padding: 10px 24px;
-        font-weight: 600;
-        transition: all 0.3s;
-
-        &:hover:not(:disabled) {
-          background: linear-gradient(135deg, #059669 0%, #047857 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
         }
       }
     }

@@ -712,14 +712,14 @@
 {{#if this.showExchangeModal}}
   <div class="qd-purchase-modal" {{on "click" this.closeExchangeModal}}>
     <div class="qd-modal-content qd-exchange-modal" {{on "click" this.stopPropagation}}>
-      <div class="modal-header">
+      <div class="qd-modal-header qd-exchange-header">
         <h3><i class="fa-solid fa-exchange-alt"></i> 付费币兑换积分</h3>
-        <button type="button" class="close-btn" {{on "click" this.closeExchangeModal}}>
+        <button type="button" class="qd-close-btn" {{on "click" this.closeExchangeModal}}>
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       
-      <div class="modal-body">
+      <div class="qd-modal-body">
         <div class="exchange-info-box">
           <div class="info-row">
             <span class="label">兑换比例：</span>
@@ -749,12 +749,24 @@
         </div>
       </div>
       
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" {{on "click" this.confirmExchange}} disabled={{this.isLoading}}>
-          <i class="fa-solid fa-check"></i> 确认兑换
-        </button>
-        <button type="button" class="btn btn-default" {{on "click" this.closeExchangeModal}}>
+      <div class="qd-modal-actions">
+        <button type="button" class="qd-cancel-btn" {{on "click" this.closeExchangeModal}}>
+          <i class="fa fa-times"></i>
           取消
+        </button>
+        <button 
+          type="button" 
+          class="qd-confirm-btn {{if this.isLoading 'loading'}}" 
+          {{on "click" this.confirmExchange}} 
+          disabled={{or this.isLoading (not this.canExchange)}}
+        >
+          {{#if this.isLoading}}
+            <i class="fa fa-spinner fa-spin"></i>
+            兑换中...
+          {{else}}
+            <i class="fa-solid fa-check"></i>
+            确认兑换
+          {{/if}}
         </button>
       </div>
     </div>

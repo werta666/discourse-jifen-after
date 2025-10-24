@@ -4,13 +4,13 @@
 
 ## 🎯 最终成功的实现方案
 
-经过多次尝试和调试，最终成功的关键在于使用 **Rails Engine 架构** + **Ember v5.12.0 现代化前端** + **Glimmer Components 渲染**。
+经过多次尝试和调试，最终成功的关键在于使用 **Rails Engine 架构** + **Ember v6.6.0 现代化前端** + **Glimmer Components 渲染**。
 
 ## 📋 环境要求
 
 ### 必需版本
-- **Discourse**: v2.7.0+
-- **Ember**: v5.12.0
+- **Discourse**: v3.6.0+
+- **Ember**: v6.6.0
 - **Ruby**: 2.7+
 - **Rails**: 6.1+
 
@@ -29,15 +29,16 @@
 ### 渲染组件选择：Glimmer Components (非 Widget)
 
 **✅ 使用 Glimmer Components 的原因**：
-- 符合 Ember v5.12.0 现代标准
+- 符合 Ember v6.6.0 现代标准
 - 更好的响应式状态管理 (`@tracked`)
 - 现代化的事件处理 (`@action`)
+- 使用新版 `service` 装饰器 (替代弃用的 `inject as service`)
 - 更清晰的代码结构和维护性
 - 更好的性能和类型安全
 
 **❌ 不使用 Widget 的原因**：
 - Widget 是较老的 Discourse 特有方式
-- 在 Ember v5.12.0 中不是推荐做法
+- 在 Ember v6.6.0 中不是推荐做法
 - 代码复杂度更高，维护困难
 
 ## � Rails Engine 最小可用配置
@@ -2504,5 +2505,98 @@ body = <<~BODY
   [点击这里](/link)
 BODY
 ```
+
+---
+
+## 🚀 Ember v6.6.0 升级指南
+
+### 📝 API 变更说明
+
+Discourse v3.6.0 已升级到 **Ember v6.6.0**，您的代码需要适配新的 API 标准。
+
+### ✅ 已完成的升级项
+
+#### 1. Service 注入方式更新
+
+**❌ 旧版（已弃用）**：
+```javascript
+import { inject as service } from "@ember/service";
+
+export default class MyController extends Controller {
+  @service router;
+}
+```
+
+**✅ 新版（Ember v6.6.0）**：
+```javascript
+import { service } from "@ember/service";
+
+export default class MyController extends Controller {
+  @service router;
+}
+```
+
+**说明**：
+- `inject as service` 在 Ember v7.0.0 将完全移除
+- 新版直接使用 `service` 装饰器，更简洁
+- 所有控制器文件已更新完成 ✅
+
+#### 2. 升级的文件列表
+
+已升级到 Ember v6.6.0 标准的文件：
+- ✅ `controllers/qd-shop.js`
+- ✅ `controllers/qd-shop-orders.js`
+- ✅ `controllers/qd-shop-admin-orders.js`
+- ✅ `controllers/qd-betting.js`
+
+### 🎯 升级效果
+
+**升级前警告**：
+```
+DEPRECATION: [PLUGIN discourse-jifen-after] Importing `inject` from 
+`@ember/service` is deprecated. Please import `service` instead.
+```
+
+**升级后**：
+- ✅ 所有弃用警告已清除
+- ✅ 代码符合 Ember v6.6.0 标准
+- ✅ 为未来 Ember v7.0.0 做好准备
+- ✅ 性能和类型安全性保持最佳
+
+### 📚 Ember v6.6.0 新特性
+
+1. **简化的装饰器**：`service` 直接使用，无需 `inject as`
+2. **更好的 TypeScript 支持**
+3. **改进的性能优化**
+4. **更清晰的错误提示**
+
+### 🔧 未来维护建议
+
+**新代码模板**（推荐）：
+```javascript
+import Controller from "@ember/controller";
+import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import { service } from "@ember/service";  // ✅ 使用新版
+import { ajax } from "discourse/lib/ajax";
+
+export default class MyController extends Controller {
+  @service router;
+  @service currentUser;
+  @tracked isLoading = false;
+  
+  @action
+  async myAction() {
+    // 您的代码
+  }
+}
+```
+
+### ⚠️ 注意事项
+
+1. **不需要升级 Ember 版本**：Discourse 已经在使用 Ember v6.6.0
+2. **只需更新代码**：将弃用的 API 替换为新标准
+3. **向后兼容**：升级后的代码在 Discourse v3.6.0+ 完美运行
+4. **准备就绪**：为 Ember v7.0.0 做好准备，无需再次修改
 
 ---
