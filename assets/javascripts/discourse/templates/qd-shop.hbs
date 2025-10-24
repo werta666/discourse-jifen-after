@@ -7,10 +7,21 @@
     </div>
     
     <div class="qd-shop-user-info">
-      <div class="qd-user-points">
-        <span class="points-label">我的积分</span>
-        <span class="points-value">{{model.userPoints}}</span>
+      <div class="qd-user-balance">
+        <div class="qd-user-points">
+          <span class="points-label"><i class="fa-solid fa-coins"></i> 我的积分</span>
+          <span class="points-value">{{model.userPoints}}</span>
+        </div>
+        
+        <div class="qd-user-paid-coins">
+          <span class="points-label"><i class="fa-solid fa-gem"></i> {{model.paidCoinName}}</span>
+          <span class="points-value paid-coins-value">{{model.userPaidCoins}}</span>
+        </div>
       </div>
+      
+      <button class="btn btn-success exchange-btn" {{on "click" this.openExchangeModal}}>
+        <i class="fa-solid fa-exchange-alt"></i> 兑换积分
+      </button>
       
       <LinkTo @route="qd-shop-orders" class="btn btn-default orders-btn">
         <i class="fa fa-history"></i> 购买历史
@@ -81,8 +92,15 @@
               
               <div class="product-meta">
                 <div class="product-price">
-                  <span class="price-value">{{product.price}}</span>
-                  <span class="price-unit">积分</span>
+                  {{#if (eq product.currency_type "paid_coins")}}
+                    <i class="fa-solid fa-gem"></i>
+                    <span class="price-value">{{product.price}}</span>
+                    <span class="price-unit">{{model.paidCoinName}}</span>
+                  {{else}}
+                    <i class="fa-solid fa-coins"></i>
+                    <span class="price-value">{{product.price}}</span>
+                    <span class="price-unit">积分</span>
+                  {{/if}}
                 </div>
                 
                 <div class="product-stock">
@@ -351,13 +369,22 @@
                   />
                 </div>
                 <div class="form-group">
-                  <label>价格 (积分)</label>
+                  <label>价格</label>
                   <input 
                     type="number" 
                     value={{this.newProduct.price}}
                     {{on "input" (fn this.updateNewProduct "price")}}
                     placeholder="100"
                   />
+                </div>
+                <div class="form-group">
+                  <label>货币类型</label>
+                  <select 
+                    value={{this.newProduct.currency_type}}
+                    {{on "change" (fn this.updateNewProduct "currency_type")}}>
+                    <option value="points">积分</option>
+                    <option value="paid_coins">{{model.paidCoinName}}</option>
+                  </select>
                 </div>
               </div>
               
@@ -626,4 +653,57 @@
       100% { transform: scale(1); }
     }
   </style>
+{{/if}}
+
+{{! 付费币兑换模态框 }}
+{{#if this.showExchangeModal}}
+  <div class="modal-overlay" {{on "click" this.closeExchangeModal}}>
+    <div class="modal-dialog qd-exchange-modal" {{on "click" this.stopPropagation}}>
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-exchange-alt"></i> 付费币兑换积分</h3>
+        <button class="close-btn" {{on "click" this.closeExchangeModal}}>
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="exchange-info-box">
+          <div class="info-row">
+            <span class="label">兑换比例：</span>
+            <span class="value">1 {{model.paidCoinName}} = {{model.exchangeRatio}} 积分</span>
+          </div>
+          <div class="info-row">
+            <span class="label">当前余额：</span>
+            <span class="value">{{model.userPaidCoins}} {{model.paidCoinName}}</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>兑换数量</label>
+          <input 
+            type="number" 
+            class="form-control" 
+            min="1"
+            max={{model.userPaidCoins}}
+            value={{this.exchangeAmount}}
+            {{on "input" (fn (mut this.exchangeAmount) value="target.value")}} />
+        </div>
+        
+        <div class="exchange-result-box">
+          <p class="result-text">
+            将获得：<strong class="highlight-points">{{this.exchangePointsGain}}</strong> 积分
+          </p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-primary" {{on "click" this.confirmExchange}} disabled={{this.isLoading}}>
+          <i class="fa-solid fa-check"></i> 确认兑换
+        </button>
+        <button class="btn btn-default" {{on "click" this.closeExchangeModal}}>
+          取消
+        </button>
+      </div>
+    </div>
+  </div>
 {{/if}}

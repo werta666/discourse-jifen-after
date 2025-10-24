@@ -17,6 +17,10 @@ export default class QdShopController extends Controller {
   @tracked successMessage = "";
   @tracked currentFilter = "all";
   
+  // 付费币相关
+  @tracked showExchangeModal = false;
+  @tracked exchangeAmount = 1;
+  
   // 管理员添加商品表单
   @tracked newProduct = {
     name: "",
@@ -25,6 +29,7 @@ export default class QdShopController extends Controller {
     price: 100,
     stock: 50,
     sort_order: 0,
+    currency_type: "points",  // 默认为积分
     selectedTag: {
       new: true,  // 默认选中新品
       hot: false,
@@ -321,6 +326,7 @@ export default class QdShopController extends Controller {
       price: 100,
       stock: 50,
       sort_order: 0,
+      currency_type: "points",
       selectedTag: {
         new: true,  // 默认选中新品
         hot: false,
@@ -355,6 +361,7 @@ export default class QdShopController extends Controller {
       price: product.price || 0,
       stock: product.stock || 0,
       sort_order: product.sort_order || 0,
+      currency_type: product.currency_type || "points",
       selectedTag: {
         new: false,
         hot: false,
@@ -396,7 +403,8 @@ export default class QdShopController extends Controller {
         icon_class: this.editingProduct.icon_class,
         price: parseInt(this.editingProduct.price) || 0,
         stock: parseInt(this.editingProduct.stock) || 0,
-        sort_order: parseInt(this.editingProduct.sort_order) || 0
+        sort_order: parseInt(this.editingProduct.sort_order) || 0,
+        currency_type: this.editingProduct.currency_type || "points"
       };
       
       const result = await ajax(`/qd/shop/products/${this.editingProduct.id}`, {
@@ -537,6 +545,70 @@ export default class QdShopController extends Controller {
     } else {
       // 默认为新品
       product.selectedTag.new = true;
+    }
+  }
+
+  // ========== 付费币兑换功能 ==========
+
+  @action
+  openExchangeModal() {
+    this.showExchangeModal = true;
+    this.exchangeAmount = 1;
+  }
+
+  @action
+  closeExchangeModal() {
+    this.showExchangeModal = false;
+    this.exchangeAmount = 1;
+  }
+
+  get exchangePointsGain() {
+    const ratio = this.model.exchangeRatio || 100;
+    return this.exchangeAmount * ratio;
+  }
+
+  get canExchange() {
+    return this.exchangeAmount > 0 && this.exchangeAmount <= (this.model.userPaidCoins || 0);
+  }
+
+  @action
+  async confirmExchange() {
+    if (!this.canExchange) {
+      alert("请输入有效的兑换数量");
+      return;
+    }
+
+    const paidCoinName = this.model.paidCoinName || "付费币";
+    const pointsToGet = this.exchangePointsGain;
+
+    if (!confirm(`确定要用 ${this.exchangeAmount} ${paidCoinName} 兑换 ${pointsToGet} 积分吗？`)) {
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      const result = await ajax("/qd/shop/exchange_coins.json", {
+        type: "POST",
+        data: {
+          amount: this.exchangeAmount
+        }
+      });
+
+      if (result.status === "success") {
+        alert(`兑换成功！\n消耗: ${result.paid_coins_used} ${paidCoinName}\n获得: ${result.points_gained} 积分`);
+        
+        // 更新余额
+        this.model.userPaidCoins = result.new_paid_coins;
+        this.model.userPoints = result.new_points;
+        
+        this.closeExchangeModal();
+      }
+    } catch (error) {
+      console.error("兑换失败:", error);
+      popupAjaxError(error);
+    } finally {
+      this.isLoading = false;
     }
   }
 }

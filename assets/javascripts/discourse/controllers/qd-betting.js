@@ -422,10 +422,12 @@ export default class QdBettingController extends Controller {
 
   @action
   updateOption(index, field, event) {
-    const value = event.target.value;
+    // 确保获取正确的值
+    const value = event?.target?.value ?? event;
     const options = [...this.createForm.options];
-    options[index] = { ...options[index], [field]: value };
-    this.createForm = { ...this.createForm, options };
+    options[index][field] = value;
+    // 触发响应式更新
+    this.createForm.options = [...options];
   }
 
   @action

@@ -197,7 +197,7 @@
     {{! 调试模态框 - 调整付费币 }}
     {{#if this.showDebugModal}}
       <div class="modal-overlay" {{on "click" this.closeDebugModal}}>
-        <div class="modal-dialog" {{on "click" (fn (mut false))}}>
+        <div class="modal-dialog" {{on "click" this.stopPropagation}}>
           <div class="modal-header">
             <h3><i class="fa-solid fa-screwdriver-wrench"></i> 调整用户付费币</h3>
             <button class="close-btn" {{on "click" this.closeDebugModal}}>

@@ -10,6 +10,12 @@ jifen:
   jifen_paid_coin_name:
     default: '付费币'
     client: true
+
+  jifen_paid_coin_to_points_ratio:
+    default: 100
+    min: 1
+    max: 10000
+    client: true
     type: text
 
   jifen_base_points_per_signin:

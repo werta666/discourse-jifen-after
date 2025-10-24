@@ -13,7 +13,10 @@ export default class QdShopRoute extends DiscourseRoute {
       
       return {
         products: response.products || [],
-        userPoints: userPoints,
+        userPoints: response.user_points || userPoints,
+        userPaidCoins: response.user_paid_coins || 0,
+        paidCoinName: response.paid_coin_name || "付费币",
+        exchangeRatio: response.exchange_ratio || 100,
         isAdmin: response.is_admin || false
       };
     } catch (error) {
@@ -23,6 +26,9 @@ export default class QdShopRoute extends DiscourseRoute {
       return {
         products: [],
         userPoints: 0,
+        userPaidCoins: 0,
+        paidCoinName: "付费币",
+        exchangeRatio: 100,
         isAdmin: false
       };
     }

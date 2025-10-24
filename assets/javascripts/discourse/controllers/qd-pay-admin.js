@@ -136,6 +136,11 @@ export default class QdPayAdminController extends Controller {
   }
 
   @action
+  stopPropagation(event) {
+    event.stopPropagation();
+  }
+
+  @action
   async adjustCoins(type) {
     if (!this.debugUsername) {
       alert("请输入用户名");

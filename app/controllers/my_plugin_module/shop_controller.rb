@@ -18,6 +18,7 @@ class MyPluginModule::ShopController < ApplicationController
             stock: product.stock,
             stock_status: product.stock > 0 ? "库存充足" : "暂时缺货",
             available: product.stock > 0,
+            currency_type: product.currency_type || "points",
             sales_count: 0,
             sort_order: product.sort_order,
             created_at: product.created_at
@@ -28,6 +29,9 @@ class MyPluginModule::ShopController < ApplicationController
           status: "success",
           products: products,
           user_points: MyPluginModule::JifenService.available_total_points(current_user),
+          user_paid_coins: MyPluginModule::PaidCoinService.available_coins(current_user),
+          paid_coin_name: SiteSetting.jifen_paid_coin_name,
+          exchange_ratio: SiteSetting.jifen_paid_coin_to_points_ratio,
           is_admin: current_user&.admin? || false
         }
       else
@@ -120,16 +124,31 @@ class MyPluginModule::ShopController < ApplicationController
           end
           
           total_price = product.price * quantity
+          currency_type = product.currency_type || "points"
           
-          # 重新获取最新积分（防止并发修改）
-          current_points = MyPluginModule::JifenService.available_total_points(current_user)
-          
-          if current_points < total_price
-            render json: {
-              status: "error",
-              message: "积分不足！当前积分：#{current_points}，需要：#{total_price}"
-            }, status: 422
-            return
+          # 根据货币类型检查余额
+          if currency_type == "paid_coins"
+            current_balance = MyPluginModule::PaidCoinService.available_coins(current_user)
+            currency_name = SiteSetting.jifen_paid_coin_name
+            
+            if current_balance < total_price
+              render json: {
+                status: "error",
+                message: "#{currency_name}不足！当前余额：#{current_balance}，需要：#{total_price}"
+              }, status: 422
+              return
+            end
+          else
+            current_balance = MyPluginModule::JifenService.available_total_points(current_user)
+            currency_name = "积分"
+            
+            if current_balance < total_price
+              render json: {
+                status: "error",
+                message: "积分不足！当前积分：#{current_balance}，需要：#{total_price}"
+              }, status: 422
+              return
+            end
           end
           
           if product.stock < quantity
@@ -140,13 +159,22 @@ class MyPluginModule::ShopController < ApplicationController
             return
           end
           
-          # 使用积分服务扣除积分（会自动记录审计日志）
-          MyPluginModule::JifenService.adjust_points!(
-            current_user, 
-            current_user, 
-            -total_price
-          )
-          new_points = MyPluginModule::JifenService.available_total_points(current_user)
+          # 根据货币类型扣除余额
+          if currency_type == "paid_coins"
+            MyPluginModule::PaidCoinService.deduct_coins!(
+              current_user,
+              total_price,
+              reason: "购买商品：#{product.name}"
+            )
+            new_balance = MyPluginModule::PaidCoinService.available_coins(current_user)
+          else
+            MyPluginModule::JifenService.adjust_points!(
+              current_user, 
+              current_user, 
+              -total_price
+            )
+            new_balance = MyPluginModule::JifenService.available_total_points(current_user)
+          end
           
           # 更新库存
           product.update!(stock: product.stock - quantity)
@@ -165,12 +193,13 @@ class MyPluginModule::ShopController < ApplicationController
               quantity: quantity,
               unit_price: product.price,
               total_price: total_price,
+              currency_type: currency_type,
               status: "pending",
               notes: ""
             )
           end
           
-          Rails.logger.info "🛒 用户#{current_user.username} 购买商品: #{product.name} x#{quantity}, 花费#{total_price}积分, 订单号: #{order&.id}"
+          Rails.logger.info "🛒 用户#{current_user.username} 购买商品: #{product.name} x#{quantity}, 花费#{total_price}#{currency_name}, 订单号: #{order&.id}"
           
           render json: {
             status: "success",
@@ -180,7 +209,8 @@ class MyPluginModule::ShopController < ApplicationController
               product_name: product.name,
               quantity: quantity,
               total_price: total_price,
-              remaining_points: new_points,
+              currency_type: currency_type,
+              remaining_balance: new_balance,
               order_status: "pending"
             }
           }
@@ -318,7 +348,7 @@ class MyPluginModule::ShopController < ApplicationController
     ensure_admin
     
     begin
-      product_params = params.require(:product).permit(:name, :description, :icon_class, :price, :stock, :sort_order)
+      product_params = params.require(:product).permit(:name, :description, :icon_class, :price, :stock, :sort_order, :currency_type)
       
       if ActiveRecord::Base.connection.table_exists?('qd_shop_products')
         product = MyPluginModule::ShopProduct.create!(product_params)
@@ -675,7 +705,7 @@ class MyPluginModule::ShopController < ApplicationController
     
     begin
       product_id = params[:id]&.to_i
-      product_params = params.require(:product).permit(:name, :description, :icon_class, :price, :stock, :sort_order)
+      product_params = params.require(:product).permit(:name, :description, :icon_class, :price, :stock, :sort_order, :currency_type)
       
       if product_id.blank?
         render json: {
@@ -731,6 +761,61 @@ class MyPluginModule::ShopController < ApplicationController
         status: "error",
         message: "更新商品失败: #{e.message}"
       }, status: 500
+    end
+  end
+
+  # 付费币兑换积分
+  def exchange_coins
+    ensure_logged_in
+    
+    amount = params[:amount].to_i
+    
+    if amount <= 0
+      render json: { status: "error", message: "兑换数量必须大于0" }, status: 400
+      return
+    end
+    
+    # 检查付费币余额
+    available = MyPluginModule::PaidCoinService.available_coins(current_user)
+    if available < amount
+      render json: { status: "error", message: "#{SiteSetting.jifen_paid_coin_name}不足" }, status: 400
+      return
+    end
+    
+    # 计算获得的积分
+    ratio = SiteSetting.jifen_paid_coin_to_points_ratio
+    points_to_add = amount * ratio
+    
+    begin
+      ActiveRecord::Base.transaction do
+        # 扣除付费币
+        MyPluginModule::PaidCoinService.deduct_coins!(
+          current_user,
+          amount,
+          reason: "兑换积分"
+        )
+        
+        # 增加积分
+        MyPluginModule::JifenService.add_points!(
+          current_user,
+          points_to_add,
+          reason: "付费币兑换"
+        )
+      end
+      
+      Rails.logger.info "💱 用户#{current_user.username} 兑换: #{amount}#{SiteSetting.jifen_paid_coin_name} -> #{points_to_add}积分"
+      
+      render json: {
+        status: "success",
+        message: "兑换成功！",
+        paid_coins_used: amount,
+        points_gained: points_to_add,
+        new_paid_coins: MyPluginModule::PaidCoinService.available_coins(current_user),
+        new_points: MyPluginModule::JifenService.available_total_points(current_user)
+      }
+    rescue => e
+      Rails.logger.error "[Shop] 兑换失败: #{e.message}"
+      render json: { status: "error", message: "兑换失败: #{e.message}" }, status: 500
     end
   end
 

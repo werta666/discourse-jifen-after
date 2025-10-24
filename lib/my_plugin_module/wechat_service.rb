@@ -211,13 +211,18 @@ module ::MyPluginModule
       SecureRandom.hex(16)
     end
 
-    # 生成签名
+    # 生成签名（参考wx_pay实现）
     def generate_sign(params)
-      # 1. 移除sign字段（如果有）并转换为字符串key
-      params_for_sign = params.reject { |k, v| k.to_s == "sign" || v.to_s.empty? }
+      # 1. 移除sign字段和空值（null或空字符串）
+      params_for_sign = params.reject do |k, v|
+        k.to_s == "sign" || 
+        v.nil? || 
+        (v.is_a?(String) && v.empty?) ||
+        v.is_a?(Array)  # 跳过数组类型
+      end
       
-      # 2. 转换所有key为字符串并排序
-      sorted_params = params_for_sign.transform_keys(&:to_s).sort.to_h
+      # 2. 转换所有key为字符串并按key排序
+      sorted_params = params_for_sign.transform_keys(&:to_s).sort
       
       # 3. 拼接成字符串 key1=value1&key2=value2
       sign_string = sorted_params.map { |k, v| "#{k}=#{v}" }.join("&")

@@ -69,6 +69,7 @@ MyPluginModule::Engine.routes.draw do
   get "/shop/products" => "shop#products"
   post "/shop/purchase" => "shop#purchase"
   get "/shop/orders" => "shop#orders"
+  post "/shop/exchange_coins" => "shop#exchange_coins"  # 付费币兑换积分
   
   # 商店管理路由
   post "/shop/add_product" => "shop#add_product"

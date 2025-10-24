@@ -28,4 +28,5 @@ zh_CN:
     jifen_duel_cooldown_minutes: "决斗发起冷却时间（分钟）"
     jifen_duel_expire_hours: "决斗申请过期时间（小时，超时自动拒绝）"
     jifen_paid_coin_name: "自定义付费币名称"
+    jifen_paid_coin_to_points_ratio: "付费币兑换积分比例（1付费币=多少积分）"
   
