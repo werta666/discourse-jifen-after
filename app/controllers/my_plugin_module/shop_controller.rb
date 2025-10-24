@@ -537,6 +537,7 @@ class MyPluginModule::ShopController < ApplicationController
             quantity: order.quantity,
             unit_price: order.unit_price,
             total_price: order.total_price,
+            currency_type: order.currency_type || "points",
             status: order.status,
             created_at: order.created_at,
             updated_at: order.updated_at,
@@ -551,7 +552,8 @@ class MyPluginModule::ShopController < ApplicationController
             total_count: total_count,
             current_page: page,
             per_page: per_page,
-            total_pages: (total_count.to_f / per_page).ceil
+            total_pages: (total_count.to_f / per_page).ceil,
+            paid_coin_name: SiteSetting.jifen_paid_coin_name
           }
         }
       else

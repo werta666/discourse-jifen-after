@@ -112,11 +112,25 @@
                   </div>
                   <div class="price-row">
                     <span class="price-label">单价:</span>
-                    <span class="price-value">{{order.unit_price}} 积分</span>
+                    <span class="price-value">
+                      {{order.unit_price}} 
+                      {{#if (eq order.currency_type "paid_coins")}}
+                        {{model.paid_coin_name}}
+                      {{else}}
+                        积分
+                      {{/if}}
+                    </span>
                   </div>
                   <div class="price-row total-price">
                     <span class="price-label">总价:</span>
-                    <span class="price-value">{{order.total_price}} 积分</span>
+                    <span class="price-value">
+                      {{order.total_price}} 
+                      {{#if (eq order.currency_type "paid_coins")}}
+                        {{model.paid_coin_name}}
+                      {{else}}
+                        积分
+                      {{/if}}
+                    </span>
                   </div>
                 </div>
                 
@@ -215,11 +229,25 @@
               </div>
               <div class="qd-summary-row">
                 <span class="qd-summary-label">单价:</span>
-                <span class="qd-summary-value">{{this.selectedOrder.unit_price}} 积分</span>
+                <span class="qd-summary-value">
+                  {{this.selectedOrder.unit_price}} 
+                  {{#if (eq this.selectedOrder.currency_type "paid_coins")}}
+                    {{model.paid_coin_name}}
+                  {{else}}
+                    积分
+                  {{/if}}
+                </span>
               </div>
               <div class="qd-summary-row">
                 <span class="qd-summary-label">总价:</span>
-                <span class="qd-summary-value qd-total-highlight">{{this.selectedOrder.total_price}} 积分</span>
+                <span class="qd-summary-value qd-total-highlight">
+                  {{this.selectedOrder.total_price}} 
+                  {{#if (eq this.selectedOrder.currency_type "paid_coins")}}
+                    {{model.paid_coin_name}}
+                  {{else}}
+                    积分
+                  {{/if}}
+                </span>
               </div>
             </div>
 

@@ -213,7 +213,7 @@
                 class="form-control" 
                 placeholder="请输入用户名" 
                 value={{this.debugUsername}}
-                {{on "input" (fn (mut this.debugUsername) value="target.value")}} />
+                {{on "input" this.updateDebugUsername}} />
             </div>
 
             <div class="form-group">
@@ -223,7 +223,7 @@
                 class="form-control" 
                 placeholder="100" 
                 value={{this.debugAmount}}
-                {{on "input" (fn (mut this.debugAmount) value="target.value")}} />
+                {{on "input" this.updateDebugAmount}} />
             </div>
 
             <div class="form-group">
@@ -233,7 +233,7 @@
                 class="form-control" 
                 placeholder="例如：补偿、活动奖励等" 
                 value={{this.debugReason}}
-                {{on "input" (fn (mut this.debugReason) value="target.value")}} />
+                {{on "input" this.updateDebugReason}} />
             </div>
           </div>
 

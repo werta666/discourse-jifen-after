@@ -141,6 +141,21 @@ export default class QdPayAdminController extends Controller {
   }
 
   @action
+  updateDebugUsername(event) {
+    this.debugUsername = event.target.value;
+  }
+
+  @action
+  updateDebugAmount(event) {
+    this.debugAmount = event.target.value;
+  }
+
+  @action
+  updateDebugReason(event) {
+    this.debugReason = event.target.value;
+  }
+
+  @action
   async adjustCoins(type) {
     if (!this.debugUsername) {
       alert("请输入用户名");

@@ -24,6 +24,7 @@ export default class QdShopAdminOrdersRoute extends DiscourseRoute {
             total_count: response.data.total_count || 0,
             per_page: response.data.per_page || 20
           },
+          paid_coin_name: response.data.paid_coin_name || "付费币",
           status: response.status,
           message: response.message || ""
         };
