@@ -109,4 +109,11 @@ MyPluginModule::Engine.routes.draw do
   delete "/dress/frames/:id" => "dress#delete_frame"      # 删除头像框（管理员）
   get "/dress/my-frames" => "dress#my_frames"             # 我的头像框
   get "/dress/my-decorations" => "dress#my_decorations"   # 我的装饰
+  
+  # 装饰勋章路由
+  get "/dress/decoration-badges" => "dress#decoration_badges"       # 获取所有装饰勋章
+  post "/dress/equip-badge" => "dress#equip_badge"                  # 装备勋章
+  post "/dress/purchase-badge" => "dress#purchase_badge"            # 购买勋章
+  post "/dress/upload-badge" => "dress#upload_badge"                # 上传勋章（管理员）
+  delete "/dress/badges/:id" => "dress#delete_badge"                # 删除勋章（管理员）
 end

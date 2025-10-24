@@ -1,3 +1,74 @@
+// ========================================
+// 头像框全局显示样式
+// ========================================
+.qd-avatar-frame-overlay {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  pointer-events: none;
+  z-index: 2;
+
+  .qd-frame-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+// 确保头像容器是相对定位
+.avatar,
+.user-card-avatar,
+.poster-avatar {
+  position: relative;
+}
+
+// ========================================
+// 装饰勋章全局显示样式
+// ========================================
+.qd-decoration-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  vertical-align: middle;
+
+  &.qd-badge-text {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &.qd-badge-image {
+    img {
+      height: 20px;
+      width: auto;
+      max-width: 40px;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+  }
+}
+
+// 用户卡片中的勋章样式
+.user-card .qd-decoration-badge {
+  margin-left: 8px;
+  
+  &.qd-badge-text {
+    padding: 3px 10px;
+    font-size: 13px;
+  }
+
+  &.qd-badge-image img {
+    height: 24px;
+    max-width: 48px;
+  }
+}
+
 // 个人装饰页面样式
 .qd-dress-page {
   max-width: 1200px;
@@ -444,62 +515,91 @@
       }
     }
 
-    // 装饰徽章部分
-    .decorations-section {
-      .decorations-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 16px;
+    // 装饰勋章部分
+    .decoration-badges-section {
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
 
-        .decoration-card {
-          background: #f9fafb;
-          border: 2px solid #e5e7eb;
-          border-radius: 12px;
-          padding: 20px;
-          display: flex;
-          gap: 16px;
+        h3 {
+          margin: 0;
+        }
+
+        .btn-admin-upload {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
           transition: all 0.3s ease;
-
-          &.unlocked {
-            border-color: #10b981;
-            background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
-
-            .decoration-icon {
-              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-              color: white;
-            }
-          }
-
-          &.locked {
-            opacity: 0.6;
-
-            .decoration-icon {
-              background: #e5e7eb;
-              color: #9ca3af;
-            }
-          }
+          display: flex;
+          align-items: center;
+          gap: 8px;
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
           }
 
-          .decoration-icon {
-            width: 50px;
-            height: 50px;
+          i {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+
+        .decoration-badge-card {
+          background: #f9fafb;
+          border: 2px solid #e5e7eb;
+          border-radius: 12px;
+          padding: 16px;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #f59e0b;
+          }
+
+          .badge-preview {
+            width: 100%;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            flex-shrink: 0;
+            margin-bottom: 12px;
 
-            i {
-              font-size: 24px;
+            .badge-text-preview {
+              padding: 6px 16px;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 600;
+            }
+
+            img {
+              max-height: 40px;
+              max-width: 100%;
+              object-fit: contain;
             }
           }
 
-          .decoration-info {
-            flex: 1;
+          .badge-info {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 12px;
 
             h4 {
               font-size: 16px;
@@ -508,37 +608,74 @@
               margin: 0 0 8px 0;
             }
 
-            .decoration-description {
+            .badge-price {
               font-size: 14px;
               color: #6b7280;
-              margin: 0 0 8px 0;
-            }
-
-            .status {
-              display: inline-block;
-              padding: 4px 10px;
-              border-radius: 6px;
-              font-size: 12px;
               font-weight: 600;
 
               i {
                 margin-right: 4px;
               }
+            }
+          }
 
-              &.unlocked-status {
-                background: #10b981;
+          .badge-actions {
+            width: 100%;
+
+            button {
+              width: 100%;
+              padding: 10px;
+              border: none;
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+
+              &.btn-equip {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                }
               }
 
-              &.locked-status {
-                background: #e5e7eb;
-                color: #6b7280;
+              &.btn-purchase {
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                color: white;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+                }
               }
             }
           }
         }
       }
     }
+  }
+}
+
+// 勋章实时预览样式
+.badge-text-live-preview {
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+
+  .preview-label {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 12px 0;
+    font-weight: 600;
   }
 }
 
@@ -551,7 +688,122 @@
   }
 }
 
-// 购买模态框样式
+// ========================================
+// 通用模态框样式（必须在页面级别定义）
+// ========================================
+.qd-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1050 !important;
+
+  .qd-modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    .qd-modal-header {
+      padding: 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+
+        i {
+          margin-right: 8px;
+        }
+      }
+
+      .qd-close-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f3f4f6;
+          color: #374151;
+        }
+      }
+    }
+
+    .qd-modal-body {
+      padding: 24px;
+    }
+
+    .qd-modal-actions {
+      display: flex;
+      gap: 12px;
+      padding: 24px;
+      border-top: 1px solid #e5e7eb;
+      justify-content: flex-end;
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &.qd-cancel-btn {
+          background: #f3f4f6;
+          color: #374151;
+
+          &:hover {
+            background: #e5e7eb;
+          }
+        }
+
+        &.qd-confirm-btn {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+
+          &.loading {
+            pointer-events: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 购买模态框特殊样式
 .qd-modal-backdrop .qd-modal-content {
   .purchase-summary {
     display: flex;

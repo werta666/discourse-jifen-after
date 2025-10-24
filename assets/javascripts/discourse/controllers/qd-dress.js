@@ -13,13 +13,24 @@ export default class QdDressController extends Controller {
   @tracked showPurchaseModal = false;
   @tracked selectedItem = null;
   
-  // 管理员上传相关
+  // 管理员上传相关（头像框）
   @tracked showUploadModal = false;
   @tracked uploadFileName = "";
   @tracked uploadFile = null;
   @tracked uploadPrice = 0;
   @tracked uploadCurrency = "points";
   @tracked isUploading = false;
+
+  // 管理员上传相关（勋章）
+  @tracked showBadgeUploadModal = false;
+  @tracked badgeUploadType = "text"; // text or image
+  @tracked badgeUploadName = "";
+  @tracked badgeUploadText = "";
+  @tracked badgeUploadStyle = "";
+  @tracked badgeUploadFile = null;
+  @tracked badgeUploadPrice = 0;
+  @tracked badgeUploadCurrency = "points";
+  @tracked isBadgeUploading = false;
 
   get currentUser() {
     return this.model?.user;
@@ -45,6 +56,10 @@ export default class QdDressController extends Controller {
     return this.model?.availableDecorations || [];
   }
 
+  get ownedBadges() {
+    return this.model?.ownedBadges || [];
+  }
+
   get currentAvatarUrl() {
     return this.currentUser?.avatar_template?.replace("{size}", "150");
   }
@@ -64,6 +79,10 @@ export default class QdDressController extends Controller {
 
   isFrameEquipped(frameId) {
     return this.selectedFrameId === frameId;
+  }
+
+  isBadgeOwned(badgeId) {
+    return this.ownedBadges.includes(badgeId);
   }
 
   @action
@@ -169,6 +188,21 @@ export default class QdDressController extends Controller {
   }
 
   @action
+  updateFileName(event) {
+    this.uploadFileName = event.target.value;
+  }
+
+  @action
+  updatePrice(event) {
+    this.uploadPrice = parseInt(event.target.value) || 0;
+  }
+
+  @action
+  updateCurrency(event) {
+    this.uploadCurrency = event.target.value;
+  }
+
+  @action
   handleFileChange(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -224,5 +258,150 @@ export default class QdDressController extends Controller {
   @action
   stopPropagation(event) {
     event.stopPropagation();
+  }
+
+  // ========================================
+  // 勋章相关 Actions
+  // ========================================
+  @action
+  openBadgeUploadModal() {
+    this.showBadgeUploadModal = true;
+    this.badgeUploadType = "text";
+    this.badgeUploadName = "";
+    this.badgeUploadText = "";
+    this.badgeUploadStyle = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;";
+    this.badgeUploadFile = null;
+    this.badgeUploadPrice = 0;
+    this.badgeUploadCurrency = "points";
+  }
+
+  @action
+  closeBadgeUploadModal() {
+    this.showBadgeUploadModal = false;
+  }
+
+  @action
+  updateBadgeType(event) {
+    this.badgeUploadType = event.target.value;
+  }
+
+  @action
+  updateBadgeName(event) {
+    this.badgeUploadName = event.target.value;
+  }
+
+  @action
+  updateBadgeText(event) {
+    this.badgeUploadText = event.target.value;
+  }
+
+  @action
+  updateBadgeStyle(event) {
+    this.badgeUploadStyle = event.target.value;
+  }
+
+  @action
+  updateBadgePrice(event) {
+    this.badgeUploadPrice = parseInt(event.target.value) || 0;
+  }
+
+  @action
+  updateBadgeCurrency(event) {
+    this.badgeUploadCurrency = event.target.value;
+  }
+
+  @action
+  handleBadgeFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // 验证文件类型
+    if (!file.type.includes("png") && !file.type.includes("jpg") && !file.type.includes("jpeg")) {
+      this.dialog.alert("❌ 只支持 PNG/JPG 格式！");
+      event.target.value = "";
+      return;
+    }
+
+    this.badgeUploadFile = file;
+  }
+
+  @action
+  equipBadge(badgeId) {
+    if (!this.isBadgeOwned(badgeId)) {
+      this.dialog.alert("你还没有拥有这个勋章！");
+      return;
+    }
+
+    this.isLoading = true;
+    ajax("/qd/dress/equip-badge", {
+      type: "POST",
+      data: { badge_id: badgeId }
+    })
+      .then(() => {
+        this.dialog.alert("✅ 勋章已装备！");
+        window.location.reload();
+      })
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+
+  @action
+  purchaseBadge(badge) {
+    this.selectedItem = badge;
+    this.showPurchaseModal = true;
+  }
+
+  @action
+  uploadBadge() {
+    if (!this.badgeUploadName) {
+      this.dialog.alert("❌ 请输入勋章名称！");
+      return;
+    }
+
+    if (this.badgeUploadType === "text") {
+      if (!this.badgeUploadText) {
+        this.dialog.alert("❌ 请输入文字内容！");
+        return;
+      }
+    } else {
+      if (!this.badgeUploadFile) {
+        this.dialog.alert("❌ 请选择文件！");
+        return;
+      }
+    }
+
+    this.isBadgeUploading = true;
+
+    const formData = new FormData();
+    formData.append("name", this.badgeUploadName);
+    formData.append("type", this.badgeUploadType);
+    formData.append("price", this.badgeUploadPrice);
+    formData.append("currency", this.badgeUploadCurrency);
+
+    if (this.badgeUploadType === "text") {
+      formData.append("text", this.badgeUploadText);
+      formData.append("style", this.badgeUploadStyle);
+    } else {
+      formData.append("file", this.badgeUploadFile);
+    }
+
+    ajax("/qd/dress/upload-badge", {
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false
+    })
+      .then(result => {
+        this.dialog.alert("✅ 勋章上传成功！");
+        this.closeBadgeUploadModal();
+        // 刷新页面数据
+        window.location.reload();
+      })
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.isBadgeUploading = false;
+      });
   }
 }

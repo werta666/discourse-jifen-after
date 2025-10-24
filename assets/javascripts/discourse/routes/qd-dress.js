@@ -3,14 +3,15 @@ import { ajax } from "discourse/lib/ajax";
 
 export default DiscourseRoute.extend({
   model() {
-    // 并行获取用户数据和头像框数据
+    // 并行获取用户数据、头像框数据和勋章数据
     const userPromise = this.store.find("user", this.currentUser.username);
     const framesPromise = ajax("/qd/dress/frames");
+    const badgesPromise = ajax("/qd/dress/decoration-badges");
 
-    return Promise.all([userPromise, framesPromise]).then(([user, framesData]) => {
+    return Promise.all([userPromise, framesPromise, badgesPromise]).then(([user, framesData, badgesData]) => {
       return {
         user: user,
-        // 获取用户的勋章
+        // 获取用户的Discourse勋章
         badges: user.get("badges") || [],
         // 获取用户的头像框（从自定义字段）
         avatarFrameId: user.get("custom_fields.avatar_frame_id"),
@@ -20,26 +21,21 @@ export default DiscourseRoute.extend({
         ownedFrames: framesData.owned_frames || [],
         // 已装备的头像框
         equippedFrameId: framesData.equipped_frame_id,
-        // 装饰品列表
-        availableDecorations: this.getAvailableDecorations()
+        // 装饰勋章列表
+        availableDecorationBadges: badgesData.badges || [],
+        // 用户拥有的勋章
+        ownedBadges: badgesData.owned_badges || [],
+        // 已装备的勋章
+        equippedBadgeId: badgesData.equipped_badge_id
       };
     });
   },
 
   setupController(controller, model) {
     this._super(controller, model);
-    // 初始化控制器的 ownedFrames
+    // 初始化控制器数据
     controller.set("ownedFrames", model.ownedFrames || []);
     controller.set("selectedFrameId", model.equippedFrameId);
-  },
-
-  getAvailableDecorations() {
-    // 可用的装饰品列表（类似勋章的展示徽章）
-    return [
-      { id: 1, name: "新星", icon: "fa-star", description: "论坛新人", unlocked: true },
-      { id: 2, name: "活跃者", icon: "fa-fire", description: "持续活跃", unlocked: false, requirement: "连续登录30天" },
-      { id: 3, name: "贡献者", icon: "fa-trophy", description: "优质内容贡献者", unlocked: false, requirement: "获得100个赞" }
-    ];
   },
 
   actions: {
