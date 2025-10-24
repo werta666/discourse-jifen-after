@@ -2608,7 +2608,7 @@ export default class MyController extends Controller {
 ## 🎯 模态框居中问题解决方案
 
 ### 问题描述
-在 `/qd/shop` 和 `/qd/dress` 页面中，模态框（Modal）显示在左下角而不是屏幕居中，背景遮罩层也无法正常显示。
+在 `/qd/shop` 和` 页面中，模态框（Modal）显示在左下角而不是屏幕居中，背景遮罩层也无法正常显示。
 
 ### 根本原因
 Discourse 的默认 CSS 样式覆盖了插件的模态框样式，导致 `display: flex`、`align-items: center`、`justify-content: center` 等居中属性失效。
