@@ -211,6 +211,10 @@
       border-left: 4px solid #c62828;
     }
     
+    &.refunded {
+      border-left: 4px solid #ff9800;
+    }
+    
     .stats-label {
       display: block;
       font-size: 12px;
@@ -287,63 +291,38 @@
       }
     }
     
-    .order-status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
       
-      .status-badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 500;
-        
-        &.status-completed {
-          background: var(--success-low, #d4edda);
-          color: var(--success, #28a745);
-        }
-        
-        &.status-pending {
-          background: #e3f2fd;
-          color: #1976d2;
-          border: 1px solid #1976d2;
-        }
-        
-        &.status-cancelled {
-          background: #ffebee;
-          color: #c62828;
-          border: 1px solid #c62828;
-        }
-        
-        &.status-refunded {
-          background: #fff3e0;
-          color: #e65100;
-          border: 1px solid #ffb74d;
-        }
-        
-        &.status-unknown {
-          background: var(--primary-low, #e9ecef);
-          color: var(--primary-medium, #666666);
-        }
+      &.status-completed {
+        background: var(--success-low, #d4edda);
+        color: var(--success, #28a745);
       }
       
-      .update-status-btn {
-        background: var(--tertiary, #0088cc);
-        color: var(--secondary, #ffffff);
-        border: none;
-        border-radius: 6px;
-        padding: 6px 12px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          background: var(--tertiary-high, #0099dd);
-        }
-        
-        i {
-          margin-right: 4px;
-        }
+      &.status-pending {
+        background: #e3f2fd;
+        color: #1976d2;
+        border: 1px solid #1976d2;
+      }
+      
+      &.status-cancelled {
+        background: #ffebee;
+        color: #c62828;
+        border: 1px solid #c62828;
+      }
+      
+      &.status-refunded {
+        background: #fff3e0;
+        color: #e65100;
+        border: 1px solid #ffb74d;
+      }
+      
+      &.status-unknown {
+        background: var(--primary-low, #e9ecef);
+        color: var(--primary-medium, #666666);
       }
     }
   }
@@ -466,40 +445,68 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 10px;
+    padding-top: 15px;
+    margin-top: 15px;
     border-top: 1px solid var(--primary-low, #e9ecef);
-    font-size: 13px;
-    color: var(--primary-medium, #666666);
+    font-size: 12px;
     
-    .order-time {
+    .order-time-info {
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 5px;
+      color: var(--primary-medium, #666666);
       
-      .time-item {
+      .order-time {
         display: flex;
-        align-items: center;
-        gap: 6px;
+        gap: 8px;
         
-        i {
-          color: var(--primary-medium, #666666);
+        .time-label {
+          font-weight: 500;
         }
       }
     }
     
-    .order-notes {
+    .order-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-      max-width: 300px;
+      gap: 8px;
       
-      i {
-        color: var(--highlight-medium, #ffc107);
+      .btn {
+        white-space: nowrap;
+        
+        i {
+          margin-right: 4px;
+        }
       }
       
-      span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      .update-status-btn {
+        background: var(--tertiary, #0088cc);
+        color: var(--secondary, #ffffff);
+        border: none;
+        
+        &:hover {
+          background: var(--tertiary-high, #0099dd);
+        }
+      }
+      
+      .delete-order-btn {
+        background: var(--danger, #d32f2f);
+        color: var(--secondary, #ffffff);
+        border: none;
+        
+        &:hover {
+          background: var(--danger-hover, #c62828);
+        }
+      }
+      
+      .refund-order-btn {
+        background: #ff9800;
+        color: white;
+        border: none;
+        
+        &:hover {
+          background: #f57c00;
+        }
       }
     }
   }
@@ -822,13 +829,24 @@
     
     .order-footer {
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
       align-items: flex-start;
       
-      .order-time {
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
+      .order-time-info {
+        width: 100%;
+      }
+      
+      .order-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 6px;
+        
+        .btn {
+          flex: 1;
+          min-width: 80px;
+          font-size: 11px;
+          padding: 5px 8px;
+        }
       }
     }
   }

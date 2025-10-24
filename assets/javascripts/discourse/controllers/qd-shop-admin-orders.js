@@ -18,14 +18,15 @@ export default class QdShopAdminOrdersController extends Controller {
 
   // 获取订单统计数据
   get orderStats() {
-    if (!this.model?.orders) return { total: 0, pending: 0, completed: 0, cancelled: 0 };
+    if (!this.model?.orders) return { total: 0, pending: 0, completed: 0, cancelled: 0, refunded: 0 };
     
     const orders = this.model.orders;
     return {
       total: orders.length,
       pending: orders.filter(order => order.status === "pending").length,
       completed: orders.filter(order => order.status === "completed").length,
-      cancelled: orders.filter(order => order.status === "cancelled").length
+      cancelled: orders.filter(order => order.status === "cancelled").length,
+      refunded: orders.filter(order => order.status === "refunded").length
     };
   }
 

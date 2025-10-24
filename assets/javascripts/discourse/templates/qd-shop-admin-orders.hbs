@@ -39,6 +39,10 @@
       <span class="stats-label">已取消</span>
       <span class="stats-value">{{this.orderStats.cancelled}}</span>
     </div>
+    <div class="stats-item refunded {{if (eq this.currentFilter 'refunded') 'active'}}" {{on "click" (fn this.setFilter "refunded")}}>
+      <span class="stats-label">已退款</span>
+      <span class="stats-value">{{this.orderStats.refunded}}</span>
+    </div>
   </div>
 
   {{! 订单列表 }}
@@ -52,36 +56,9 @@
                 <span class="order-label">订单号:</span>
                 <span class="order-number">#{{order.id}}</span>
               </div>
-              <div class="order-status">
-                <span class="status-badge {{this.getStatusClass order.status}}">
-                  {{this.getStatusText order.status}}
-                </span>
-                <div class="order-actions">
-                  {{#unless (eq order.status "refunded")}}
-                    <button 
-                      class="btn btn-small btn-warning refund-order-btn" 
-                      {{on "click" (action "refundOrder" order)}}
-                    >
-                      <i class="fa fa-undo"></i>
-                      退款
-                    </button>
-                  {{/unless}}
-                  <button 
-                    class="btn btn-small update-status-btn" 
-                    {{on "click" (action "showUpdateStatusModal" order)}}
-                  >
-                    <i class="fa fa-edit"></i>
-                    更新状态
-                  </button>
-                  <button 
-                    class="btn btn-small btn-danger delete-order-btn" 
-                    {{on "click" (action "deleteOrder" order)}}
-                  >
-                    <i class="fa fa-trash"></i>
-                    删除
-                  </button>
-                </div>
-              </div>
+              <span class="status-badge {{this.getStatusClass order.status}}">
+                {{this.getStatusText order.status}}
+              </span>
             </div>
             
             <div class="order-body">
@@ -153,16 +130,47 @@
             </div>
             
             <div class="order-footer">
-              <div class="order-time">
-                <span class="time-label">创建时间:</span>
-                <span class="time-value">{{this.formatDate order.created_at}}</span>
-              </div>
-              {{#if order.updated_at}}
+              <div class="order-time-info">
                 <div class="order-time">
-                  <span class="time-label">更新时间:</span>
-                  <span class="time-value">{{this.formatDate order.updated_at}}</span>
+                  <span class="time-label">创建时间:</span>
+                  <span class="time-value">{{this.formatDate order.created_at}}</span>
                 </div>
-              {{/if}}
+                {{#if order.updated_at}}
+                  <div class="order-time">
+                    <span class="time-label">更新时间:</span>
+                    <span class="time-value">{{this.formatDate order.updated_at}}</span>
+                  </div>
+                {{/if}}
+              </div>
+              
+              <div class="order-actions">
+                {{#unless (eq order.status "refunded")}}
+                  <button 
+                    type="button"
+                    class="btn btn-small btn-warning refund-order-btn" 
+                    {{on "click" (action "refundOrder" order)}}
+                  >
+                    <i class="fa fa-undo"></i>
+                    退款
+                  </button>
+                {{/unless}}
+                <button 
+                  type="button"
+                  class="btn btn-small update-status-btn" 
+                  {{on "click" (action "showUpdateStatusModal" order)}}
+                >
+                  <i class="fa fa-edit"></i>
+                  更新状态
+                </button>
+                <button 
+                  type="button"
+                  class="btn btn-small btn-danger delete-order-btn" 
+                  {{on "click" (action "deleteOrder" order)}}
+                >
+                  <i class="fa fa-trash"></i>
+                  删除
+                </button>
+              </div>
             </div>
           </div>
         {{/each}}
