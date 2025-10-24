@@ -12,17 +12,76 @@ module ::MyPluginModule
       render "default/empty"
     end
 
-    # 获取用户付费币余额详情
-    def balance
-      summary = MyPluginModule::PaidCoinService.summary_for(current_user)
-      
+    # 清理未付款订单
+    def clear_unpaid_orders
+      ensure_admin!
+
+      deleted_count = MyPluginModule::PaymentOrder.where(status: ["pending", "cancelled"]).delete_all
+
       render_json_dump({
         success: true,
-        balance: summary
+        deleted_count: deleted_count
       })
     rescue => e
-      Rails.logger.error "[付费币] 获取余额失败: #{e.message}"
-      render_json_error("获取余额失败: #{e.message}", status: 500)
+      Rails.logger.error "[支付] 清理订单失败: #{e.message}\n#{e.backtrace.join("\n")}"
+      render_json_error("清理订单失败: #{e.message}", status: 500)
+    end
+
+    # 管理员调整付费币
+    def adjust_coins
+      ensure_admin!
+
+      username = params[:username]
+      amount = params[:amount].to_i
+      reason = params[:reason] || "管理员调整"
+
+      unless username.present?
+        render_json_error("用户名不能为空", status: 400)
+        return
+      end
+
+      if amount == 0
+        render_json_error("数量不能为0", status: 400)
+        return
+      end
+
+      user = User.find_by(username: username)
+      unless user
+        render_json_error("用户不存在", status: 404)
+        return
+      end
+
+      begin
+        if amount > 0
+          # 增加付费币
+          MyPluginModule::PaidCoinService.add_coins!(
+            user,
+            amount,
+            reason: reason
+          )
+        else
+          # 减少付费币
+          MyPluginModule::PaidCoinService.deduct_coins!(
+            user,
+            amount.abs,
+            reason: reason
+          )
+        end
+
+        balance = MyPluginModule::PaidCoinService.available_coins(user)
+
+        Rails.logger.info "[支付] 管理员 #{current_user.username} 调整用户 #{username} 付费币: #{amount}，原因: #{reason}"
+
+        render_json_dump({
+          success: true,
+          username: user.username,
+          amount: amount,
+          balance: balance
+        })
+      rescue => e
+        Rails.logger.error "[支付] 调整付费币失败: #{e.message}\n#{e.backtrace.join("\n")}"
+        render_json_error("调整付费币失败: #{e.message}", status: 500)
+      end
     end
 
     # 获取充值套餐配置

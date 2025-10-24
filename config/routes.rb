@@ -96,4 +96,5 @@ MyPluginModule::Engine.routes.draw do
   get "/pay/admin" => "pay#admin"
   get "/pay/admin/stats" => "pay#admin_stats"
   delete "/pay/admin/clear_unpaid" => "pay#clear_unpaid_orders"
+  post "/pay/admin/adjust_coins" => "pay#adjust_coins"
 end

@@ -43,10 +43,6 @@ jifen:
   jifen_alipay_enabled:
     default: true
     client: true
-  
-  jifen_wechat_enabled:
-    default: false
-    client: true
 
   jifen_alipay_app_id:
     default: ''
@@ -61,6 +57,10 @@ jifen:
     default: ''
     client: false
     type: text
+
+  jifen_wechat_enabled:
+    default: false
+    client: true
   
   jifen_wechat_app_id:
     default: ''
