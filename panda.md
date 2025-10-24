@@ -2,6 +2,8 @@
 
 本文档详细说明了如何成功实现一个在 Discourse 中可访问的 `/panda` 路由，经过多次调试和优化后的最终解决方案。
 
+
+
 ## 🎯 最终成功的实现方案
 
 经过多次尝试和调试，最终成功的关键在于使用 **Rails Engine 架构** + **Ember v6.6.0 现代化前端** + **Glimmer Components 渲染**。
@@ -2598,5 +2600,52 @@ export default class MyController extends Controller {
 2. **只需更新代码**：将弃用的 API 替换为新标准
 3. **向后兼容**：升级后的代码在 Discourse v3.6.0+ 完美运行
 4. **准备就绪**：为 Ember v7.0.0 做好准备，无需再次修改
+
+---
+
+---
+
+## 🎯 模态框居中问题解决方案
+
+### 问题描述
+在 `/qd/shop` 和 `/qd/dress` 页面中，模态框（Modal）显示在左下角而不是屏幕居中，背景遮罩层也无法正常显示。
+
+### 根本原因
+Discourse 的默认 CSS 样式覆盖了插件的模态框样式，导致 `display: flex`、`align-items: center`、`justify-content: center` 等居中属性失效。
+
+### 解决方案：使用 `!important` 强制样式优先级
+
+#### 关键 CSS 修复（在 `qd-dress.scss` 和 `qd-shop.scss` 中）
+
+```scss
+.qd-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1050 !important;
+}
+```
+
+#### 成功要点
+1. **所有定位和布局属性都加 `!important`**：确保优先级高于 Discourse 默认样式
+2. **z-index 设置为 1050**：确保模态框在最顶层
+3. **使用 Flexbox 居中**：`display: flex` + `align-items: center` + `justify-content: center`
+4. **背景遮罩半透明**：`background: rgba(0, 0, 0, 0.5)`
+
+#### 为什么之前不工作
+- ❌ 没有 `!important`：Discourse 的全局样式优先级更高
+- ❌ z-index 太低：被其他元素覆盖
+- ❌ position 或 display 被覆盖：导致 Flexbox 布局失效
+
+#### 验证方法
+1. 打开浏览器开发者工具
+2. 检查 `.qd-modal-backdrop` 元素
+3. 确认所有关键属性都生效且没有被划掉（strikethrough）
 
 ---

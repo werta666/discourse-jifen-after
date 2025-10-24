@@ -2036,15 +2036,15 @@
 }
 
 // ========================================
-// 兑换积分模态框 - 特殊样式
+// 兑换积分模态框 - 精致优雅样式
 // ========================================
 .qd-modal-backdrop .qd-modal-content.qd-exchange-modal {
-  max-width: 500px;
+  max-width: 420px;
     
     // 绿色渐变头部
     .qd-modal-header.qd-exchange-header {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      padding: 20px 24px;
+      padding: 16px 20px;
       margin: 0;
       border-bottom: none;
       border-radius: 12px 12px 0 0;
@@ -2052,15 +2052,24 @@
       h3 {
         color: white;
         margin: 0;
+        font-size: 18px;
         
         i {
-          margin-right: 10px;
+          margin-right: 8px;
+          font-size: 16px;
         }
       }
       
       .qd-close-btn {
         background: rgba(255, 255, 255, 0.2);
         color: white;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
         
         &:hover {
           background: rgba(255, 255, 255, 0.3);
@@ -2070,54 +2079,58 @@
 
     // 模态框主体样式
     .qd-modal-body {
-      // 兑换信息框
+      padding: 20px;
+      
+      // 兑换信息框 - 精简设计
       .exchange-info-box {
         background: #f0fdf4;
-        border: 2px solid #86efac;
+        border: 1px solid #d1fae5;
         border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 20px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
 
         .info-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 0;
+          padding: 6px 0;
+          font-size: 14px;
 
           &:not(:last-child) {
             border-bottom: 1px solid #d1fae5;
           }
 
           .label {
-            font-weight: 600;
+            font-weight: 500;
             color: #065f46;
           }
 
           .value {
-            font-weight: 700;
+            font-weight: 600;
             color: #047857;
           }
         }
       }
 
-      // 表单组
+      // 表单组 - 紧凑设计
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
 
         label {
           display: block;
           font-weight: 600;
           color: #374151;
           margin-bottom: 8px;
+          font-size: 13px;
         }
 
         .form-control {
           width: 100%;
-          padding: 12px;
-          border: 2px solid #d1d5db;
+          padding: 10px 12px;
+          border: 2px solid #e5e7eb;
           border-radius: 8px;
-          font-size: 16px;
-          transition: all 0.3s;
+          font-size: 14px;
+          transition: all 0.2s;
           box-sizing: border-box;
 
           &:focus {
@@ -2128,25 +2141,40 @@
         }
       }
 
-      // 兑换结果框
+      // 兑换结果框 - 精致设计
       .exchange-result-box {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 8px;
-        padding: 16px;
+        padding: 14px;
         text-align: center;
 
         .result-text {
           color: white;
-          font-size: 16px;
+          font-size: 14px;
           margin: 0;
 
           .highlight-points {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             display: inline-block;
-            padding: 0 8px;
+            padding: 0 6px;
             animation: pulse 1.5s ease-in-out infinite;
           }
+        }
+      }
+    }
+    
+    // 按钮区域 - 紧凑优雅
+    .qd-modal-actions {
+      padding: 16px 20px;
+      border-top: 1px solid #f3f4f6;
+      
+      button {
+        padding: 10px 18px;
+        font-size: 14px;
+        
+        i {
+          font-size: 13px;
         }
       }
     }

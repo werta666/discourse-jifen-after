@@ -122,13 +122,20 @@ module ::MyPluginModule
       end
 
       begin
-        # 创建目标目录
+        # 确保创建目标目录
         upload_dir = File.join(Rails.root, "public", "uploads", "default", "jifen")
-        FileUtils.mkdir_p(upload_dir) unless Dir.exist?(upload_dir)
+        FileUtils.mkdir_p(upload_dir)
+        
+        Rails.logger.info "[装饰系统] 上传目录: #{upload_dir}"
 
         # 保存文件
         file_path = File.join(upload_dir, "#{filename}.png")
-        File.open(file_path, "wb") { |f| f.write(file.read) }
+        File.open(file_path, "wb") do |f|
+          file.rewind
+          f.write(file.read)
+        end
+        
+        Rails.logger.info "[装饰系统] 文件已保存: #{file_path}"
 
         # 生成URL
         image_url = "/uploads/default/jifen/#{filename}.png"
@@ -335,14 +342,21 @@ module ::MyPluginModule
             return render json: { error: "只支持 PNG/JPG 格式" }, status: 400
           end
 
-          # 创建目标目录
+          # 确保创建目标目录
           upload_dir = File.join(Rails.root, "public", "uploads", "default", "jifen2")
-          FileUtils.mkdir_p(upload_dir) unless Dir.exist?(upload_dir)
+          FileUtils.mkdir_p(upload_dir)
+          
+          Rails.logger.info "[装饰系统] 勋章上传目录: #{upload_dir}"
 
           # 保存文件
           filename = "badge_#{badge_id}_#{Time.now.to_i}.#{file.original_filename.split('.').last}"
           file_path = File.join(upload_dir, filename)
-          File.open(file_path, "wb") { |f| f.write(file.read) }
+          File.open(file_path, "wb") do |f|
+            file.rewind
+            f.write(file.read)
+          end
+          
+          Rails.logger.info "[装饰系统] 勋章文件已保存: #{file_path}"
 
           # 生成URL
           image_url = "/uploads/default/jifen2/#{filename}"
