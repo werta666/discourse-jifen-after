@@ -26,6 +26,7 @@ register_asset "stylesheets/qd-shop-orders.scss"
 register_asset "stylesheets/qd-shop-admin-orders.scss"
 register_asset "stylesheets/qd-pay-modern.scss"
 register_asset "stylesheets/qd-pay-admin.scss"
+register_asset "stylesheets/qd-test.scss"
 
 # 插件命名空间（沿用现有 MyPluginModule 以避免大规模重命名）
 module ::MyPluginModule
@@ -37,6 +38,9 @@ require_relative "lib/my_plugin_module/engine"
 
 # 在 Rails 初始化完成后挂载 Engine，路径为 /qd
 after_initialize do
+  # 加载用户序列化器扩展（让前端可以访问头像框和勋章数据）
+  require_relative "app/serializers/user_serializer_extension"
+  
   Discourse::Application.routes.append do
     mount ::MyPluginModule::Engine, at: "/qd"
   end

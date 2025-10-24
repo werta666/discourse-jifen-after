@@ -1,0 +1,192 @@
+<div class="qd-test-page">
+  <div class="qd-test-header">
+    <h1>🎨 装饰系统测试</h1>
+    <p>测试头像框和装饰勋章在论坛中的显示效果</p>
+  </div>
+
+  <div class="qd-test-content">
+    {{! 头像框部分 }}
+    <div class="qd-test-section">
+      <div class="section-header">
+        <h2>🖼️ 头像框测试</h2>
+        {{#if this.isAdmin}}
+          <div class="upload-control">
+            <label class="btn btn-primary">
+              <i class="fa fa-upload"></i> 上传头像框
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/jpg"
+                {{on "change" this.uploadFrame}}
+                style="display:none"
+              />
+            </label>
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="frames-grid">
+        {{#each this.availableFrames as |frame|}}
+          <div class="frame-card">
+            <div class="frame-preview">
+              <div class="avatar-wrapper">
+                <img
+                  src={{this.currentUser.avatar_template}}
+                  alt="Avatar"
+                  class="test-avatar"
+                />
+                <div class="frame-overlay">
+                  <img src={{frame.image}} alt={{frame.name}} />
+                </div>
+              </div>
+            </div>
+            <div class="frame-info">
+              <h3>{{frame.name}}</h3>
+              <p class="upload-info">上传者：{{frame.uploaded_by}}</p>
+              {{#if (this.isFrameEquipped frame.id)}}
+                <button class="btn btn-success" disabled>
+                  <i class="fa fa-check"></i> 已装备
+                </button>
+              {{else}}
+                <button
+                  class="btn btn-primary"
+                  {{on "click" (fn this.equipFrame frame.id)}}
+                >
+                  <i class="fa fa-hand-pointer"></i> 装备
+                </button>
+              {{/if}}
+            </div>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>暂无头像框，请管理员上传</p>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{! 装饰勋章部分 }}
+    <div class="qd-test-section">
+      <div class="section-header">
+        <h2>🏅 装饰勋章测试</h2>
+        {{#if this.isAdmin}}
+          <div class="upload-control">
+            <div class="badge-type-selector">
+              <button
+                class="btn {{if (eq this.badgeUploadType 'image') 'btn-primary' 'btn-default'}}"
+                {{on "click" (fn this.switchBadgeType "image")}}
+              >
+                图片勋章
+              </button>
+              <button
+                class="btn {{if (eq this.badgeUploadType 'text') 'btn-primary' 'btn-default'}}"
+                {{on "click" (fn this.switchBadgeType "text")}}
+              >
+                文字勋章
+              </button>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+
+      {{#if this.isAdmin}}
+        <div class="badge-upload-form">
+          <input
+            type="text"
+            placeholder="勋章名称"
+            value={{this.badgeUploadName}}
+            {{on "input" (fn (mut this.badgeUploadName) value="target.value")}}
+            class="form-control"
+          />
+
+          {{#if (eq this.badgeUploadType "text")}}
+            <input
+              type="text"
+              placeholder="显示文字"
+              value={{this.badgeUploadText}}
+              {{on "input" (fn (mut this.badgeUploadText) value="target.value")}}
+              class="form-control"
+            />
+            <input
+              type="text"
+              placeholder="CSS 样式（可选）"
+              value={{this.badgeUploadStyle}}
+              {{on "input" (fn (mut this.badgeUploadStyle) value="target.value")}}
+              class="form-control"
+            />
+            <button
+              class="btn btn-primary"
+              {{on "click" this.uploadTextBadge}}
+              disabled={{this.uploadingBadge}}
+            >
+              <i class="fa fa-upload"></i>
+              {{if this.uploadingBadge "上传中..." "上传文字勋章"}}
+            </button>
+          {{else}}
+            <label class="btn btn-primary">
+              <i class="fa fa-upload"></i> 上传图片勋章
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/jpg"
+                {{on "change" this.uploadBadge}}
+                style="display:none"
+              />
+            </label>
+          {{/if}}
+        </div>
+      {{/if}}
+
+      <div class="badges-grid">
+        {{#each this.availableBadges as |badge|}}
+          <div class="badge-card">
+            <div class="badge-preview">
+              {{#if (eq badge.type "text")}}
+                <span class="badge-text-display" style={{badge.style}}>
+                  {{badge.text}}
+                </span>
+              {{else}}
+                <img src={{badge.image}} alt={{badge.name}} />
+              {{/if}}
+            </div>
+            <div class="badge-info">
+              <h3>{{badge.name}}</h3>
+              <p class="badge-type">类型：{{if (eq badge.type "text") "文字" "图片"}}</p>
+              <p class="upload-info">上传者：{{badge.uploaded_by}}</p>
+              {{#if (this.isBadgeEquipped badge.id)}}
+                <button class="btn btn-success" disabled>
+                  <i class="fa fa-check"></i> 已装备
+                </button>
+              {{else}}
+                <button
+                  class="btn btn-primary"
+                  {{on "click" (fn this.equipBadge badge.id)}}
+                >
+                  <i class="fa fa-hand-pointer"></i> 装备
+                </button>
+              {{/if}}
+            </div>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>暂无勋章，请管理员上传</p>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    {{! 测试说明 }}
+    <div class="qd-test-section">
+      <div class="test-instructions">
+        <h2>📖 测试说明</h2>
+        <ul>
+          <li>✅ 装备头像框或勋章后，去论坛发一个帖子或回复</li>
+          <li>✅ 查看你的头像是否显示了头像框</li>
+          <li>✅ 查看你的用户名旁边是否显示了勋章</li>
+          <li>✅ 头像框和勋章应该在所有帖子、回复中显示</li>
+          <li>⚠️ 如果未显示，请刷新页面或清除浏览器缓存</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -800,28 +800,11 @@
     }
   }
 
-  // 购买模态框样式修复
-  .qd-modal-backdrop, .qd-purchase-modal {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    background: rgba(0, 0, 0, 0.5) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 1050 !important;
-
+  // 购买模态框样式修复（保留作为备用）
+  .qd-purchase-modal {
     .qd-modal-content {
-      background: white;
-      border-radius: 12px;
       max-width: 480px;
       width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      position: relative;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
       .qd-modal-header {
         padding: 24px 24px 0 24px;
@@ -2036,10 +2019,39 @@
 }
 
 // ========================================
+// 强制所有模态框居中（最高优先级）
+// ========================================
+.qd-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1050 !important;
+  padding: 20px !important;
+  
+  // 确保所有模态框内容都居中且不受其他样式影响
+  .qd-modal-content {
+    position: relative !important;
+    margin: 0 auto !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+// ========================================
 // 兑换积分模态框 - 精致优雅样式
 // ========================================
 .qd-modal-backdrop .qd-modal-content.qd-exchange-modal {
   max-width: 420px;
+  margin: 0 auto !important;
     
     // 绿色渐变头部
     .qd-modal-header.qd-exchange-header {

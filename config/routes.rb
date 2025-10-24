@@ -99,5 +99,14 @@ MyPluginModule::Engine.routes.draw do
   get "/pay/admin/stats" => "pay#admin_stats"
   delete "/pay/admin/clear_unpaid" => "pay#clear_unpaid_orders"
   post "/pay/admin/adjust_coins" => "pay#adjust_coins"
+  
+  # 装饰系统测试
+  get "/test" => "test#index"
+  get "/test/frames" => "test#frames"
+  get "/test/badges" => "test#badges"
+  post "/test/upload-frame" => "test#upload_frame"
+  post "/test/upload-badge" => "test#upload_badge"
+  post "/test/equip-frame" => "test#equip_frame"
+  post "/test/equip-badge" => "test#equip_badge"
 
 end
