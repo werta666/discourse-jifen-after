@@ -1,0 +1,491 @@
+<div class="qd-dress-admin-container">
+  {{! 页面头部 }}
+  <div class="dress-admin-header">
+    <div class="header-content">
+      <div class="header-left">
+        <i class="fa fa-star"></i>
+        <h1>装饰系统管理</h1>
+      </div>
+      <div class="header-stats">
+        <div class="stat-card">
+          <i class="fa fa-gift"></i>
+          <div class="stat-info">
+            <span class="stat-value">{{this.model.grantsSummary.total_grants}}</span>
+            <span class="stat-label">总授予数</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fa fa-check-circle"></i>
+          <div class="stat-info">
+            <span class="stat-value">{{this.model.grantsSummary.active_grants}}</span>
+            <span class="stat-label">生效中</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fa fa-users"></i>
+          <div class="stat-info">
+            <span class="stat-value">{{this.model.grantsSummary.total_users}}</span>
+            <span class="stat-label">拥有用户</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! 标签页导航 }}
+  <div class="dress-admin-tabs">
+    <button 
+      class="tab-btn {{if (eq this.currentTab 'frames') 'active'}}"
+      {{on "click" (fn this.setTab "frames")}}
+    >
+      <i class="fa fa-image"></i>
+      <span>头像框管理</span>
+      <span class="tab-count">{{this.frames.length}}</span>
+    </button>
+    <button 
+      class="tab-btn {{if (eq this.currentTab 'badges') 'active'}}"
+      {{on "click" (fn this.setTab "badges")}}
+    >
+      <i class="fa fa-certificate"></i>
+      <span>勋章管理</span>
+      <span class="tab-count">{{this.badges.length}}</span>
+    </button>
+    <button 
+      class="tab-btn {{if (eq this.currentTab 'grants') 'active'}}"
+      {{on "click" (fn this.setTab "grants")}}
+    >
+      <i class="fa fa-gift"></i>
+      <span>授予记录</span>
+      <span class="tab-count">{{this.grants.length}}</span>
+    </button>
+  </div>
+
+  {{! 内容区域 }}
+  <div class="dress-admin-content">
+    {{#if (eq this.currentTab "frames")}}
+      <div class="content-header">
+        <h2><i class="fa fa-image"></i> 头像框管理</h2>
+        <button class="btn-primary" {{on "click" this.showUploadFrameModal}}>
+          <i class="fa fa-upload"></i> 上传头像框
+        </button>
+      </div>
+
+      <div class="items-grid">
+        {{#each this.frames as |frame|}}
+          <div class="item-card frame-card">
+            <div class="item-preview">
+              <img src={{frame.image}} alt="头像框" />
+            </div>
+            <div class="item-info">
+              <div class="item-id">ID: {{frame.id}}</div>
+              <div class="item-params">
+                <span><i class="fa fa-arrows-h"></i> {{frame.width}}×{{frame.height}}px</span>
+                <span><i class="fa fa-arrows-v"></i> Top:{{frame.top}} Left:{{frame.left}}</span>
+              </div>
+              <div class="item-meta">
+                <span class="uploader"><i class="fa fa-user"></i> {{frame.uploaded_by}}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="btn-icon btn-edit" {{on "click" (fn this.showEditParams frame "frame")}} title="调整参数">
+                <i class="fa fa-cog"></i>
+              </button>
+              <button class="btn-icon btn-grant" {{on "click" (fn this.openGrantModal frame "frame")}} title="授予用户">
+                <i class="fa fa-gift"></i>
+              </button>
+              <button class="btn-icon btn-delete" {{on "click" (fn this.deleteItem frame "frame")}} title="删除">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>暂无头像框，点击上方按钮上传</p>
+          </div>
+        {{/each}}
+      </div>
+
+    {{else if (eq this.currentTab "badges")}}
+      <div class="content-header">
+        <h2><i class="fa fa-certificate"></i> 勋章管理</h2>
+        <div class="header-actions">
+          <button class="btn-primary" {{on "click" (fn this.showUploadBadgeModal "image")}}>
+            <i class="fa fa-image"></i> 上传图片勋章
+          </button>
+          <button class="btn-secondary" {{on "click" (fn this.showUploadBadgeModal "text")}}>
+            <i class="fa fa-font"></i> 创建文字勋章
+          </button>
+        </div>
+      </div>
+
+      <div class="items-grid">
+        {{#each this.badges as |badge|}}
+          <div class="item-card badge-card">
+            <div class="item-preview badge-preview">
+              {{#if (eq badge.type "text")}}
+                <span class="badge-text-display" style={{badge.style}}>{{badge.text}}</span>
+              {{else}}
+                <img src={{badge.image}} alt={{badge.name}} style="height: {{or badge.height 25}}px;" />
+              {{/if}}
+            </div>
+            <div class="item-info">
+              <div class="item-name">ID: {{badge.id}}</div>
+              <div class="item-type">
+                {{#if (eq badge.type "text")}}
+                  <i class="fa fa-font"></i> 文字勋章
+                {{else}}
+                  <i class="fa fa-image"></i> 图片勋章 ({{or badge.height 25}}px)
+                {{/if}}
+              </div>
+              <div class="item-meta">
+                <span class="uploader"><i class="fa fa-user"></i> {{badge.uploaded_by}}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              {{#if (eq badge.type "image")}}
+                <button class="btn-icon btn-edit" {{on "click" (fn this.showEditParams badge "badge")}} title="调整高度">
+                  <i class="fa fa-cog"></i>
+                </button>
+              {{/if}}
+              <button class="btn-icon btn-grant" {{on "click" (fn this.openGrantModal badge "badge")}} title="授予用户">
+                <i class="fa fa-gift"></i>
+              </button>
+              <button class="btn-icon btn-delete" {{on "click" (fn this.deleteItem badge "badge")}} title="删除">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>暂无勋章，点击上方按钮创建</p>
+          </div>
+        {{/each}}
+      </div>
+
+    {{else if (eq this.currentTab "grants")}}
+      <div class="content-header">
+        <h2><i class="fa fa-gift"></i> 授予记录</h2>
+        <div class="header-actions">
+          <div class="grants-filters">
+            <button class="filter-btn {{if (eq this.grantsFilter 'all') 'active'}}" {{on "click" (fn this.setGrantsFilter "all")}}>
+              全部
+            </button>
+            <button class="filter-btn {{if (eq this.grantsFilter 'active') 'active'}}" {{on "click" (fn this.setGrantsFilter "active")}}>
+              <i class="fa fa-check-circle"></i> 生效中
+            </button>
+            <button class="filter-btn {{if (eq this.grantsFilter 'expired') 'active'}}" {{on "click" (fn this.setGrantsFilter "expired")}}>
+              <i class="fa fa-clock-o"></i> 已过期
+            </button>
+            <button class="filter-btn {{if (eq this.grantsFilter 'revoked') 'active'}}" {{on "click" (fn this.setGrantsFilter "revoked")}}>
+              <i class="fa fa-ban"></i> 已撤销
+            </button>
+          </div>
+          <button class="btn-delete-revoked" {{on "click" this.deleteRevokedGrants}} type="button">
+            <i class="fa fa-trash"></i> 删除已撤销
+          </button>
+        </div>
+      </div>
+
+      <div class="grants-table">
+        <table>
+          <thead>
+            <tr>
+              <th>用户</th>
+              <th>装饰类型</th>
+              <th>装饰ID</th>
+              <th>授予者</th>
+              <th>授予时间</th>
+              <th>过期时间</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each this.filteredGrants as |grant|}}
+              <tr class="{{if grant.revoked 'revoked'}} {{if grant.expired 'expired'}}">
+                <td>
+                  <a href="/u/{{grant.username}}" class="user-link">
+                    <i class="fa fa-user"></i> {{grant.username}}
+                  </a>
+                </td>
+                <td>
+                  {{#if (eq grant.decoration_type "avatar_frame")}}
+                    <i class="fa fa-image"></i> 头像框
+                  {{else}}
+                    <i class="fa fa-certificate"></i> 勋章
+                  {{/if}}
+                </td>
+                <td>#{{grant.decoration_id}}</td>
+                <td>{{grant.granted_by_username}}</td>
+                <td>{{this.formatDate grant.granted_at}}</td>
+                <td>
+                  {{#if grant.permanent}}
+                    <span class="badge-permanent"><i class="fa fa-infinity"></i> 永久</span>
+                  {{else if grant.expired}}
+                    <span class="badge-expired">{{this.formatDate grant.expires_at}}</span>
+                  {{else}}
+                    <span class="badge-active">
+                      {{this.formatDate grant.expires_at}}
+                      <br>
+                      <small>(剩余{{this.formatDuration grant.time_remaining}})</small>
+                    </span>
+                  {{/if}}
+                </td>
+                <td>
+                  {{#if grant.revoked}}
+                    <span class="status-badge revoked"><i class="fa fa-ban"></i> 已撤销</span>
+                  {{else if grant.expired}}
+                    <span class="status-badge expired"><i class="fa fa-clock-o"></i> 已过期</span>
+                  {{else}}
+                    <span class="status-badge active"><i class="fa fa-check-circle"></i> 生效中</span>
+                  {{/if}}
+                </td>
+                <td>
+                  {{#unless grant.revoked}}
+                    <button class="btn-small btn-danger" {{on "click" (fn this.revokeGrant grant)}}>
+                      <i class="fa fa-ban"></i> 撤销
+                    </button>
+                  {{/unless}}
+                </td>
+              </tr>
+            {{else}}
+              <tr>
+                <td colspan="8" class="empty-cell">
+                  <i class="fa fa-inbox"></i> 暂无授予记录
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{/if}}
+  </div>
+
+  {{! 上传模态框 }}
+  {{#if this.showUploadModal}}
+    <div class="modal-backdrop" {{on "click" this.closeUploadModal}}>
+      <div class="modal-content" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3>
+            {{#if (eq this.uploadType "frame")}}
+              <i class="fa fa-upload"></i> 上传头像框
+            {{else if (eq this.badgeUploadType "image")}}
+              <i class="fa fa-upload"></i> 上传图片勋章
+            {{else}}
+              <i class="fa fa-font"></i> 创建文字勋章
+            {{/if}}
+          </h3>
+          <button class="close-btn" {{on "click" this.closeUploadModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          {{#if (eq this.uploadType "frame")}}
+            <div class="form-group">
+              <label><i class="fa fa-tag"></i> 头像框名称（必填）</label>
+              <Input @type="text" @value={{this.frameName}} class="form-control" placeholder="请输入头像框名称，用于文件命名" />
+              <small>此名称将用于文件命名，只能包含字母、数字、下划线和连字符</small>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa fa-file-image-o"></i> 选择图片文件</label>
+              <input type="file" id="frame-file-input" accept="image/png,image/webp,image/gif" />
+              <small>支持格式：PNG、WEBP、GIF</small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>宽度 (px)</label>
+                <Input @type="number" @value={{this.frameWidth}} class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>高度 (px)</label>
+                <Input @type="number" @value={{this.frameHeight}} class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>水平偏移 Left (px)</label>
+                <Input @type="number" @value={{this.frameLeft}} class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>垂直偏移 Top (px)</label>
+                <Input @type="number" @value={{this.frameTop}} class="form-control" />
+              </div>
+            </div>
+          {{else}}
+            <div class="form-group">
+              <label><i class="fa fa-tag"></i> 勋章名称</label>
+              <Input @type="text" @value={{this.badgeName}} class="form-control" placeholder="请输入勋章名称" />
+            </div>
+
+            {{#if (eq this.badgeUploadType "image")}}
+              <div class="form-group">
+                <label><i class="fa fa-file-image-o"></i> 选择图片文件</label>
+                <input type="file" id="badge-file-input" accept="image/png,image/webp,image/gif" />
+                <small>支持格式：PNG、WEBP、GIF</small>
+              </div>
+
+              <div class="form-group">
+                <label>高度 (px)</label>
+                <Input @type="number" @value={{this.badgeHeight}} class="form-control" />
+                <small>建议范围：18-30px（默认25px）</small>
+              </div>
+            {{else}}
+              <div class="form-group">
+                <label><i class="fa fa-font"></i> 显示文字</label>
+                <Input @type="text" @value={{this.badgeText}} class="form-control" placeholder="VIP" />
+              </div>
+
+              <div class="form-group">
+                <label><i class="fa fa-paint-brush"></i> 样式预设</label>
+                <select class="form-control" {{on "change" this.selectStylePreset}}>
+                  {{#each this.stylePresets as |preset|}}
+                    <option value={{preset.id}}>{{preset.name}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label><i class="fa fa-code"></i> 自定义CSS（可选）</label>
+                <Textarea @value={{this.badgeStyle}} class="form-control" @rows="3" placeholder="background: red; color: white;" />
+              </div>
+
+              {{#if this.badgeText}}
+                <div class="preview-box">
+                  <label>预览效果：</label>
+                  <span class="badge-preview-text" style={{this.badgeStyle}}>{{this.badgeText}}</span>
+                </div>
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" {{on "click" this.closeUploadModal}}>
+            <i class="fa fa-times"></i> 取消
+          </button>
+          <button 
+            class="btn-primary" 
+            {{on "click" (if (eq this.uploadType "frame") this.uploadFrame this.uploadBadge)}}
+            disabled={{this.isLoading}}
+          >
+            {{#if this.isLoading}}
+              <i class="fa fa-spinner fa-spin"></i> 上传中...
+            {{else}}
+              <i class="fa fa-check"></i> 确认上传
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 参数调整模态框 }}
+  {{#if this.showParamsModal}}
+    <div class="modal-backdrop" {{on "click" this.closeParamsModal}}>
+      <div class="modal-content" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-cog"></i> 调整参数</h3>
+          <button class="close-btn" {{on "click" this.closeParamsModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          {{#if (eq this.editingType "frame")}}
+            <div class="form-row">
+              <div class="form-group">
+                <label>宽度 (px)</label>
+                <Input @type="number" @value={{this.frameWidth}} class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>高度 (px)</label>
+                <Input @type="number" @value={{this.frameHeight}} class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>水平偏移 Left (px)</label>
+                <Input @type="number" @value={{this.frameLeft}} class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>垂直偏移 Top (px)</label>
+                <Input @type="number" @value={{this.frameTop}} class="form-control" />
+              </div>
+            </div>
+          {{else}}
+            <div class="form-group">
+              <label>高度 (px)</label>
+              <Input @type="number" @value={{this.badgeHeight}} class="form-control" />
+              <small>建议范围：18-30px（默认25px）</small>
+            </div>
+          {{/if}}
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" {{on "click" this.closeParamsModal}}>
+            <i class="fa fa-times"></i> 取消
+          </button>
+          <button class="btn-primary" {{on "click" this.saveParams}}>
+            <i class="fa fa-check"></i> 保存
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 授予模态框 }}
+  {{#if this.showGrantModal}}
+    <div class="modal-backdrop" {{on "click" this.closeGrantModal}}>
+      <div class="modal-content" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-gift"></i> 授予装饰</h3>
+          <button class="close-btn" {{on "click" this.closeGrantModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label><i class="fa fa-user"></i> 目标用户名</label>
+            <Input @type="text" @value={{this.grantUsername}} class="form-control" placeholder="输入用户名" />
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa fa-clock-o"></i> 有效期（天数）</label>
+            <Input @type="number" @value={{this.grantExpiresInDays}} class="form-control" placeholder="0 = 永久" />
+            <small>输入0表示永久拥有，其他数字表示有效天数</small>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa fa-comment"></i> 授予原因（可选）</label>
+            <Textarea @value={{this.grantReason}} class="form-control" @rows="3" placeholder="记录授予原因" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" {{on "click" this.closeGrantModal}}>
+            <i class="fa fa-times"></i> 取消
+          </button>
+          <button 
+            class="btn-primary" 
+            {{on "click" this.submitGrant}}
+            disabled={{this.isLoading}}
+          >
+            {{#if this.isLoading}}
+              <i class="fa fa-spinner fa-spin"></i> 授予中...
+            {{else}}
+              <i class="fa fa-check"></i> 确认授予
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

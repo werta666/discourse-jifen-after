@@ -1,0 +1,544 @@
+/* 积分排行榜 - 精致游戏风格样式 */
+
+/* 整体容器：精致的蓝紫渐变背景 */
+.qd-board--neo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+  padding: 20px 0;
+  position: relative;
+}
+
+.qd-board--neo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(1px);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.qd-board--neo .qd-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.qd-board--neo .qd-card {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* 标题区域美化 */
+.board-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.board-title {
+  font-size: 36px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 
+    0 2px 4px rgba(0,0,0,0.5),
+    0 0 20px rgba(255,255,255,0.3);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.board-subtitle {
+  font-size: 18px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  margin: 0;
+}
+
+/* 未登录状态样式 */
+.board-login-prompt {
+  text-align: center;
+  padding: 60px 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 20px;
+  border: 2px dashed rgba(255,255,255,0.3);
+  margin: 20px 0;
+}
+
+.login-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin-bottom: 12px;
+}
+
+.login-message {
+  font-size: 16px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* 限制登录按钮样式只在积分排行榜页面生效 */
+.qd-board--neo .login-button {
+  display: inline-block;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  color: white;
+  padding: 14px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.qd-board--neo .login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,107,107,0.6);
+  text-decoration: none;
+  color: white;
+}
+
+/* 舞台区域 */
+.board-stage {
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 30px;
+  margin-bottom: 40px;
+  min-height: 200px;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 20px;
+}
+
+.podium-position {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.podium-position:hover {
+  transform: translateY(-5px);
+}
+
+/* 冠军位置 - 居中放大 */
+.podium-position--first {
+  order: 2;
+  transform: scale(1.2);
+  flex: 1;
+  max-width: 180px;
+}
+
+/* 亚军位置 - 左侧 */
+.podium-position--second {
+  order: 1;
+  flex: 1;
+  max-width: 150px;
+}
+
+/* 季军位置 - 右侧 */
+.podium-position--third {
+  order: 3;
+  flex: 1;
+  max-width: 140px;
+}
+
+/* 奖牌样式 */
+.board-medal {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.podium-position--first .board-medal {
+  width: 96px;
+  height: 96px;
+  font-size: 28px;
+}
+
+/* 金牌 */
+.board-medal--gold {
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+  box-shadow: 
+    0 0 30px rgba(255,215,0,0.6),
+    inset 0 2px 0 rgba(255,255,255,0.3);
+  animation: goldGlow 3s ease-in-out infinite;
+}
+
+@keyframes goldGlow {
+  0%, 100% { 
+    box-shadow: 0 0 30px rgba(255,215,0,0.6), inset 0 2px 0 rgba(255,255,255,0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(255,215,0,0.8), inset 0 2px 0 rgba(255,255,255,0.4);
+    transform: scale(1.05);
+  }
+}
+
+/* 银牌 */
+.board-medal--silver {
+  background: linear-gradient(45deg, #c0c0c0, #e8e8e8, #c0c0c0);
+  box-shadow: 
+    0 0 25px rgba(192,192,192,0.5),
+    inset 0 2px 0 rgba(255,255,255,0.3);
+  animation: silverGlow 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes silverGlow {
+  0%, 100% { 
+    box-shadow: 0 0 25px rgba(192,192,192,0.5), inset 0 2px 0 rgba(255,255,255,0.3);
+  }
+  50% { 
+    box-shadow: 0 0 35px rgba(192,192,192,0.7), inset 0 2px 0 rgba(255,255,255,0.4);
+  }
+}
+
+/* 铜牌 */
+.board-medal--bronze {
+  background: linear-gradient(45deg, #cd7f32, #e6a85c, #cd7f32);
+  box-shadow: 
+    0 0 20px rgba(205,127,50,0.5),
+    inset 0 2px 0 rgba(255,255,255,0.2);
+  animation: bronzeGlow 3s ease-in-out infinite 1s;
+}
+
+@keyframes bronzeGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(205,127,50,0.5), inset 0 2px 0 rgba(255,255,255,0.2);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(205,127,50,0.7), inset 0 2px 0 rgba(255,255,255,0.3);
+  }
+}
+
+/* 用户信息 */
+.podium-user {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+
+.podium-position--first .podium-user {
+  font-size: 22px;
+}
+
+.podium-score {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4ade80;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  background: rgba(74,222,128,0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(74,222,128,0.3);
+}
+
+.podium-position--first .podium-score {
+  font-size: 18px;
+  padding: 8px 16px;
+}
+
+/* 其余榜单美化 */
+.board-list {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.board-list .board-item {
+  border-bottom: 1px dashed rgba(255,255,255,0.2);
+  padding: 16px 12px;
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.board-list .board-item:hover {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  transform: translateX(4px);
+}
+
+.board-list .board-item:last-child {
+  border-bottom: none;
+}
+
+.board-list .board-rank {
+  font-weight: 900;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.board-list .board-user {
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.board-list .board-score {
+  font-weight: 700;
+  font-size: 16px;
+  color: #4ade80;
+  letter-spacing: 0.01em;
+  padding: 6px 14px;
+  background: rgba(74,222,128,0.2);
+  border-radius: 16px;
+  border: 1px solid rgba(74,222,128,0.3);
+}
+
+/* 底部区域美化 */
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 使用更具体的选择器，避免影响全局按钮 */
+.qd-board--neo .board-footer button {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+  transition: all 0.2s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.qd-board--neo .board-footer button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102,126,234,0.4);
+}
+
+.qd-board--neo .board-footer button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 管理员刷新按钮特殊样式 */
+.admin-refresh-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24) !important;
+  border: 1px solid rgba(255,107,107,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-refresh-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.admin-refresh-btn:hover::before {
+  left: 100%;
+}
+
+.cache-info {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  border: 1px dashed rgba(255,255,255,0.2);
+}
+
+.board-footer .board-updated {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+}
+
+/* 底部信息区域重新设计 */
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(5px);
+}
+
+.board-info {
+  flex: 1;
+}
+
+.countdown-info {
+  font-size: 16px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.countdown-minutes {
+  display: inline-block;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 18px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+  animation: pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* 使用更具体的选择器，限制在积分排行榜页面内 */
+.qd-board--neo .admin-refresh-btn {
+  background: linear-gradient(45deg, #667eea, #764ba2) !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+  box-shadow: 
+    0 4px 15px rgba(102,126,234,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+.qd-board--neo .admin-refresh-btn:hover:not(:disabled) {
+  background: linear-gradient(45deg, #5a67d8, #6b46c1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 6px 20px rgba(102,126,234,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+.qd-board--neo .admin-refresh-btn:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .qd-board--neo .qd-card {
+    padding: 24px;
+    margin: 0 10px;
+  }
+  
+  .board-title {
+    font-size: 28px;
+  }
+  
+  .podium {
+    gap: 12px;
+  }
+  
+  .podium-position--first {
+    transform: scale(1.1);
+  }
+  
+  .board-medal {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+  
+  .podium-position--first .board-medal {
+    width: 72px;
+    height: 72px;
+    font-size: 22px;
+  }
+
+  .board-footer {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .countdown-info {
+    font-size: 14px;
+  }
+
+  .admin-refresh-btn {
+    width: 100%;
+  }
+}

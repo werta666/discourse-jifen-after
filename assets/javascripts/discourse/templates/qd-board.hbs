@@ -1,0 +1,93 @@
+{{! 积分排行榜模板 - 动态主题风格舞台布局 }}
+<div class="qd-page qd-board--{{this.boardTheme}}">
+  <div class="qd-container">
+    <div class="qd-card">
+      <div class="board-header">
+        <h2 class="board-title">🏆 积分排行榜</h2>
+        <p class="board-subtitle">前五名荣耀展示</p>
+      </div>
+
+      {{#if this.requiresLogin}}
+        {{! 未登录状态的友好提示 }}
+        <div class="board-login-prompt">
+          <div class="login-icon">🔐</div>
+          <h3 class="login-title">需要登录</h3>
+          <p class="login-message">{{this.loginMessage}}</p>
+          <LinkTo @route="login" class="login-button">
+            立即登录
+          </LinkTo>
+        </div>
+      {{else}}
+        {{! 已登录状态显示排行榜 }}
+        <div class="board-stage">
+          {{! 舞台/领奖台布局：亚军(左) - 冠军(中心放大) - 季军(右) }}
+          <div class="podium">
+            {{#if this.secondUser}}
+              <div class="podium-position podium-position--second">
+                <div class="{{this.medalClass this.secondUser.rank}}">
+                  <span class="medal-rank">{{this.secondUser.rank}}</span>
+                </div>
+                <div class="podium-user">{{this.secondUser.username}}</div>
+                <div class="podium-score">+{{this.secondUser.points}} 分</div>
+              </div>
+            {{/if}}
+
+            {{#if this.firstUser}}
+              <div class="podium-position podium-position--first">
+                <div class="{{this.medalClass this.firstUser.rank}}">
+                  <span class="medal-rank">{{this.firstUser.rank}}</span>
+                </div>
+                <div class="podium-user">{{this.firstUser.username}}</div>
+                <div class="podium-score">+{{this.firstUser.points}} 分</div>
+              </div>
+            {{/if}}
+
+            {{#if this.thirdUser}}
+              <div class="podium-position podium-position--third">
+                <div class="{{this.medalClass this.thirdUser.rank}}">
+                  <span class="medal-rank">{{this.thirdUser.rank}}</span>
+                </div>
+                <div class="podium-user">{{this.thirdUser.username}}</div>
+                <div class="podium-score">+{{this.thirdUser.points}} 分</div>
+              </div>
+            {{/if}}
+          </div>
+        </div>
+
+        {{! 其余榜单（第4-5名）}}
+        {{#if this.restList}}
+          <div class="board-list">
+            {{#each this.restList as |user|}}
+              <div class="board-item">
+                <div class="board-rank">#{{user.rank}}</div>
+                <div class="board-user">{{user.username}}</div>
+                <div class="board-score">+{{user.points}} 分</div>
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
+      {{/if}}
+
+      {{! 底部操作区 }}
+      <div class="board-footer">
+        <div class="board-info">
+          <div class="countdown-info">
+            ⏰ 距离下次更新还需要 <span class="countdown-minutes">{{this.nextUpdateMinutes}}</span> 分钟
+          </div>
+        </div>
+        
+        {{#if this.isAdmin}}
+          <button 
+            type="button" 
+            class="btn btn-primary admin-refresh-btn" 
+            {{on "click" this.refreshBoard}}
+            disabled={{this.isLoading}}
+            title="管理员专用：强制刷新排行榜缓存"
+          >
+            {{#if this.isLoading}}🔄 刷新中...{{else}}🔄 强制刷新{{/if}}
+          </button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

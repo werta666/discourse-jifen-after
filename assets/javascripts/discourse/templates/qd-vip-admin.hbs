@@ -1,0 +1,464 @@
+<div class="qd-vip-admin-page">
+  {{! 顶部标题栏 }}
+  <div class="admin-header">
+    <div class="header-content">
+      <h1><i class="fa fa-crown"></i> VIP套餐管理</h1>
+      <div class="header-actions">
+        <button class="btn-back" {{on "click" this.goToVipPage}}>
+          <i class="fa fa-arrow-left"></i> 返回VIP页面
+        </button>
+        <button class="btn-create" {{on "click" this.openCreateModal}}>
+          <i class="fa fa-plus"></i> 创建套餐
+        </button>
+      </div>
+    </div>
+    <div class="admin-tabs">
+      <button 
+        class="tab-btn {{if (eq this.activeTab 'packages') 'active'}}"
+        data-tab="packages"
+        {{on "click" this.handleTabClick}}
+      >
+        <i class="fa fa-box"></i> 套餐管理
+      </button>
+      <button 
+        class="tab-btn {{if (eq this.activeTab 'users') 'active'}}"
+        data-tab="users"
+        {{on "click" this.handleTabClick}}
+      >
+        <i class="fa fa-users"></i> 用户管理
+      </button>
+    </div>
+  </div>
+
+  {{#if (eq this.activeTab 'packages')}}
+  {{! 套餐列表 }}
+  <div class="packages-table">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>套餐名称</th>
+          <th>VIP等级</th>
+          <th>时长</th>
+          <th>价格</th>
+          <th>赠送内容</th>
+          <th>状态</th>
+          <th>排序</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this.packages as |pkg|}}
+          <tr class="{{unless pkg.is_active 'inactive'}}">
+            <td>{{pkg.id}}</td>
+            <td class="name-cell">
+              <strong>{{pkg.name}}</strong>
+            </td>
+            <td>
+              <span class="vip-badge">VIP {{pkg.level}}</span>
+            </td>
+            <td>
+              <span class="duration-badge">{{pkg.duration_label}}</span>
+              <span class="duration-days">({{pkg.duration_days}}天)</span>
+            </td>
+            <td class="price-cell">
+              <strong>{{pkg.price}}</strong> {{this.coinName}}
+            </td>
+            <td class="rewards-cell">
+              {{#if pkg.rewards.makeup_cards}}
+                <div class="reward-tag">
+                  <i class="fa fa-ticket-alt"></i> {{pkg.rewards.makeup_cards}}张补签卡
+                </div>
+              {{/if}}
+              {{#if pkg.rewards.avatar_frame_id}}
+                <div class="reward-tag">
+                  <i class="fa fa-image"></i> 头像框 #{{pkg.rewards.avatar_frame_id}}
+                </div>
+              {{/if}}
+              {{#if pkg.rewards.badge_id}}
+                <div class="reward-tag">
+                  <i class="fa fa-certificate"></i> 勋章 #{{pkg.rewards.badge_id}}
+                </div>
+              {{/if}}
+              {{#unless (or pkg.rewards.makeup_cards pkg.rewards.avatar_frame_id pkg.rewards.badge_id)}}
+                <span class="no-rewards">无</span>
+              {{/unless}}
+            </td>
+            <td>
+              <button 
+                class="btn-toggle {{if pkg.is_active 'active' 'inactive'}}"
+                {{on "click" (fn this.toggleActive pkg)}}
+              >
+                {{#if pkg.is_active}}
+                  <i class="fa fa-check-circle"></i> 启用
+                {{else}}
+                  <i class="fa fa-times-circle"></i> 禁用
+                {{/if}}
+              </button>
+            </td>
+            <td>{{pkg.sort_order}}</td>
+            <td class="actions-cell">
+              <button class="btn-edit" {{on "click" (fn this.openEditModal pkg)}}>
+                <i class="fa fa-edit"></i>
+              </button>
+              <button class="btn-delete" {{on "click" (fn this.deletePackage pkg)}}>
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        {{else}}
+          <tr>
+            <td colspan="9" class="empty-state">
+              <i class="fa fa-inbox"></i>
+              <p>暂无套餐，点击上方"创建套餐"按钮开始添加</p>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  {{! 创建/编辑套餐弹窗 }}
+  {{#if (or this.showCreateModal this.showEditModal)}}
+    <div class="modal-backdrop" {{on "click" (if this.showCreateModal this.closeCreateModal this.closeEditModal)}}>
+      <div class="package-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3>
+            <i class="fa fa-{{if this.showCreateModal 'plus' 'edit'}}"></i>
+            {{if this.showCreateModal '创建套餐' '编辑套餐'}}
+          </h3>
+          <button class="btn-close" {{on "click" (if this.showCreateModal this.closeCreateModal this.closeEditModal)}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-grid">
+            {{! 基本信息 }}
+            <div class="form-section">
+              <h4><i class="fa fa-info-circle"></i> 基本信息</h4>
+              
+              <div class="form-group">
+                <label>套餐名称 *</label>
+                <input 
+                  type="text" 
+                  {{on "input" this.updateFormName}}
+                  value={{this.formName}}
+                  placeholder="例如：VIP 1 月付"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>VIP等级 *</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormLevel}}
+                  value={{this.formLevel}}
+                  min="1"
+                  max="10"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>套餐描述</label>
+                <textarea 
+                  {{on "input" this.updateFormDescription}}
+                  rows="3"
+                  placeholder="介绍套餐特点..."
+                >{{this.formDescription}}</textarea>
+              </div>
+            </div>
+
+            {{! 多时长定价方案 }}
+            <div class="form-section full-width">
+              <h4><i class="fa fa-calendar"></i> 时长和价格</h4>
+              
+              {{#if this.hasPricingPlans}}
+                <div class="pricing-plans-list">
+                  {{#each this.formPricingPlans as |plan|}}
+                    <div class="pricing-plan-item">
+                      <div class="plan-info">
+                        <span class="plan-type-badge">{{plan.label}}</span>
+                        <span class="plan-days">{{plan.days}}天</span>
+                      </div>
+                      <div class="plan-price">
+                        <input 
+                          type="number" 
+                          value={{plan.price}}
+                          {{on "input" (fn this.updatePlanPrice plan.type)}}
+                          min="0"
+                          placeholder="价格"
+                        />
+                        <span class="price-unit">{{this.coinName}}</span>
+                      </div>
+                      <button 
+                        class="btn-remove-plan" 
+                        {{on "click" (fn this.removePricingPlan plan.type)}}
+                        type="button"
+                      >
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </div>
+                  {{/each}}
+                </div>
+              {{else}}
+                <div class="no-pricing-plans">
+                  <i class="fa fa-info-circle"></i>
+                  <span>请至少添加一个定价方案</span>
+                </div>
+              {{/if}}
+
+              <div class="add-pricing-plan">
+                <label>添加时长方案：</label>
+                <div class="add-plan-buttons">
+                  {{#each this.durationTypes as |type|}}
+                    <button 
+                      class="btn-add-plan"
+                      {{on "click" (fn this.addPricingPlan type.value)}}
+                      type="button"
+                    >
+                      <i class="fa fa-plus"></i>
+                      {{type.label}} ({{type.days}}天)
+                    </button>
+                  {{/each}}
+                </div>
+                <small class="form-hint">支持为同一套餐设置不同时长的价格，用户可以自由选择</small>
+              </div>
+            </div>
+
+            {{! 赠送内容 }}
+            <div class="form-section full-width">
+              <h4><i class="fa fa-gift"></i> 赠送内容</h4>
+              
+              <div class="form-group">
+                <label>补签卡数量</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormMakeupCards}}
+                  value={{this.formMakeupCards}}
+                  min="0"
+                  placeholder="0 = 不赠送"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>专属头像框ID</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormAvatarFrameId}}
+                  value={{this.formAvatarFrameId}}
+                  placeholder="输入头像框ID，0=不赠送"
+                  min="0"
+                />
+                <small class="form-hint">可在 <a href="/qd/dress/admin" target="_blank">/qd/dress/admin</a> 查看所有头像框ID</small>
+              </div>
+
+              <div class="form-group">
+                <label>专属勋章ID</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormBadgeId}}
+                  value={{this.formBadgeId}}
+                  placeholder="输入勋章ID，0=不赠送"
+                  min="0"
+                />
+                <small class="form-hint">可在 <a href="/qd/dress/admin" target="_blank">/qd/dress/admin</a> 查看所有勋章ID</small>
+              </div>
+            </div>
+
+            {{! VIP特权 }}
+            <div class="form-section full-width">
+              <h4><i class="fa fa-star"></i> VIP特权</h4>
+              
+              <div class="form-group">
+                <label>每日签到额外积分</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormDailySigninBonus}}
+                  value={{this.formDailySigninBonus}}
+                  min="0"
+                  placeholder="例如：10 表示VIP会员签到额外获得10积分"
+                />
+                <small class="form-hint">设置VIP会员每日签到可额外获得的积分数量，0表示无额外奖励</small>
+              </div>
+            </div>
+
+            {{! 其他设置 }}
+            <div class="form-section full-width">
+              <h4><i class="fa fa-cog"></i> 其他设置</h4>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    {{on "change" this.updateFormIsActive}}
+                    checked={{this.formIsActive}}
+                  />
+                  启用套餐
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label>排序序号</label>
+                <input 
+                  type="number" 
+                  {{on "input" this.updateFormSortOrder}}
+                  value={{this.formSortOrder}}
+                  placeholder="数字越小越靠前"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button 
+            class="btn-cancel" 
+            {{on "click" (if this.showCreateModal this.closeCreateModal this.closeEditModal)}}
+            disabled={{this.saving}}
+          >
+            取消
+          </button>
+          <button 
+            class="btn-save" 
+            {{on "click" (if this.showCreateModal this.createPackage this.updatePackage)}}
+            disabled={{this.saving}}
+          >
+            {{#if this.saving}}
+              <i class="fa fa-spinner fa-spin"></i> 保存中...
+            {{else}}
+              <i class="fa fa-save"></i> 保存
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+  {{/if}}
+
+  {{#if (eq this.activeTab 'users')}}
+    <div class="vip-users-table">
+      <div class="table-header">
+        <h2><i class="fa fa-users"></i> 当前VIP用户</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>用户</th>
+            <th>VIP等级</th>
+            <th>套餐</th>
+            <th>到期时间</th>
+            <th>剩余天数</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#if this.userLoading}}
+            <tr>
+              <td colspan="6" class="empty-state">
+                <i class="fa fa-spinner fa-spin"></i>
+                <p>加载中...</p>
+              </td>
+            </tr>
+          {{else if this.hasUsers}}
+            {{#each this.users as |u|}}
+              <tr>
+                <td class="user-cell">
+                  <i class="fa fa-user-circle"></i>
+                  <strong>@{{u.username}}</strong>
+                </td>
+                <td><span class="vip-badge">VIP {{u.vip_level}}</span></td>
+                <td>{{u.package_name}}</td>
+                <td>{{u.expires_at}}</td>
+                <td>{{u.days_remaining}}</td>
+                <td>
+                  <button 
+                    class="btn-edit" 
+                    data-user-id="{{u.user_id}}"
+                    {{on "click" this.openUserEdit}}
+                  >
+                    <i class="fa fa-edit"></i> 编辑
+                  </button>
+                  <button
+                    class="btn-cancel-vip"
+                    data-user-id="{{u.user_id}}"
+                    {{on "click" this.cancelUserVip}}
+                    type="button"
+                  >
+                    <i class="fa fa-ban"></i> 取消VIP
+                  </button>
+                </td>
+              </tr>
+            {{/each}}
+          {{else}}
+            <tr>
+              <td colspan="6" class="empty-state">
+                <i class="fa fa-inbox"></i>
+                <p>暂无VIP用户</p>
+              </td>
+            </tr>
+          {{/if}}
+        </tbody>
+      </table>
+
+      <div class="pagination-modern">
+        <button class="btn-page" {{on "click" this.usersPrevPage}} disabled={{or this.userLoading (eq this.userPage 1)}}>
+          <i class="fa fa-angle-left"></i> 上一页
+        </button>
+        <span class="page-info">第 {{this.userPage}} / {{this.userTotalPages}} 页</span>
+        <button class="btn-page" {{on "click" this.usersNextPage}} disabled={{or this.userLoading (eq this.userPage this.userTotalPages)}}>
+          下一页 <i class="fa fa-angle-right"></i>
+        </button>
+      </div>
+    </div>
+
+    {{#if this.showUserEditModal}}
+      <div class="modal-backdrop" {{on "click" this.closeUserEditModal}}>
+        <div class="package-modal" {{on "click" this.stopPropagation}}>
+          <div class="modal-header">
+            <h3><i class="fa fa-user-edit"></i> 编辑用户VIP</h3>
+            <button class="btn-close" {{on "click" this.closeUserEditModal}}>
+              <i class="fa fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="form-section">
+                <h4><i class="fa fa-id-card"></i> 用户</h4>
+                <div class="form-group">
+                  <label>用户名</label>
+                  <input type="text" value={{this.editingUser.username}} disabled />
+                </div>
+                <div class="form-group">
+                  <label>VIP等级</label>
+                  <input type="number" min="1" max="10" value={{this.editVipLevel}} {{on "input" this.updateUserVipLevel}} />
+                </div>
+              </div>
+              <div class="form-section">
+                <h4><i class="fa fa-clock"></i> 到期时间</h4>
+                <div class="form-group">
+                  <label>日期</label>
+                  <input type="date" value={{this.editExpireDate}} {{on "input" this.updateUserExpireDate}} />
+                </div>
+                <div class="form-group">
+                  <label>时间</label>
+                  <input type="time" value={{this.editExpireTime}} {{on "input" this.updateUserExpireTime}} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" {{on "click" this.closeUserEditModal}} disabled={{this.savingUser}}>取消</button>
+            <button class="btn-save" {{on "click" this.saveUserEdit}} disabled={{this.savingUser}}>
+              {{#if this.savingUser}}
+                <i class="fa fa-spinner fa-spin"></i> 保存中...
+              {{else}}
+                <i class="fa fa-save"></i> 保存
+              {{/if}}
+            </button>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>

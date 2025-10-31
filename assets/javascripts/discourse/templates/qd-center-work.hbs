@@ -1,0 +1,190 @@
+<div class="qd-center-work-page">
+  {{! 顶部导航 }}
+  <div class="qd-center-header">
+    <button class="btn-back" {{on "click" this.goBack}}>
+      <i class="fa fa-arrow-left"></i>
+      <span>{{this.backButtonText}}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fa fa-image"></i>
+      作品详情
+    </h1>
+  </div>
+
+  <div class="qd-center-container">
+    {{! 作品卡片（复用/qd/center样式） }}
+    <div class="work-card-single">
+      <div class="work-image">
+        <img src={{this.work.image_url}} alt={{this.work.title}} />
+      </div>
+      
+      <div class="work-info">
+        <div class="creator-section">
+          <img class="creator-avatar" src={{this.creator.avatar_url}} alt={{this.creator.username}} />
+          <div class="creator-text">
+            <span class="creator-label">创作者</span>
+            <h3 class="creator-name">{{this.creator.username}}</h3>
+          </div>
+        </div>
+        
+        <h2 class="work-title-detail">
+          {{if this.work.title this.work.title (concat "作品 #" this.work.id)}}
+        </h2>
+        
+        <div class="work-stats">
+          <span><i class="fa fa-heart"></i> {{this.work.likes_count}}</span>
+          <span><i class="fa fa-eye"></i> {{this.work.clicks_count}}</span>
+        </div>
+        
+        <div class="work-actions-detail">
+          <button class="btn-view-post" {{on "click" this.viewPost}}>
+            <i class="fa fa-external-link-alt"></i> 查看原帖
+          </button>
+          
+          {{#if this.currentUser}}
+            {{#unless this.isOwnWork}}
+              <button 
+                class="btn-like {{if this.work.is_liked 'liked'}}"
+                {{on "click" this.toggleLike}}
+              >
+                <i class="fa fa-heart"></i>
+                {{if this.work.is_liked "已点赞" "点赞"}}
+              </button>
+              
+              {{#if this.canDonate}}
+                <button class="btn-donate" {{on "click" this.openDonationModal}}>
+                  <i class="fa fa-gift"></i> 打赏
+                </button>
+              {{else if this.donationLimitReached}}
+                <button class="btn-donate disabled" disabled>
+                  <i class="fa fa-ban"></i> 已达上限
+                </button>
+              {{/if}}
+            {{else}}
+              <div class="own-work-tip">
+                <i class="fa fa-info-circle"></i> 这是您的作品
+              </div>
+            {{/unless}}
+          {{else}}
+            <button class="btn-like" {{on "click" this.toggleLike}}>
+              <i class="fa fa-heart"></i> 点赞
+            </button>
+            <button class="btn-donate" {{on "click" this.openDonationModal}}>
+              <i class="fa fa-gift"></i> 打赏
+            </button>
+          {{/if}}
+        </div>
+        
+        {{#if this.maxDonationsPerWork}}
+          <div class="donation-tip">
+            <i class="fa fa-info-circle"></i>
+            您已打赏 {{this.work.user_donation_count}}/{{this.maxDonationsPerWork}} 次
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  {{! 打赏弹窗 }}
+  {{#if this.showDonationModal}}
+    <div class="modal-backdrop" {{on "click" this.closeDonationModal}}>
+      <div class="donation-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-gift"></i> 打赏创作者</h3>
+          <button class="btn-close" {{on "click" this.closeDonationModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="currency-selector">
+            <button 
+              class="currency-option {{if (eq this.donationCurrency 'jifen') 'active'}}"
+              {{on "click" (fn this.selectCurrency "jifen")}}
+            >
+              <i class="fa fa-coins"></i>
+              <span>{{this.jifenName}}</span>
+              <small>余额：{{this.userJifen}}</small>
+            </button>
+            
+            <button 
+              class="currency-option {{if (eq this.donationCurrency 'paid_coin') 'active'}}"
+              {{on "click" (fn this.selectCurrency "paid_coin")}}
+            >
+              <i class="fa fa-gem"></i>
+              <span>{{this.paidCoinName}}</span>
+              <small>余额：{{this.userPaidCoin}}</small>
+            </button>
+          </div>
+          
+          <div class="amount-input-group">
+            <label>打赏金额</label>
+            <input 
+              type="number" 
+              min="1"
+              {{on "input" this.updateDonationAmount}}
+              value={{this.donationAmount}}
+              placeholder="请输入打赏金额"
+            />
+          </div>
+          
+          <div class="donation-info">
+            <i class="fa fa-info-circle"></i>
+            <span>创作者将收到您的打赏！（平台抽成 {{this.model.commission_rate}}%）</span>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeDonationModal}}>
+            取消
+          </button>
+          <button 
+            class="btn-confirm" 
+            {{on "click" this.confirmDonation}}
+            disabled={{this.isDonating}}
+          >
+            {{#if this.isDonating}}
+              <i class="fa fa-spinner fa-spin"></i> 打赏中...
+            {{else}}
+              <i class="fa fa-check"></i> 确认打赏
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 分享弹窗 }}
+  {{#if this.showShareModal}}
+    <div class="modal-backdrop" {{on "click" this.closeShareModal}}>
+      <div class="share-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-share-alt"></i> 分享作品</h3>
+          <button class="btn-close" {{on "click" this.closeShareModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="share-link-box">
+            <input 
+              type="text" 
+              value={{this.shareUrl}}
+              readonly
+              class="share-link-input"
+            />
+            <button class="btn-copy" {{on "click" this.copyShareLink}}>
+              <i class="fa fa-copy"></i>
+              复制链接
+            </button>
+          </div>
+          
+          <div class="share-hint">
+            <i class="fa fa-lightbulb"></i>
+            <span>复制链接分享给好友，让更多人看到这个作品！</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

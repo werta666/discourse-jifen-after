@@ -1,0 +1,280 @@
+<div class="qd-center-page">
+  {{! 顶部标题栏 }}
+  <div class="center-hero">
+    {{! 装饰背景 }}
+    <div class="hero-bg-pattern"></div>
+    
+    <div class="hero-main">
+      <div class="hero-content">
+        <div class="hero-icon-wrapper">
+          <div class="hero-icon-bg"></div>
+          <i class="fa fa-palette"></i>
+        </div>
+        
+        <div class="hero-text">
+          <h1 class="hero-title">
+            <span class="title-main">作品墙</span>
+            <span class="title-badge">Creator Hub</span>
+          </h1>
+          <div class="hero-features">
+            <span class="feature-item">
+              <i class="fa fa-fire"></i> 热度榜单
+            </span>
+            <span class="feature-item">
+              <i class="fa fa-gift"></i> 打赏激励
+            </span>
+            <span class="feature-item">
+              <i class="fa fa-heart"></i> 社区认可
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-actions">
+        {{#if this.currentUser}}
+          {{#if this.isCreator}}
+            <button class="btn-creator" {{on "click" this.goToMake}}>
+              <i class="fa fa-upload"></i> 
+              <span>我的创作</span>
+            </button>
+          {{else}}
+            <button class="btn-apply" {{on "click" this.goToApply}}>
+              <i class="fa fa-user-plus"></i>
+              <span>申请成为创作者</span>
+            </button>
+          {{/if}}
+          {{#if this.currentUser.admin}}
+            <button class="btn-admin" {{on "click" this.goToAdmin}}>
+              <i class="fa fa-cog"></i>
+              <span>管理后台</span>
+            </button>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+    
+    {{! 装饰元素 }}
+    <div class="hero-decorations">
+      <div class="decoration-circle decoration-1"></div>
+      <div class="decoration-circle decoration-2"></div>
+      <div class="decoration-circle decoration-3"></div>
+    </div>
+  </div>
+
+  {{! 作品墙 }}
+  <div class="works-container">
+    {{#if this.works.length}}
+      <div class="works-grid">
+        {{#each this.works as |work|}}
+          <div class="work-card">
+            {{! 作品图片 }}
+            <div class="work-image" {{on "click" (fn this.goToPost work)}}>
+              <img src={{work.image_url}} alt={{work.title}} loading="lazy" />
+              <div class="work-overlay">
+                <i class="fa fa-external-link-alt"></i>
+                <span>查看详情</span>
+              </div>
+            </div>
+            
+            {{! 作品信息 }}
+            <div class="work-info">
+              {{#if work.title}}
+                <h3 class="work-title">{{work.title}}</h3>
+              {{/if}}
+              
+              <div class="work-meta">
+                <span class="work-author">
+                  <i class="fa fa-user"></i> {{work.username}}
+                </span>
+                <span class="work-date">
+                  <i class="fa fa-clock"></i> {{format-date work.created_at}}
+                </span>
+              </div>
+              
+              {{! 统计数据 }}
+              <div class="work-stats">
+                <div class="stat-item">
+                  <i class="fa fa-heart"></i>
+                  <span>{{work.likes_count}}</span>
+                </div>
+                <div class="stat-item">
+                  <i class="fa fa-eye"></i>
+                  <span>{{work.clicks_count}}</span>
+                </div>
+                <div class="stat-item heat-stat">
+                  <i class="fa fa-fire" style="color: {{work.heatColor}}"></i>
+                  <span>{{work.heat_score}}</span>
+                </div>
+                <div class="stat-item donation-stat">
+                  <i class="fa fa-coins" style="color: #FFA940;"></i>
+                  <span>{{if work.jifen_received work.jifen_received 0}}</span>
+                </div>
+                <div class="stat-item donation-stat">
+                  <i class="fa fa-gem" style="color: #722ED1;"></i>
+                  <span>{{if work.paid_coin_received work.paid_coin_received 0}}</span>
+                </div>
+              </div>
+              
+              {{! 操作按钮 }}
+              <div class="work-actions">
+                <button 
+                  class="btn-like {{if work.liked_by_current_user 'liked'}}"
+                  {{on "click" (fn this.likeWork work)}}
+                >
+                  <i class="fa {{if work.liked_by_current_user 'fa-heart' 'fa-heart-o'}}"></i>
+                  {{#if work.liked_by_current_user}}已点赞{{else}}点赞{{/if}}
+                </button>
+                
+                {{! 只有非作者才能打赏 }}
+                {{#unless (eq work.user_id this.currentUser.id)}}
+                  <button class="btn-donate" {{on "click" (fn this.openDonateModal work)}}>
+                    <i class="fa fa-gift"></i> 打赏
+                  </button>
+                {{/unless}}
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="no-works">
+        <i class="fa fa-images"></i>
+        <p>暂无作品</p>
+        <small>快来成为第一个上传作品的创作者吧！</small>
+      </div>
+    {{/if}}
+  </div>
+
+  {{! 打赏弹窗 }}
+  {{#if this.showDonateModal}}
+    <div class="modal-backdrop" {{on "click" this.closeDonateModal}}>
+      <div class="donate-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-gift"></i> 打赏作品</h3>
+          <button class="btn-close" {{on "click" this.closeDonateModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          {{#if this.selectedWork}}
+            <div class="donate-work-info">
+              <img src={{this.selectedWork.image_url}} alt="作品" />
+              <div>
+                {{#if this.selectedWork.title}}
+                  <strong>{{this.selectedWork.title}}</strong>
+                {{/if}}
+                <p>作者：{{this.selectedWork.username}}</p>
+              </div>
+            </div>
+            
+            {{! 选择货币类型 }}
+            <div class="currency-selector">
+              <label>选择货币类型</label>
+              <div class="currency-options">
+                <button 
+                  class="currency-option {{if (eq this.selectedCurrency 'jifen') 'active'}}"
+                  {{on "click" (fn this.selectCurrency "jifen")}}
+                >
+                  <i class="fa fa-coins"></i>
+                  {{this.jifenName}}
+                </button>
+                <button 
+                  class="currency-option {{if (eq this.selectedCurrency 'paid_coin') 'active'}}"
+                  {{on "click" (fn this.selectCurrency "paid_coin")}}
+                >
+                  <i class="fa fa-gem"></i>
+                  {{this.paidCoinName}}
+                </button>
+              </div>
+            </div>
+            
+            {{! 输入金额 }}
+            <div class="amount-input">
+              <label>打赏金额</label>
+              <input 
+                type="number" 
+                min="1"
+                {{on "input" this.updateDonateAmount}}
+                value={{this.donateAmount}}
+                placeholder="请输入金额"
+              />
+            </div>
+            
+            <div class="donate-tip">
+              <i class="fa fa-info-circle"></i>
+              <span>打赏将直接支持创作者，鼓励更多优质内容</span>
+            </div>
+          {{/if}}
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeDonateModal}}>
+            取消
+          </button>
+          <button 
+            class="btn-confirm" 
+            {{on "click" this.confirmDonate}}
+            disabled={{or this.donating (eq this.donateAmount 0)}}
+          >
+            {{#if this.donating}}
+              <i class="fa fa-spinner fa-spin"></i> 处理中...
+            {{else}}
+              <i class="fa fa-check"></i> 确认打赏
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 庆祝模态框 }}
+  {{#if this.showCelebrationModal}}
+    <div class="modal-backdrop" {{on "click" this.closeCelebrationModal}}>
+      <div class="celebration-modal" {{on "click" this.stopPropagation}}>
+        <div class="celebration-content">
+          {{! 成功图标 }}
+          <div class="celebration-icon">
+            <i class="fa fa-check-circle"></i>
+          </div>
+          
+          {{! 感谢标题 }}
+          <h2 class="celebration-title">{{this.celebrationData.message}}</h2>
+          
+          {{! 感谢信息 }}
+          <p class="celebration-message">您的支持是创作者最大的动力！</p>
+          
+          {{! 打赏详情 }}
+          <div class="donation-details">
+            <div class="detail-row">
+              <span class="label">打赏金额</span>
+              <span class="value amount">{{this.celebrationData.donation.amount}} {{this.celebrationData.donation.currency_name}}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">作品</span>
+              <span class="value">{{this.celebrationData.donation.work_title}}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">创作者</span>
+              <span class="value">@{{this.celebrationData.donation.creator_username}}</span>
+            </div>
+          </div>
+          
+          {{! 关闭按钮 }}
+          <button class="btn-celebration-close" {{on "click" this.closeCelebrationModal}}>
+            <i class="fa fa-heart"></i> 继续浏览
+          </button>
+        </div>
+        
+        {{! 飘落的爱心 }}
+        <div class="celebration-confetti">
+          <span>❤️</span>
+          <span>💚</span>
+          <span>💙</span>
+          <span>💛</span>
+          <span>💜</span>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

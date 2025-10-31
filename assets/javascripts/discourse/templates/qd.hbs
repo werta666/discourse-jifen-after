@@ -1,0 +1,326 @@
+<div class="qd-page">
+  <div class="qd-container">
+    <div class="qd-card">
+      {{#if this.currentUser.admin}}
+        <div class="qd-admin-debug">
+          <button class="debug-btn" {{on "click" this.openAdminDebug}}>
+            🛠️ 管理员调试
+          </button>
+        </div>
+      {{/if}}
+      
+      <div class="qd-header">
+        <h1 class="qd-title">🎯 每日签到</h1>
+        <p class="qd-subtitle">坚持签到，积累积分</p>
+      </div>
+      
+      {{#if this.model.user_logged_in}}
+        <div class="qd-stats-grid">
+          <div class="qd-stat-item">
+            <div class="qd-stat-value">{{this.model.today_score}}</div>
+            <div class="qd-stat-label">今日积分</div>
+          </div>
+          <div class="qd-stat-item">
+            <div class="qd-stat-value">{{this.model.total_score}}</div>
+            <div class="qd-stat-label">可用积分</div>
+          </div>
+          <div class="qd-stat-item">
+            <div class="qd-stat-value">{{this.model.consecutive_days}}</div>
+            <div class="qd-stat-label">连续签到天数</div>
+          </div>
+          <div class="qd-stat-item">
+            <div class="qd-stat-value">{{this.model.points}}</div>
+            <div class="qd-stat-label">基础奖励</div>
+          </div>
+        </div>
+
+        <div class="qd-quick-nav">
+          <LinkTo @route="qd-pay" class="qd-nav-btn qd-nav-recharge">
+            <span class="qd-nav-icon"><i class="fa-solid fa-wallet"></i></span>
+            <span class="qd-nav-text">积分充值</span>
+          </LinkTo>
+          <LinkTo @route="qd-board" class="qd-nav-btn qd-nav-board">
+            <span class="qd-nav-icon"><i class="fa-solid fa-trophy"></i></span>
+            <span class="qd-nav-text">排行榜</span>
+          </LinkTo>
+          <LinkTo @route="qd-shop" class="qd-nav-btn qd-nav-shop">
+            <span class="qd-nav-icon"><i class="fa-solid fa-store"></i></span>
+            <span class="qd-nav-text">积分商店</span>
+          </LinkTo>
+        </div>
+
+        {{#if this.model.consecutive_days}}
+          <div class="qd-consecutive-info">
+            <h4>🔥 连续签到奖励</h4>
+            <p>已连续签到 <strong>{{this.model.consecutive_days}}</strong> 天！</p>
+            <div class="qd-reward-tips">
+              <small>{{this.rewardText}}</small>
+            </div>
+          </div>
+        {{/if}}
+        
+        <div class="qd-sign-section">
+          <button 
+            class="btn btn-large qd-sign-btn {{if this.model.signed 'btn-default' 'btn-primary'}}" 
+            {{on "click" this.signIn}}
+            disabled={{or this.model.signed this.isLoading}}
+          >
+            {{#if this.isLoading}}
+              ⏳ 处理中...
+            {{else if this.model.signed}}
+              ✅ 今日已签到
+            {{else}}
+              🎯 立即签到
+            {{/if}}
+          </button>
+          
+          <div class="qd-status-message {{if this.model.signed 'success' 'info'}}">
+            {{#if this.model.signed}}
+              今日签到完成，明天再来吧！连续签到 {{this.model.consecutive_days}} 天
+            {{else}}
+              点击按钮完成今日签到，获得 {{this.model.points}} 积分
+            {{/if}}
+          </div>
+        </div>
+
+        <div class="qd-makeup-section">
+          <div class="qd-makeup-header">
+            <h4>📝 补签功能</h4>
+            <div class="qd-makeup-cards">
+              补签卡：{{this.model.makeup_cards}} 张
+            </div>
+          </div>
+          
+          {{#if this.missingDays}}
+            <div class="qd-missed-days">
+              {{#each this.missingDays as |day|}}
+                <div class="qd-missed-day">
+                  <div class="qd-day-date">{{day.formatted_date}}</div>
+                  <button class="qd-makeup-btn" 
+                          {{on "click" (fn this.makeupSign day.date)}}
+                          disabled={{this.noMakeupCards}}>
+                    {{#if this.noMakeupCards}}
+                      无卡
+                    {{else}}
+                      补签
+                    {{/if}}
+                  </button>
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="qd-no-missed">
+              🎉 没有缺勤记录
+            </div>
+          {{/if}}
+        </div>
+
+        {{#if this.makeupMessage}}
+          <div class="qd-buy-message success">
+            <span class="qd-buy-icon">✅</span>
+            <span class="qd-buy-text">{{this.makeupMessage}}</span>
+          </div>
+        {{/if}}
+
+        {{#if this.makeupError}}
+          <div class="qd-buy-message error">
+            <span class="qd-buy-icon">❌</span>
+            <span class="qd-buy-text">{{this.makeupError}}</span>
+          </div>
+        {{/if}}
+
+        <div class="qd-shop-section">
+          <div class="qd-shop-header">
+            <h4>💰 补签卡商店</h4>
+            <p>用积分购买补签卡，补签过去的缺勤日期</p>
+          </div>
+          <div class="qd-shop-item">
+            <div class="qd-item-info">
+              <div class="qd-item-name">补签卡 x1</div>
+              <div class="qd-item-price">{{this.model.makeup_card_price}} 积分</div>
+            </div>
+            <button class="qd-buy-btn" {{on "click" this.buyMakeupCard}}
+                    disabled={{this.insufficientPoints}}>
+              {{#if this.insufficientPoints}}
+                积分不足
+              {{else}}
+                购买
+              {{/if}}
+            </button>
+          </div>
+          
+          {{#if this.buyMessage}}
+            <div class="qd-buy-message success">
+              <span class="qd-buy-icon">✅</span>
+              <span class="qd-buy-text">{{this.buyMessage}}</span>
+            </div>
+          {{/if}}
+          
+          {{#if this.buyError}}
+            <div class="qd-buy-message error">
+              <span class="qd-buy-icon">❌</span>
+              <span class="qd-buy-text">{{this.buyError}}</span>
+            </div>
+          {{/if}}
+        </div>
+      {{else}}
+        <div class="qd-sign-section">
+          <LinkTo @route="login" class="btn btn-large btn-primary qd-login-btn">
+            🔐 登录后签到
+          </LinkTo>
+          <div class="qd-status-message info">
+            登录后即可开始每日签到获取积分
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- 签到记录列表（最近 7 天，按时间倒序） -->
+    {{#if this.model.user_logged_in}}
+      <div class="qd-records-section">
+        <h4>🗓️ 签到记录（最近 7 天）</h4>
+        {{#if this.records.length}}
+          <ul class="qd-records-list">
+            {{#each this.records as |r|}}
+              <li class="qd-record-item">
+                <span class="qd-record-date">{{r.date}}</span>
+                <span class="qd-record-points">+{{r.points}} 分</span>
+                <span class="qd-record-makeup">{{if r.makeup "补签" "正常"}}</span>
+                <span class="qd-record-streak">连续：{{r.streak_count}} 天</span>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <div class="qd-no-records">暂无签到记录</div>
+        {{/if}}
+      </div>
+    {{/if}}
+    
+    <div class="qd-install-info">
+      📅 签到系统于 {{this.model.install_date}} 正式启用<br>
+      💡 每日签到可获得 {{this.model.points}} 积分，连续签到获得更多成就感
+    </div>
+  </div>
+</div>
+
+{{!-- 补签确认弹窗 --}}
+{{#if this.showMakeupConfirm}}
+  <div class="qd-confirm-modal">
+    <div class="qd-confirm-content">
+      <h3>确认补签</h3>
+      <p>确定补签 <strong>{{this.selectedMakeupDate}}</strong> 吗？将消耗 <strong>1 张补签卡</strong>。</p>
+      <p class="qd-confirm-note">补签仅在系统启用日之后有效，得分按设置比例计算</p>
+
+      <div class="qd-confirm-buttons">
+        <button class="qd-confirm-cancel" {{on "click" this.cancelMakeupConfirm}} disabled={{this.isLoading}}>
+          取消
+        </button>
+        <button class="qd-confirm-ok" {{on "click" this.confirmMakeupSign}} disabled={{this.isLoading}}>
+          {{#if this.isLoading}}处理中...{{else}}确认补签{{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+{{!-- 购买补签卡确认弹窗 --}}
+{{#if this.showBuyConfirm}}
+  <div class="qd-confirm-modal">
+    <div class="qd-confirm-content">
+      <h3>确认购买</h3>
+      <p>您确定要使用 <strong>{{this.model.makeup_card_price}} 积分</strong> 购买 <strong>1 张补签卡</strong> 吗？</p>
+      <p class="qd-confirm-note">购买后可用于补签缺勤日期，每次补签消耗 1 张补签卡</p>
+      
+      <div class="qd-confirm-buttons">
+        <button class="qd-confirm-cancel" {{on "click" this.cancelBuyConfirm}} disabled={{this.isLoading}}>
+          取消
+        </button>
+        <button class="qd-confirm-ok" {{on "click" this.confirmBuyMakeupCard}} disabled={{this.isLoading}}>
+          {{#if this.isLoading}}
+            处理中...
+          {{else}}
+            确认购买
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+{{!-- 管理员调试弹窗 --}}
+{{#if this.showDebugModal}}
+  <div class="debug-modal">
+    <div class="debug-content">
+      <h3>🛠️ 管理员调试（仅管理员）</h3>
+
+      <div class="debug-section">
+        <h4>手动调整积分</h4>
+        <div class="debug-form">
+          <Input @value={{this.adminUsernameAdjust}} placeholder="用户名，例如: alice" />
+          <Input @value={{this.adminDelta}} @type="number" placeholder="调整值（可正可负），无限制，例如：+1000 或 -500" />
+          <button class="btn-warning" {{on "click" this.adjustPoints}} disabled={{this.isLoading}}>
+            {{if this.isLoading "处理中..." "保存并应用"}}
+          </button>
+        </div>
+      </div>
+
+      <div class="debug-section">
+        <h4>重置今日签到</h4>
+        <div class="debug-form">
+          <Input @value={{this.adminUsernameReset}} placeholder="用户名，例如: alice" />
+          <button class="btn-danger" {{on "click" this.resetToday}} disabled={{this.isLoading}}>
+            {{if this.isLoading "处理中..." "重置今日签到"}}
+          </button>
+        </div>
+      </div>
+
+
+      {{#if this.adminMessage}}
+        <div class="debug-section">
+          <h4>结果</h4>
+          <div>{{this.adminMessage}}</div>
+        </div>
+      {{/if}}
+
+      {{#if this.adminError}}
+        <div class="debug-section">
+          <h4>错误</h4>
+          <div>{{this.adminError}}</div>
+        </div>
+      {{/if}}
+
+      <div class="debug-close">
+        <button {{on "click" this.closeAdminDebug}}>关闭</button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+{{! VIP签到奖励提示 }}
+{{#if this.showVipSigninBonus}}
+  <div class="modal-backdrop vip-bonus-backdrop">
+    <div class="vip-signin-bonus-modal">
+      <div class="vip-bonus-header">
+        <h3><i class="fa fa-crown"></i> VIP会员签到成功</h3>
+        <button class="btn-close" {{on "click" this.closeVipSigninBonus}}>
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="vip-bonus-body">
+        <div class="vip-bonus-icon">
+          <i class="fa fa-gift"></i>
+        </div>
+        <div class="vip-bonus-message">
+          <p class="vip-level">VIP {{this.vipSigninBonusInfo.level}} 专属特权</p>
+          <p class="vip-bonus-points">额外获得 <span class="highlight">+{{this.vipSigninBonusInfo.bonus}}</span> 积分</p>
+          <p class="vip-bonus-desc">会员签到积分已自动发放</p>
+        </div>
+      </div>
+      <div class="vip-bonus-footer">
+        <button class="btn-confirm" {{on "click" this.closeVipSigninBonus}}>
+          <i class="fa fa-check"></i> 知道了
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}

@@ -1,0 +1,141 @@
+<div class="qd-dress-container">
+  {{! 页面标题 }}
+  <div class="dress-header">
+    <div class="header-content">
+      <h1><i class="fa fa-star"></i> 我的装饰</h1>
+      <div class="user-info">
+        <i class="fa fa-user"></i> {{this.model.username}}
+      </div>
+    </div>
+  </div>
+
+  {{! 头像框区域 }}
+  <div class="dress-section">
+    <div class="section-header">
+      <h2><i class="fa fa-image"></i> 我的头像框</h2>
+      {{#if this.model.equipped_frame_id}}
+        <button class="btn-unequip" {{on "click" this.unequipFrame}} disabled={{this.isLoading}}>
+          <i class="fa fa-times"></i> 取消装备
+        </button>
+      {{/if}}
+    </div>
+
+    {{#if this.hasFrames}}
+      <div class="decoration-grid">
+        {{#each this.model.owned_frames as |frame|}}
+          <div class="decoration-card {{if (eq this.model.equipped_frame_id frame.id) 'equipped'}}">
+            <div class="card-preview">
+              <img src={{frame.image}} alt="头像框" />
+              {{#if (eq this.model.equipped_frame_id frame.id)}}
+                <div class="equipped-badge"><i class="fa fa-check-circle"></i> 已装备</div>
+              {{/if}}
+            </div>
+            <div class="card-info">
+              <div class="info-row">
+                <span class="label">ID:</span>
+                <span class="value">{{frame.id}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">获得时间:</span>
+                <span class="value">{{this.formatDate frame.granted_at}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">授予者:</span>
+                <span class="value">{{frame.granted_by}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">有效期:</span>
+                <span class="value">
+                  {{#if frame.permanent}}
+                    <span class="permanent"><i class="fa fa-infinity"></i> 永久</span>
+                  {{else}}
+                    {{this.formatDate frame.expires_at}}
+                    <br><small>(剩余{{this.formatDuration frame.time_remaining}})</small>
+                  {{/if}}
+                </span>
+              </div>
+            </div>
+            {{#unless (eq this.model.equipped_frame_id frame.id)}}
+              <button class="btn-equip" {{on "click" (fn this.equipFrame frame.id)}} disabled={{this.isLoading}}>
+                <i class="fa fa-hand-pointer"></i> 装备
+              </button>
+            {{/unless}}
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="empty-state">
+        <i class="fa fa-inbox"></i>
+        <p>您还没有头像框</p>
+        <small>完成任务或参与活动可获得装饰</small>
+      </div>
+    {{/if}}
+  </div>
+
+  {{! 勋章区域 }}
+  <div class="dress-section">
+    <div class="section-header">
+      <h2><i class="fa fa-certificate"></i> 我的勋章</h2>
+      {{#if this.model.equipped_badge_id}}
+        <button class="btn-unequip" {{on "click" this.unequipBadge}} disabled={{this.isLoading}}>
+          <i class="fa fa-times"></i> 取消装备
+        </button>
+      {{/if}}
+    </div>
+
+    {{#if this.hasBadges}}
+      <div class="decoration-grid">
+        {{#each this.model.owned_badges as |badge|}}
+          <div class="decoration-card {{if (eq this.model.equipped_badge_id badge.id) 'equipped'}}">
+            <div class="card-preview badge-preview">
+              {{#if (eq badge.type "text")}}
+                <span class="badge-text-display" style={{badge.style}}>{{badge.text}}</span>
+              {{else}}
+                <img src={{badge.image}} alt={{badge.name}} style="height: {{or badge.height 25}}px;" />
+              {{/if}}
+              {{#if (eq this.model.equipped_badge_id badge.id)}}
+                <div class="equipped-badge"><i class="fa fa-check-circle"></i> 已装备</div>
+              {{/if}}
+            </div>
+            <div class="card-info">
+              <div class="info-row">
+                <span class="label">ID:</span>
+                <span class="value">{{badge.id}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">获得时间:</span>
+                <span class="value">{{this.formatDate badge.granted_at}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">授予者:</span>
+                <span class="value">{{badge.granted_by}}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">有效期:</span>
+                <span class="value">
+                  {{#if badge.permanent}}
+                    <span class="permanent"><i class="fa fa-infinity"></i> 永久</span>
+                  {{else}}
+                    {{this.formatDate badge.expires_at}}
+                    <br><small>(剩余{{this.formatDuration badge.time_remaining}})</small>
+                  {{/if}}
+                </span>
+              </div>
+            </div>
+            {{#unless (eq this.model.equipped_badge_id badge.id)}}
+              <button class="btn-equip" {{on "click" (fn this.equipBadge badge.id)}} disabled={{this.isLoading}}>
+                <i class="fa fa-hand-pointer"></i> 装备
+              </button>
+            {{/unless}}
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="empty-state">
+        <i class="fa fa-inbox"></i>
+        <p>您还没有勋章</p>
+        <small>完成任务或参与活动可获得装饰</small>
+      </div>
+    {{/if}}
+  </div>
+</div>

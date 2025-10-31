@@ -1,0 +1,329 @@
+<div class="qd-vip-page-modern">
+  {{! 顶部导航 }}
+  <div class="vip-top-bar">
+    <div class="top-bar-content">
+      <div class="brand">
+        <i class="fa fa-crown"></i>
+        <span>VIP会员中心</span>
+      </div>
+      {{#if this.currentUser.admin}}
+        <button class="btn-admin-top" {{on "click" this.goToAdmin}}>
+          <i class="fa fa-cog"></i>
+          <span>管理后台</span>
+        </button>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="vip-container">
+    {{! 当前状态卡片 }}
+    <div class="current-status-card">
+      <div class="status-grid">
+        <div class="status-item vip-level-item">
+          <div class="status-icon-wrapper {{if this.hasVip 'active' ''}}">
+            <i class="fa fa-crown"></i>
+          </div>
+          <div class="status-info">
+            <span class="status-label">VIP等级</span>
+            {{#if this.hasVip}}
+              <span class="status-value gradient">VIP {{this.vipLevel}}</span>
+            {{else}}
+              <span class="status-value gray">未开通</span>
+            {{/if}}
+          </div>
+        </div>
+
+        <div class="status-item">
+          <div class="status-icon-wrapper">
+            <i class="fa fa-calendar-alt"></i>
+          </div>
+          <div class="status-info">
+            <span class="status-label">到期时间</span>
+            <span class="status-value">{{if this.hasVip this.vipExpiresAt "--"}}</span>
+          </div>
+        </div>
+
+        <div class="status-item">
+          <div class="status-icon-wrapper balance">
+            <i class="fa fa-wallet"></i>
+          </div>
+          <div class="status-info">
+            <span class="status-label">{{this.coinName}}余额</span>
+            <span class="status-value balance-value">{{this.userBalance}}</span>
+          </div>
+        </div>
+
+        {{#if this.hasVip}}
+          <div class="status-item">
+            <div class="status-icon-wrapper days">
+              <i class="fa fa-clock"></i>
+            </div>
+            <div class="status-info">
+              <span class="status-label">剩余天数</span>
+              <span class="status-value">{{this.vipDaysRemaining}} 天</span>
+            </div>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+
+    {{! VIP套餐标题 }}
+    <div class="packages-header">
+      <h2>选择您的专属套餐</h2>
+      <p>解锁更多特权，畅享尊贵体验</p>
+    </div>
+
+    {{! 套餐列表 }}
+    {{#if this.hasPackages}}
+      <div class="packages-grid-modern">
+        {{#each this.packages as |pkg|}}
+          <div 
+            class="package-card-modern {{if (eq this.selectedPackageId pkg.id) 'selected'}} {{if (eq pkg.level this.vipLevel) 'current'}}"
+            data-pkg-id="{{pkg.id}}"
+            {{on "click" this.handleCardClick}}
+          >
+            {{#if (eq pkg.level this.vipLevel)}}
+              <div class="current-badge">
+                <i class="fa fa-check-circle"></i> 当前等级
+              </div>
+            {{/if}}
+
+            <div class="package-level-badge">
+              {{#if (eq pkg.level 1)}}
+                <i class="fa fa-star"></i>
+              {{else if (eq pkg.level 2)}}
+                <i class="fa fa-gem"></i>
+              {{else if (eq pkg.level 3)}}
+                <i class="fa fa-crown"></i>
+              {{else if (eq pkg.level 4)}}
+                <i class="fa fa-trophy"></i>
+              {{else if (eq pkg.level 5)}}
+                <i class="fa fa-fire"></i>
+              {{else}}
+                <i class="fa fa-bolt"></i>
+              {{/if}}
+              <span>VIP {{pkg.level}}</span>
+            </div>
+            
+            <h3 class="package-title">{{pkg.name}}</h3>
+            
+            {{#if pkg.description}}
+              <p class="package-desc">{{pkg.description}}</p>
+            {{/if}}
+
+            {{! 奖励列表 }}
+            {{#if pkg.rewards}}
+              <div class="rewards-section">
+                <div class="rewards-label">
+                  <i class="fa fa-gift"></i>
+                  <span>专属特权</span>
+                </div>
+                <ul class="rewards-list-modern">
+                  {{#if pkg.rewards.makeup_cards}}
+                    <li>
+                      <i class="fa fa-ticket-alt"></i>
+                      <span>{{pkg.rewards.makeup_cards}} 张补签卡</span>
+                    </li>
+                  {{/if}}
+                  <li class="{{unless pkg.rewards.avatar_frame_id 'reward-disabled'}}">
+                    <i class="fa fa-image"></i>
+                    <span>专属头像框</span>
+                    {{#unless pkg.rewards.avatar_frame_id}}
+                      <span class="reward-status">未赠送</span>
+                    {{/unless}}
+                  </li>
+                  <li class="{{unless pkg.rewards.badge_id 'reward-disabled'}}">
+                    <i class="fa fa-certificate"></i>
+                    <span>专属勋章</span>
+                    {{#unless pkg.rewards.badge_id}}
+                      <span class="reward-status">未赠送</span>
+                    {{/unless}}
+                  </li>
+                  {{#if pkg.daily_signin_bonus}}
+                    <li>
+                      <i class="fa fa-calendar-check"></i>
+                      <span>每日签到 +{{pkg.daily_signin_bonus}} 积分</span>
+                    </li>
+                  {{/if}}
+                </ul>
+              </div>
+            {{/if}}
+
+            {{#if (eq this.selectedPackageId pkg.id)}}
+              <div class="selected-indicator">
+                <i class="fa fa-check"></i>
+              </div>
+            {{/if}}
+          </div>
+        {{/each}}
+      </div>
+
+      {{! 购买按钮 }}
+      {{#if this.selectedPackage}}
+        <div class="purchase-action">
+          <button class="btn-purchase-main" {{on "click" this.openPurchaseModal}}>
+            <span class="btn-text">
+              {{#if (eq this.selectedPackage.level this.vipLevel)}}
+                <i class="fa fa-redo"></i> 续费 {{this.selectedPackage.name}}
+              {{else}}
+                <i class="fa fa-shopping-cart"></i> 购买 {{this.selectedPackage.name}}
+              {{/if}}
+            </span>
+          </button>
+        </div>
+      {{/if}}
+    {{else}}
+      <div class="no-packages-state">
+        <i class="fa fa-box-open"></i>
+        <p>暂无VIP套餐</p>
+        <small>敬请期待</small>
+      </div>
+    {{/if}}
+  </div>
+
+  {{! 购买确认模态框 }}
+  {{#if this.showPurchaseModal}}
+    <div class="modal-overlay" {{on "click" this.closePurchaseModal}}>
+      <div class="purchase-modal-modern" {{on "click" this.stopPropagation}}>
+        <button class="modal-close-btn" {{on "click" this.closePurchaseModal}}>
+          <i class="fa fa-times"></i>
+        </button>
+
+        <div class="modal-header-modern">
+          <i class="fa fa-shopping-cart modal-icon"></i>
+          <h3>确认购买</h3>
+        </div>
+
+        {{#if this.selectedPackage}}
+          <div class="modal-body-modern">
+            <div class="purchase-info">
+              <div class="info-row">
+                <span class="info-label">套餐</span>
+                <span class="info-value">{{this.selectedPackage.name}}</span>
+              </div>
+
+              {{#if this.pricingPlans.length}}
+                <div class="duration-selector-wrapper">
+                  <span class="info-label">选择时长</span>
+                  <div class="duration-buttons">
+                    {{#each this.pricingPlans as |plan|}}
+                      <button
+                        type="button"
+                        class="duration-btn {{if (eq plan.type this.selectedDurationType) 'active'}}"
+                        data-type="{{plan.type}}"
+                        {{on "click" this.handleDurationClick}}
+                      >
+                        <span class="duration-label">{{plan.label}}</span>
+                        <span class="duration-price">{{plan.price}} {{this.coinName}}</span>
+                      </button>
+                    {{/each}}
+                  </div>
+                </div>
+              {{/if}}
+
+              <div class="price-summary">
+                <div class="price-row total">
+                  <span>应付金额</span>
+                  <span class="price-amount">{{this.payablePrice}} {{this.coinName}}</span>
+                </div>
+                <div class="price-row balance">
+                  <span>当前余额</span>
+                  <span>{{this.userBalance}} {{this.coinName}}</span>
+                </div>
+                <div class="price-row remaining">
+                  <span>购买后余额</span>
+                  <span>{{this.remainingBalance}} {{this.coinName}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer-modern">
+            <button 
+              class="btn-modal-cancel"
+              {{on "click" this.closePurchaseModal}}
+              disabled={{this.purchasing}}
+            >
+              取消
+            </button>
+            <button
+              class="btn-modal-confirm"
+              {{on "click" this.confirmPurchase}}
+              disabled={{this.purchasing}}
+            >
+              {{#if this.purchasing}}
+                <i class="fa fa-spinner fa-spin"></i> 处理中...
+              {{else}}
+                <i class="fa fa-check"></i> 确认购买
+              {{/if}}
+            </button>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 购买成功模态框 }}
+  {{#if this.showSuccessModal}}
+    <div class="modal-overlay success" {{on "click" this.closeSuccessModal}}>
+      <div class="success-modal-modern" {{on "click" this.stopPropagation}}>
+        <div class="success-icon-wrapper">
+          <i class="fa fa-check-circle"></i>
+        </div>
+
+        <h2 class="success-title">购买成功！</h2>
+        <p class="success-message">恭喜您成为 {{this.purchaseResult.packageName}} 会员</p>
+
+        {{#if this.purchaseResult}}
+          <div class="success-details">
+            <div class="detail-card">
+              <i class="fa fa-crown"></i>
+              <span class="detail-label">VIP等级</span>
+              <span class="detail-value">VIP {{this.purchaseResult.subscription.level}}</span>
+            </div>
+            <div class="detail-card">
+              <i class="fa fa-calendar-alt"></i>
+              <span class="detail-label">到期时间</span>
+              <span class="detail-value">{{this.purchaseResult.subscription.expires_at}}</span>
+            </div>
+            <div class="detail-card">
+              <i class="fa fa-clock"></i>
+              <span class="detail-label">有效天数</span>
+              <span class="detail-value">{{this.purchaseResult.subscription.days_remaining}} 天</span>
+            </div>
+          </div>
+
+          {{#if (or this.purchaseResult.rewards.makeup_cards this.purchaseResult.rewards.avatar_frame_id this.purchaseResult.rewards.badge_id)}}
+            <div class="rewards-earned">
+              <h4><i class="fa fa-gift"></i> 获得奖励</h4>
+              <div class="rewards-grid">
+                {{#if this.purchaseResult.rewards.makeup_cards}}
+                  <div class="reward-badge">
+                    <i class="fa fa-ticket-alt"></i>
+                    <span>{{this.purchaseResult.rewards.makeup_cards}} 张补签卡</span>
+                  </div>
+                {{/if}}
+                {{#if this.purchaseResult.rewards.avatar_frame_id}}
+                  <div class="reward-badge">
+                    <i class="fa fa-image"></i>
+                    <span>专属头像框</span>
+                  </div>
+                {{/if}}
+                {{#if this.purchaseResult.rewards.badge_id}}
+                  <div class="reward-badge">
+                    <i class="fa fa-certificate"></i>
+                    <span>专属勋章</span>
+                  </div>
+                {{/if}}
+              </div>
+            </div>
+          {{/if}}
+        {{/if}}
+
+        <button class="btn-success-ok" {{on "click" this.closeSuccessModal}}>
+          <i class="fa fa-check"></i> 太棒了！
+        </button>
+      </div>
+    </div>
+  {{/if}}
+</div>

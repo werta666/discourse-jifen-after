@@ -1,0 +1,521 @@
+<div class="qd-center-make-page">
+  {{! 顶部导航 }}
+  <div class="make-header">
+    <div class="header-left">
+      <button class="btn-back" {{on "click" this.goToCenter}}>
+        <i class="fa fa-arrow-left"></i>
+        <span>返回作品墙</span>
+      </button>
+    </div>
+    
+    <div class="header-center">
+      <i class="fa fa-palette"></i>
+      <h1>我的创作</h1>
+    </div>
+    
+    <div class="header-right">
+      <button class="btn-upload" {{on "click" this.openUploadModal}}>
+        <i class="fa fa-cloud-upload-alt"></i>
+        <span>上传作品</span>
+      </button>
+    </div>
+  </div>
+
+  {{! 统计卡片 }}
+  <div class="stats-cards">
+    <div class="stat-card">
+      <i class="fa fa-images"></i>
+      <div class="stat-info">
+        <span class="stat-value">{{this.myWorks.length}}</span>
+        <span class="stat-label">我的作品</span>
+      </div>
+    </div>
+    
+    <div class="stat-card earnings">
+      <i class="fa fa-coins"></i>
+      <div class="stat-info">
+        <div class="earnings-breakdown">
+          <div class="earning-item">
+            <i class="fa fa-coins jifen-icon"></i>
+            <span class="earning-value">{{this.model.total_jifen_received}}</span>
+            <span class="earning-label">{{this.jifenName}}</span>
+          </div>
+          <div class="earning-item">
+            <i class="fa fa-gem paid-coin-icon"></i>
+            <span class="earning-value">{{this.model.total_paid_coin_received}}</span>
+            <span class="earning-label">{{this.paidCoinName}}</span>
+          </div>
+        </div>
+        <span class="stat-label">总收益</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <i class="fa fa-heart"></i>
+      <div class="stat-info">
+        <span class="stat-value">{{this.totalLikes}}</span>
+        <span class="stat-label">总点赞</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <i class="fa fa-eye"></i>
+      <div class="stat-info">
+        <span class="stat-value">{{this.totalClicks}}</span>
+        <span class="stat-label">总浏览</span>
+      </div>
+    </div>
+  </div>
+
+  {{! 上架标准提示 }}
+  {{#if this.shopStandards.min_likes}}
+    <div class="shop-standards-tip">
+      <i class="fa fa-info-circle"></i>
+      <span>
+        上架标准：点赞数 ≥ {{this.shopStandards.min_likes}}，点击数 ≥ {{this.shopStandards.min_clicks}}
+      </span>
+    </div>
+  {{/if}}
+
+  {{! 标签页切换 }}
+  <div class="tabs">
+    <button 
+      class="tab {{if (eq this.activeTab 'works') 'active'}}"
+      {{on "click" (fn this.switchTab "works")}}
+    >
+      <i class="fa fa-images"></i> 我的作品
+    </button>
+    <button 
+      class="tab {{if (eq this.activeTab 'donations') 'active'}}"
+      {{on "click" (fn this.switchTab "donations")}}
+    >
+      <i class="fa fa-gift"></i> 打赏记录
+    </button>
+    <button 
+      class="tab {{if (eq this.activeTab 'partnership') 'active'}}"
+      {{on "click" (fn this.switchTab "partnership")}}
+    >
+      <i class="fa fa-handshake"></i> 合作销售记录
+    </button>
+  </div>
+
+  {{! 我的作品 }}
+  {{#if (eq this.activeTab "works")}}
+    <div class="works-list">
+      {{#if this.myWorks.length}}
+        <div class="works-grid-make">
+          {{#each this.myWorks as |work|}}
+            <div class="work-card-make">
+              <div class="work-image-make">
+                <img src={{work.image_url}} alt={{work.title}} />
+                <div class="work-status-overlay">
+                  <span class="status-badge {{this.getStatusClass work.status}}">
+                    {{#if (eq work.status "pending")}}待审核{{/if}}
+                    {{#if (eq work.status "approved")}}已通过{{/if}}
+                    {{#if (eq work.status "rejected")}}已驳回{{/if}}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="work-info-make">
+                <div class="work-header-make">
+                  <h3 class="work-title-make">{{if work.title work.title (concat "作品 #" work.id)}}</h3>
+                  <span class="work-id-badge">ID: {{work.id}}</span>
+                </div>
+                
+                <div class="work-date-line">
+                  <i class="fa fa-calendar"></i>
+                  <span>{{format-date work.created_at}}</span>
+                </div>
+                
+                <div class="work-stats-make">
+                  <span><i class="fa fa-heart"></i> {{work.likes_count}}</span>
+                  <span><i class="fa fa-eye"></i> {{work.clicks_count}}</span>
+                  <span class="earning-item jifen">
+                    <i class="fa fa-coins"></i>
+                    {{work.jifen_received}}
+                  </span>
+                  <span class="earning-item paid-coin">
+                    <i class="fa fa-gem"></i>
+                    {{work.paid_coin_received}}
+                  </span>
+                </div>
+                
+                {{#if work.is_shop_product}}
+                  <div class="shop-badge">
+                    <i class="fa fa-store"></i> 已上架商品
+                  </div>
+                {{else if (eq work.shop_status "pending")}}
+                  <div class="shop-badge pending">
+                    <i class="fa fa-clock"></i> 上架审核中
+                  </div>
+                {{/if}}
+              
+              {{#if work.rejection_reason}}
+                <div class="rejection-reason">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  驳回原因：{{work.rejection_reason}}
+                </div>
+              {{/if}}
+              
+              <div class="work-actions-line">
+                <a href={{work.post_url}} target="_blank" class="btn-view">
+                  <i class="fa fa-external-link-alt"></i> 查看帖子
+                </a>
+                
+                {{#if (eq work.status "approved")}}
+                  <button class="btn-share-work" {{on "click" (fn this.shareWork work)}}>
+                    <i class="fa fa-share-alt"></i> 分享
+                  </button>
+                {{/if}}
+                
+                {{#if (eq work.status "rejected")}}
+                  <button class="btn-delete-rejected" {{on "click" (fn this.deleteRejectedWork work)}}>
+                    <i class="fa fa-trash"></i> 删除
+                  </button>
+                {{/if}}
+                
+                {{#if (and (eq work.status "approved") (not work.is_shop_product) (eq work.shop_status "none"))}}
+                  <button class="btn-apply-shop" {{on "click" (fn this.applyShop work)}}>
+                    <i class="fa fa-store"></i> 申请上架
+                  </button>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        {{/each}}
+        </div>
+      {{else}}
+        <div class="no-works-state">
+          <div class="empty-icon">
+            <i class="fa fa-image"></i>
+          </div>
+          <h3>暂无作品</h3>
+          <p>上传您的第一个作品，开启创作之旅</p>
+          <button class="btn-upload-hero" {{on "click" this.openUploadModal}}>
+            <i class="fa fa-cloud-upload-alt"></i>
+            <span>立即上传作品</span>
+          </button>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 打赏记录 }}
+  {{#if (eq this.activeTab "donations")}}
+    <div class="donations-list">
+      {{#if this.donations.length}}
+        {{! 日期筛选器 }}
+        <div class="date-filter-section">
+          <div class="filter-group">
+            <label><i class="fa fa-calendar"></i> 按日期筛选：</label>
+            <input 
+              type="date" 
+              value={{this.filterDate}}
+              {{on "input" this.updateFilterDate}}
+              class="date-filter-input"
+            />
+            <button class="btn-clear-filter" {{on "click" this.clearFilter}}>
+              <i class="fa fa-times"></i> 清除筛选
+            </button>
+          </div>
+          <div class="filter-stats">
+            显示 {{this.filteredDonations.length}} / {{this.donations.length}} 条记录
+          </div>
+        </div>
+        
+        {{#if this.filteredDonations.length}}
+          <table class="donations-table">
+            <thead>
+              <tr>
+                <th>作品</th>
+                <th>打赏人</th>
+                <th>金额</th>
+                <th>类型</th>
+                <th>抽成</th>
+                <th>实收</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.paginatedDonations as |donation|}}
+                <tr>
+                  <td>{{donation.work_title}}</td>
+                  <td>{{donation.donor_username}}</td>
+                  <td>{{donation.amount}}</td>
+                  <td>
+                    {{#if (eq donation.currency_type "jifen")}}
+                      {{this.jifenName}}
+                    {{else}}
+                      {{this.paidCoinName}}
+                    {{/if}}
+                  </td>
+                  <td>{{donation.commission_rate}}%</td>
+                  <td class="received-amount"><i class="fa fa-coins"></i><span>{{donation.creator_received}}</span></td>
+                  <td class="donation-time">{{format-date donation.created_at leaveAgo="true"}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          
+          {{! 分页控件 }}
+          {{#if (gt this.totalPages 1)}}
+            <div class="pagination">
+              <button 
+                class="btn-page" 
+                {{on "click" this.previousPage}}
+                disabled={{not this.hasPreviousPage}}
+              >
+                <i class="fa fa-chevron-left"></i> 上一页
+              </button>
+              
+              <span class="page-info">
+                第 {{this.currentPage}} / {{this.totalPages}} 页
+              </span>
+              
+              <button 
+                class="btn-page" 
+                {{on "click" this.nextPage}}
+                disabled={{not this.hasNextPage}}
+              >
+                下一页 <i class="fa fa-chevron-right"></i>
+              </button>
+            </div>
+          {{/if}}
+        {{else}}
+          <div class="no-data">
+            <i class="fa fa-filter"></i>
+            <p>该日期无打赏记录</p>
+          </div>
+        {{/if}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-gift"></i>
+          <p>暂无打赏记录</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 合作销售记录 }}
+  {{#if (eq this.activeTab "partnership")}}
+    <div class="donations-list">
+      {{#if this.partnershipSales.length}}
+        {{! 日期筛选器 }}
+        <div class="date-filter-section">
+          <div class="filter-group">
+            <label><i class="fa fa-calendar"></i> 按日期筛选：</label>
+            <input 
+              type="date" 
+              value={{this.salesFilterDate}}
+              {{on "input" this.updateSalesFilterDate}}
+              class="date-filter-input"
+            />
+            <button class="btn-clear-filter" {{on "click" this.clearSalesFilter}}>
+              <i class="fa fa-times"></i> 清除筛选
+            </button>
+          </div>
+          <div class="filter-stats">
+            显示 {{this.filteredPartnershipSales.length}} / {{this.partnershipSales.length}} 条记录
+            <span class="total-income">
+              <i class="fa fa-wallet"></i> 总收益：
+              {{#if this.totalPartnershipIncomePaidCoins}}
+                <span class="income-paid-coins">
+                  <i class="fa fa-gem"></i> {{this.paidCoinName}}: {{this.totalPartnershipIncomePaidCoins}}
+                </span>
+              {{/if}}
+              {{#if this.totalPartnershipIncomeJifen}}
+                <span class="income-jifen">
+                  <i class="fa fa-coins"></i> {{this.jifenName}}: {{this.totalPartnershipIncomeJifen}}
+                </span>
+              {{/if}}
+              {{#unless (or this.totalPartnershipIncomePaidCoins this.totalPartnershipIncomeJifen)}}
+                <span>0</span>
+              {{/unless}}
+            </span>
+          </div>
+        </div>
+        
+        {{#if this.filteredPartnershipSales.length}}
+          <table class="donations-table">
+            <thead>
+              <tr>
+                <th>商品名称</th>
+                <th>购买人</th>
+                <th>数量</th>
+                <th>单价</th>
+                <th>总价</th>
+                <th>货币</th>
+                <th>抽成比例</th>
+                <th>实收利润</th>
+                <th>订单状态</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.paginatedPartnershipSales as |sale|}}
+                <tr>
+                  <td>{{sale.product_name}}</td>
+                  <td>@{{sale.buyer_username}}</td>
+                  <td>x{{sale.quantity}}</td>
+                  <td>{{sale.unit_price}}</td>
+                  <td>{{sale.total_price}}</td>
+                  <td>
+                    {{#if (eq sale.currency_type "paid_coins")}}
+                      {{this.paidCoinName}}
+                    {{else}}
+                      {{this.jifenName}}
+                    {{/if}}
+                  </td>
+                  <td>{{sale.commission_rate}}%</td>
+                  <td class="received-amount partnership-income">
+                    {{#if (eq sale.currency_type "paid_coins")}}
+                      <i class="fa fa-gem"></i>
+                      <span>{{sale.partner_income}} {{this.paidCoinName}}</span>
+                    {{else}}
+                      <i class="fa fa-coins"></i>
+                      <span>{{sale.partner_income}} {{this.jifenName}}</span>
+                    {{/if}}
+                  </td>
+                  <td>
+                    <span class="order-status {{sale.order_status}}">
+                      {{this.getOrderStatusLabel sale.order_status}}
+                    </span>
+                  </td>
+                  <td class="donation-time">{{format-date sale.created_at leaveAgo="true"}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          
+          {{! 分页控件 }}
+          {{#if (gt this.salesTotalPages 1)}}
+            <div class="pagination">
+              <button 
+                class="btn-page" 
+                {{on "click" this.salesPreviousPage}}
+                disabled={{not this.salesHasPreviousPage}}
+              >
+                <i class="fa fa-chevron-left"></i> 上一页
+              </button>
+              
+              <span class="page-info">
+                第 {{this.salesCurrentPage}} / {{this.salesTotalPages}} 页
+              </span>
+              
+              <button 
+                class="btn-page" 
+                {{on "click" this.salesNextPage}}
+                disabled={{not this.salesHasNextPage}}
+              >
+                下一页 <i class="fa fa-chevron-right"></i>
+              </button>
+            </div>
+          {{/if}}
+        {{else}}
+          <div class="no-data">
+            <i class="fa fa-filter"></i>
+            <p>该日期无合作销售记录</p>
+          </div>
+        {{/if}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-handshake"></i>
+          <p>暂无合作销售记录</p>
+          <small>在商店创建合作商品后，销售记录将显示在这里</small>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 上传作品弹窗 }}
+  {{#if this.showUploadModal}}
+    <div class="modal-backdrop" {{on "click" this.closeUploadModal}}>
+      <div class="upload-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-upload"></i> 上传作品</h3>
+          <button class="btn-close" {{on "click" this.closeUploadModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group required">
+            <label>作品标题 <span class="required-mark">*</span></label>
+            <input 
+              type="text"
+              {{on "input" this.updateUploadTitle}}
+              value={{this.uploadTitle}}
+              placeholder="为您的作品取个名字（必填）"
+              maxlength="100"
+            />
+            <small class="char-count">{{this.titleLength}}/100</small>
+          </div>
+          
+          <div class="form-group required">
+            <label>作品图片 <span class="required-mark">*</span></label>
+            <div class="image-upload-area">
+              {{#if this.uploadImagePreview}}
+                <div class="image-preview">
+                  <img src={{this.uploadImagePreview}} alt="预览" />
+                  <button class="btn-remove-image" {{on "click" this.removeImage}}>
+                    <i class="fa fa-times"></i>
+                  </button>
+                </div>
+              {{else}}
+                <label class="upload-trigger" for="image-upload-input">
+                  <i class="fa fa-cloud-upload-alt"></i>
+                  <p>点击上传图片</p>
+                  <small>仅支持 JPG 格式，建议尺寸 800x600</small>
+                </label>
+                <input 
+                  id="image-upload-input"
+                  type="file"
+                  accept="image/jpeg,image/jpg"
+                  {{on "change" this.handleImageUpload}}
+                  style="display:none;"
+                />
+              {{/if}}
+            </div>
+          </div>
+          
+          <div class="form-group required">
+            <label>帖子地址 <span class="required-mark">*</span></label>
+            <div class="url-input-group">
+              <span class="url-prefix">{{this.siteUrl}}/t/</span>
+              <input 
+                type="text"
+                {{on "input" this.updateUploadPostUrl}}
+                value={{this.uploadPostUrl}}
+                placeholder="请填写正确的帖子地址"
+                class="url-suffix-input"
+              />
+            </div>
+            <small>只需填写 /t/ 后面的部分，如：/topic/13/1 或 /topic-xxx/13/1</small>
+          </div>
+          
+          <div class="upload-tip">
+            <i class="fa fa-info-circle"></i>
+            <span>提交后将进入审核，通过后会在作品墙展示</span>
+          </div>
+        </div>        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeUploadModal}}>
+            取消
+          </button>
+          <button 
+            class="btn-confirm" 
+            {{on "click" this.confirmUpload}}
+            disabled={{this.uploading}}
+          >
+            {{#if this.uploading}}
+              <i class="fa fa-spinner fa-spin"></i> 提交中...
+            {{else}}
+              <i class="fa fa-check"></i> 提交审核
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

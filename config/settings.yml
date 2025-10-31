@@ -1,0 +1,153 @@
+jifen:
+  jifen_makeup_ratio_percent:
+    default: 100
+    client: false
+
+  jifen_enabled:
+    default: true
+    client: true
+  
+  jifen_paid_coin_name:
+    default: '付费币'
+    client: true
+
+  jifen_paid_coin_to_points_ratio:
+    default: 100
+    min: 1
+    max: 10000
+    client: true
+    type: text
+
+  jifen_base_points_per_signin:
+    default: 5
+    client: true
+
+  jifen_consecutive_rewards_json:
+    default: '{"3":10,"5":20}'
+    client: true
+    type: text
+
+  jifen_makeup_card_price:
+    default: 20
+    client: true
+
+  jifen_leaderboard_update_minutes:
+    default: 3
+    min: 1
+    max: 60
+    client: true
+
+  jifen_board_theme:
+    default: 'neo'
+    client: true
+    type: enum
+    choices:
+      - neo
+      - mario
+      - minecraft
+
+  jifen_alipay_enabled:
+    default: true
+    client: true
+
+  jifen_alipay_app_id:
+    default: ''
+    client: false
+
+  jifen_alipay_private_key:
+    default: ''
+    client: false
+    type: text
+
+  jifen_alipay_public_key:
+    default: ''
+    client: false
+    type: text
+
+  jifen_wechat_enabled:
+    default: false
+    client: true
+  
+  jifen_wechat_app_id:
+    default: ''
+    client: false
+  
+  jifen_wechat_mch_id:
+    default: ''
+    client: false
+  
+  jifen_wechat_api_key:
+    default: ''
+    client: false
+    type: text
+  
+  jifen_wechat_app_secret:
+    default: ''
+    client: false
+    type: text
+
+  jifen_qrcode_api:
+    default: 'https://api.pwmqr.com/qrcode/create/?url='
+    client: true
+
+  jifen_recharge_packages:
+    default: '[{"amount":10,"points":100,"label":"体验装"},{"amount":50,"points":550,"bonus":50},{"amount":100,"points":1200,"bonus":200,"label":"热销"},{"amount":500,"points":6500,"bonus":1500}]'
+    client: true
+    type: text
+
+  jifen_betting_enabled:
+    default: true
+    client: true
+
+  jifen_betting_vote_creation_cost:
+    default: 100
+    min: 0
+    max: 10000
+    client: true
+
+  jifen_betting_min_bet_amount:
+    default: 10
+    min: 1
+    max: 1000
+    client: true
+
+  jifen_betting_platform_fee_rate:
+    default: 5
+    min: 0
+    max: 20
+    client: true
+
+  jifen_betting_max_event_duration_days:
+    default: 30
+    min: 1
+    max: 90
+    client: true
+
+  jifen_duel_enabled:
+    default: true
+    client: true
+
+  jifen_duel_creation_cost:
+    default: 50
+    min: 0
+    max: 10000
+    client: true
+
+  jifen_duel_cooldown_minutes:
+    default: 60
+    min: 0
+    max: 1440
+    client: true
+
+  jifen_duel_expire_hours:
+    default: 72
+    min: 1
+    max: 720
+    client: true
+
+  jifen_creator_application_fee:
+    default: 100
+    min: 0
+    max: 10000
+    client: true
+    

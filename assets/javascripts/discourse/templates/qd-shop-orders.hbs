@@ -1,0 +1,130 @@
+<div class="qd-shop-orders-page">
+  {{! 页面头部 }}
+  <div class="qd-orders-header">
+    <div class="qd-orders-title">
+      <button class="back-btn" {{on "click" this.goBackToShop}}>
+        <i class="fa fa-arrow-left"></i>
+      </button>
+      <h1>📋 购买历史</h1>
+      <p class="qd-orders-subtitle">查看您的所有购买记录</p>
+    </div>
+    
+    <div class="qd-orders-actions">
+      <button 
+        class="btn btn-default refresh-btn {{if this.isLoading 'loading'}}" 
+        {{on "click" this.refreshOrders}}
+        disabled={{this.isLoading}}
+      >
+        <i class="fa fa-refresh {{if this.isLoading 'fa-spin'}}"></i>
+        {{if this.isLoading "刷新中..." "刷新"}}
+      </button>
+    </div>
+  </div>
+
+  {{! 订单列表 }}
+  <div class="qd-orders-content">
+    {{#if model.orders}}
+      <div class="qd-orders-list">
+        {{#each model.orders as |order|}}
+          <div class="qd-order-card">
+            <div class="order-header">
+              <div class="order-id">
+                <span class="order-label">订单号:</span>
+                <span class="order-number">#{{order.id}}</span>
+              </div>
+              <div class="order-status">
+                <span class="status-badge {{this.getStatusClass order.status}}">
+                  {{this.getStatusText order.status}}
+                </span>
+              </div>
+            </div>
+            
+            <div class="order-body">
+              <div class="product-info">
+                <div class="product-icon">
+                  <i class="fa {{order.product_icon}}"></i>
+                </div>
+                
+                <div class="product-details">
+                  <h3 class="product-name">{{order.product_name}}</h3>
+                  {{#if order.product_description}}
+                    <p class="product-description">{{order.product_description}}</p>
+                  {{/if}}
+                  
+                  <div class="product-meta">
+                    <span class="quantity">数量: {{order.quantity}}</span>
+                    <span class="unit-price">
+                      单价: {{order.unit_price}} 
+                      {{#if (eq order.currency_type "paid_coins")}}
+                        {{model.paid_coin_name}}
+                      {{else}}
+                        积分
+                      {{/if}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="order-summary">
+                <div class="total-price">
+                  <span class="price-label">总计</span>
+                  <span class="price-value">
+                    {{order.total_price}} 
+                    {{#if (eq order.currency_type "paid_coins")}}
+                      {{model.paid_coin_name}}
+                    {{else}}
+                      积分
+                    {{/if}}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="order-footer">
+              <div class="order-time">
+                <i class="fa fa-clock-o"></i>
+                <span>{{this.formatDate order.created_at}}</span>
+              </div>
+              
+              {{#if order.notes}}
+                <div class="order-notes">
+                  <i class="fa fa-sticky-note-o"></i>
+                  <span>{{order.notes}}</span>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+      
+      {{! 统计信息 }}
+      <div class="qd-orders-stats">
+        <div class="stats-item">
+          <span class="stats-label">总订单数</span>
+          <span class="stats-value">{{this.totalOrders}}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">总消费积分</span>
+          <span class="stats-value">{{this.totalSpent}}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">已完成订单</span>
+          <span class="stats-value">{{this.completedOrders}}</span>
+        </div>
+      </div>
+      
+    {{else}}
+      <div class="qd-orders-empty">
+        <div class="empty-icon">
+          <i class="fa fa-shopping-bag"></i>
+        </div>
+        <h3>暂无购买记录</h3>
+        <p>您还没有购买过任何商品，快去商店看看吧！</p>
+        <button class="btn btn-primary" {{on "click" this.goBackToShop}}>
+          <i class="fa fa-shopping-cart"></i>
+          前往商店
+        </button>
+      </div>
+    {{/if}}
+  </div>
+</div>

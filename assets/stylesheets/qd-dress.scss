@@ -1,0 +1,358 @@
+@charset "UTF-8";
+
+.qd-dress-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  // ========================================
+  // 页面头部
+  // ========================================
+  .dress-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        i {
+          font-size: 2rem;
+        }
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+      }
+    }
+  }
+
+  // ========================================
+  // 区块样式
+  // ========================================
+  .dress-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e5e7eb;
+
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: #667eea;
+        }
+      }
+
+      .btn-unequip {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        background: #ef4444;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+
+        &:hover:not(:disabled) {
+          background: #dc2626;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    // ========================================
+    // 装饰网格
+    // ========================================
+    .decoration-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+
+      .decoration-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+
+        &:hover {
+          border-color: #667eea;
+          transform: translateY(-4px);
+          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        &.equipped {
+          border-color: #10b981;
+          background: linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 0%, white 100%);
+        }
+
+        .card-preview {
+          width: 100%;
+          height: 180px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f9fafb;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+          overflow: hidden;
+          position: relative;
+
+          img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+          }
+
+          .equipped-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+          }
+        }
+
+        .badge-preview {
+          .badge-text-display {
+            display: inline-block;
+            font-size: 1.2rem;
+          }
+        }
+
+        .card-info {
+          margin-bottom: 1rem;
+
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .label {
+              font-weight: 600;
+              color: #6b7280;
+            }
+
+            .value {
+              text-align: right;
+              color: #111827;
+
+              small {
+                font-size: 0.85rem;
+                color: #9ca3af;
+              }
+
+              .permanent {
+                color: #3b82f6;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+              }
+            }
+          }
+        }
+
+        .btn-equip {
+          width: 100%;
+          padding: 0.75rem;
+          border-radius: 8px;
+          border: none;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          font-size: 1rem;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+
+    // ========================================
+    // 空状态
+    // ========================================
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #9ca3af;
+
+      i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      p {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #6b7280;
+      }
+
+      small {
+        font-size: 0.9rem;
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+// ========================================
+// 装饰显示样式（全局 - 帖子中渲染）
+// ========================================
+
+// 头像框样式
+.qd-avatar-frame-overlay {
+  position: absolute !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  // top, left, width, height 由 JS 动态设置，不要覆盖
+
+  img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+  }
+}
+
+// 确保头像容器是相对定位
+.topic-avatar:has(.qd-avatar-frame-overlay),
+.user-card-avatar:has(.qd-avatar-frame-overlay),
+.avatar:has(.qd-avatar-frame-overlay) {
+  position: relative !important;
+}
+
+// 勋章样式
+.qd-decoration-badge {
+  margin-left: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+
+  &.qd-badge-text {
+    font-size: 0.85rem;
+  }
+
+  &.qd-badge-image {
+    img {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}
+
+// ========================================
+// 响应式设计
+// ========================================
+@media (max-width: 768px) {
+  .qd-dress-container {
+    padding: 0 1rem;
+
+    .dress-header {
+      padding: 1.5rem;
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    .dress-section {
+      padding: 1.5rem;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+
+        .btn-unequip {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .decoration-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

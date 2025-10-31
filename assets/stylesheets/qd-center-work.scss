@@ -1,0 +1,515 @@
+.qd-center-work-page {
+  min-height: 100vh;
+  padding: 20px;
+  
+  // 顶部导航
+  .qd-center-header {
+    max-width: 900px;
+    margin: 0 auto 30px;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+      
+      i {
+        font-size: 14px;
+      }
+      
+      &:hover {
+        background: linear-gradient(135deg, #E8E8E8 0%, #DADADA 100%);
+        transform: translateX(-3px);
+      }
+    }
+    
+    .page-title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: #333;
+      
+      i {
+        font-size: 24px;
+        color: #1890FF;
+      }
+    }
+  }
+  
+  // 主内容容器
+  .qd-center-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  // 作品单卡片
+  .work-card-single {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+    
+    .work-image {
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      position: relative;
+      
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+    }
+    
+    .work-info {
+      padding: 20px;
+      
+      .creator-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #F0F9FF 0%, #E6F7FF 100%);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        
+        .creator-avatar {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .creator-text {
+          flex: 1;
+          
+          .creator-label {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 2px;
+          }
+          
+          .creator-name {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1890FF;
+          }
+        }
+      }
+      
+      .work-title-detail {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 14px;
+        line-height: 1.4;
+      }
+      
+      .work-stats {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #F0F0F0;
+        
+        span {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          color: #666;
+          font-size: 14px;
+          
+          i {
+            color: #1890FF;
+            font-size: 15px;
+          }
+        }
+      }
+      
+      .work-actions-detail {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+        
+        .btn-view-post,
+        .btn-like,
+        .btn-donate {
+          flex: 1;
+          min-width: 100px;
+          padding: 10px 16px;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 13px;
+          transition: all 0.3s;
+          text-align: center;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          
+          i {
+            font-size: 13px;
+          }
+        }
+        
+        .btn-view-post {
+          background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+          color: white;
+          box-shadow: 0 3px 10px rgba(82, 196, 26, 0.3);
+          
+          &:hover {
+            background: linear-gradient(135deg, #73D13D 0%, #95DE64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(82, 196, 26, 0.4);
+          }
+        }
+        
+        .btn-like {
+          background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+          color: #666;
+          
+          &:hover {
+            background: linear-gradient(135deg, #FFE6E6 0%, #FFD4D4 100%);
+            color: #FF4D4F;
+          }
+          
+          &.liked {
+            background: linear-gradient(135deg, #FF4D4F 0%, #FF7875 100%);
+            color: white;
+            
+            &:hover {
+              background: linear-gradient(135deg, #FF7875 0%, #FFA39E 100%);
+            }
+          }
+        }
+        
+        .btn-donate {
+          background: linear-gradient(135deg, #FAAD14 0%, #FFC53D 100%);
+          color: white;
+          box-shadow: 0 3px 10px rgba(250, 173, 20, 0.3);
+          
+          &:hover {
+            background: linear-gradient(135deg, #FFC53D 0%, #FFD666 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(250, 173, 20, 0.4);
+          }
+          
+          &.disabled {
+            background: linear-gradient(135deg, #D9D9D9 0%, #BFBFBF 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+            
+            &:hover {
+              transform: none;
+            }
+          }
+        }
+        
+        .own-work-tip {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 20px;
+          background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+          border-radius: 10px;
+          color: #0050B3;
+          font-weight: 600;
+          font-size: 14px;
+          
+          i {
+            font-size: 14px;
+          }
+        }
+      }
+      
+      .donation-tip {
+        padding: 8px 12px;
+        background: #FFF7E6;
+        border-left: 3px solid #FAAD14;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #8C8C8C;
+        font-size: 12px;
+        
+        i {
+          color: #FAAD14;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+  
+  // 打赏弹窗（复用/qd/center样式）
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .donation-modal {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    width: 90%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        i {
+          color: #FAAD14;
+          font-size: 17px;
+        }
+      }
+      
+      .btn-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+        padding: 4px;
+        
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+    
+    .modal-body {
+      .currency-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+        
+        .currency-option {
+          padding: 14px;
+          background: #FAFAFA;
+          border: 2px solid #E8E8E8;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          
+          i {
+            font-size: 22px;
+            color: #999;
+          }
+          
+          span {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+          }
+          
+          small {
+            color: #999;
+            font-size: 11px;
+          }
+          
+          &.active {
+            background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+            border-color: #1890FF;
+            
+            i {
+              color: #1890FF;
+            }
+            
+            span {
+              color: #1890FF;
+            }
+          }
+          
+          &:hover:not(.active) {
+            background: #F0F0F0;
+          }
+        }
+      }
+      
+      .amount-input-group {
+        margin-bottom: 18px;
+        
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 600;
+          color: #333;
+          font-size: 14px;
+        }
+        
+        input {
+          width: 100%;
+          padding: 10px 14px;
+          border: 2px solid #E8E8E8;
+          border-radius: 8px;
+          font-size: 15px;
+          transition: all 0.3s;
+          box-sizing: border-box;
+          
+          &:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+          }
+        }
+      }
+      
+      .donation-info {
+        padding: 10px 14px;
+        background: #E6F7FF;
+        border-left: 3px solid #1890FF;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #0050B3;
+        font-size: 12px;
+        
+        i {
+          color: #1890FF;
+          font-size: 12px;
+        }
+      }
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      
+      .btn-cancel,
+      .btn-confirm {
+        flex: 1;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+      
+      .btn-cancel {
+        background: #F5F5F5;
+        color: #666;
+        
+        &:hover {
+          background: #E8E8E8;
+        }
+      }
+      
+      .btn-confirm {
+        background: linear-gradient(135deg, #1890FF 0%, #40A9FF 100%);
+        color: white;
+        box-shadow: 0 3px 10px rgba(24, 144, 255, 0.3);
+        
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #40A9FF 0%, #69C0FF 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(24, 144, 255, 0.4);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
+  // 响应式
+  @media (max-width: 768px) {
+    padding: 15px;
+    
+    .qd-center-header {
+      flex-direction: column;
+      text-align: center;
+      
+      .btn-back {
+        align-self: flex-start;
+      }
+      
+      .page-title {
+        justify-content: center;
+      }
+    }
+    
+    .work-card-single {
+      .work-info {
+        padding: 20px;
+        
+        .work-actions-detail {
+          flex-direction: column;
+          
+          .btn-view-post,
+          .btn-like,
+          .btn-donate,
+          .own-work-tip {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

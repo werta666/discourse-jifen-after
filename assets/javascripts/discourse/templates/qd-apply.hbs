@@ -1,0 +1,196 @@
+<div class="qd-page qd-apply-page">
+  <div class="qd-container">
+    <div class="qd-header">
+      <h1>🎨 申请成为创作者</h1>
+      <p class="subtitle">加入创作者计划，展示您的作品并获得打赏</p>
+    </div>
+
+    {{#if this.model.is_creator}}
+      <div class="qd-card success-card">
+        <div class="icon">✅</div>
+        <h2>您已经是创作者了！</h2>
+        <p>您可以前往创作者中心上传作品</p>
+        <LinkTo @route="qd-center-make" class="btn btn-primary">
+          前往创作者中心
+        </LinkTo>
+      </div>
+    {{else if this.model.has_pending_application}}
+      <div class="qd-card pending-card">
+        <div class="icon">⏳</div>
+        <h2>您的申请正在审核中</h2>
+        <p>申请时间：{{this.model.pending_application.submitted_at}}</p>
+        <p class="description">请耐心等待管理员审核，审核结果将通过系统消息通知您</p>
+        
+        <div class="application-details">
+          <h3>申请信息</h3>
+          <div class="detail-item">
+            <label>创作领域：</label>
+            <p>{{this.model.pending_application.creative_field}}</p>
+          </div>
+          <div class="detail-item">
+            <label>创作经历：</label>
+            <p>{{this.model.pending_application.creative_experience}}</p>
+          </div>
+        </div>
+        
+        <LinkTo @route="qd-center" class="btn btn-default">
+          返回作品墙
+        </LinkTo>
+      </div>
+    {{else}}
+      <div class="qd-card">
+        <div class="fee-info">
+          <div class="fee-box">
+            <span class="label">申请费用：</span>
+            <span class="amount">{{this.model.application_fee}} 积分</span>
+          </div>
+          <div class="balance-box {{if this.model.can_afford 'sufficient' 'insufficient'}}">
+            <span class="label">当前积分：</span>
+            <span class="amount">{{this.model.user_points}} 积分</span>
+          </div>
+        </div>
+
+        {{#unless this.model.can_afford}}
+          <div class="warning-box">
+            ⚠️ 您的积分不足，请先获取足够的积分再申请
+          </div>
+        {{/unless}}
+
+        <form class="application-form">
+          <div class="form-group">
+            <label for="creative-field">
+              个人创作领域 <span class="required">*</span>
+              <span class="hint">(10-500字符)</span>
+            </label>
+            <textarea
+              id="creative-field"
+              rows="3"
+              placeholder="例如：数字绘画、3D建模、UI设计、插画等"
+              {{on "input" this.updateCreativeField}}
+              value={{this.creativeField}}
+              maxlength="500"
+            ></textarea>
+            <div class="char-count {{if (and (gte this.creativeField.length 10) (lte this.creativeField.length 500)) 'valid' 'invalid'}}">
+              {{this.creativeField.length}}/500
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="creative-experience">
+              创作经历 <span class="required">*</span>
+              <span class="hint">(20-2000字符，详细介绍您的创作经验和成就)</span>
+            </label>
+            <textarea
+              id="creative-experience"
+              rows="6"
+              placeholder="请详细描述您的创作经历、作品风格、获得的荣誉等..."
+              {{on "input" this.updateCreativeExperience}}
+              value={{this.creativeExperience}}
+              maxlength="2000"
+            ></textarea>
+            <div class="char-count {{if (and (gte this.creativeExperience.length 20) (lte this.creativeExperience.length 2000)) 'valid' 'invalid'}}">
+              {{this.creativeExperience.length}}/2000
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portfolio-images">
+              上传代表作或证明 <span class="required">*</span>
+              <span class="hint">(至少2张，最多5张)</span>
+            </label>
+            
+            <div class="image-upload-section">
+              {{#if this.hasImages}}
+                <div class="uploaded-images-grid">
+                  {{#each this.uploadedImageUrls as |imageUrl index|}}
+                    <div class="uploaded-image-item">
+                      <img src={{imageUrl}} alt="作品{{index}}" />
+                      <button 
+                        class="btn-remove-img" 
+                        {{on "click" (fn this.removeImage index)}}
+                        type="button"
+                      >
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </div>
+                  {{/each}}
+                </div>
+              {{/if}}
+              
+              {{#if this.canUploadMore}}
+                <label class="upload-btn-wrapper" for="portfolio-upload">
+                  {{#if this.uploadingImage}}
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <span>上传中...</span>
+                  {{else}}
+                    <i class="fa fa-cloud-upload-alt"></i>
+                    <span>{{if this.hasImages "继续上传图片" "点击上传图片"}}</span>
+                  {{/if}}
+                </label>
+                <input 
+                  id="portfolio-upload"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif"
+                  multiple
+                  {{on "change" this.handleImageUpload}}
+                  style="display:none;"
+                />
+              {{else}}
+                <div class="upload-limit-reached">
+                  <i class="fa fa-check-circle"></i>
+                  已达到最大上传数量（5张）
+                </div>
+              {{/if}}
+              
+              <div class="upload-hint {{if this.hasEnoughImages 'valid' 'invalid'}}">
+                <i class="fa fa-{{if this.hasEnoughImages 'check-circle' 'info-circle'}}"></i>
+                已上传 {{this.imageCount}}/5 张图片
+                {{#unless this.hasEnoughImages}}
+                  （至少需要2张）
+                {{/unless}}
+              </div>
+              
+              <div class="upload-hint">
+                <i class="fa fa-info-circle"></i>
+                支持 JPG、PNG、GIF 格式，单个文件不超过 5MB
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-primary submit-btn {{unless this.canSubmit 'disabled'}}"
+              {{on "click" this.submitApplication}}
+              disabled={{unless this.canSubmit "disabled"}}
+            >
+              {{#if this.isSubmitting}}
+                提交中...
+              {{else}}
+                提交申请 (消耗 {{this.model.application_fee}} 积分)
+              {{/if}}
+            </button>
+            
+            <LinkTo @route="qd-center" class="btn btn-default">
+              返回作品墙
+            </LinkTo>
+          </div>
+        </form>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+{{! 成功弹窗 }}
+{{#if this.showSuccess}}
+  <div class="qd-modal-backdrop" {{on "click" this.hideSuccess}}>
+    <div class="qd-modal success-modal" {{on "click" this.stopPropagation}}>
+      <div class="modal-icon">✅</div>
+      <h2>{{this.successMessage}}</h2>
+      <p>管理员审核通过后，您将收到系统通知</p>
+      <button class="btn btn-primary" {{on "click" this.hideSuccess}}>
+        确定
+      </button>
+    </div>
+  </div>
+{{/if}}

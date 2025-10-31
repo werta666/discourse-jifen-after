@@ -1,0 +1,256 @@
+<div class="qd-page qd-pay-admin-page">
+  <div class="qd-pay-admin-container">
+    
+    {{! 页面标题 }}
+    <div class="admin-header">
+      <div class="header-left">
+        <h1><i class="fa-solid fa-chart-line"></i> 充值订单管理</h1>
+        <p class="subtitle">查看和管理所有充值订单</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" {{on "click" this.openDebugModal}}>
+          <i class="fa-solid fa-screwdriver-wrench"></i> 调整付费币
+        </button>
+        <button class="btn btn-default" {{on "click" this.refreshData}}>
+          <i class="fa-solid fa-rotate"></i> 刷新数据
+        </button>
+        <button class="btn btn-default" {{on "click" this.goBack}}>
+          <i class="fa-solid fa-arrow-left"></i> 返回充值页
+        </button>
+      </div>
+    </div>
+
+    {{! 统计卡片 - 自适应小卡片 }}
+    <div class="stats-grid-compact">
+      <div class="stat-card total">
+        <div class="stat-icon">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.totalOrders}}</div>
+          <div class="stat-label">总订单数</div>
+        </div>
+      </div>
+
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.paidOrders}}</div>
+          <div class="stat-label">已支付</div>
+        </div>
+      </div>
+
+      <div class="stat-card pending">
+        <div class="stat-icon">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.pendingOrders}}</div>
+          <div class="stat-label">待支付</div>
+        </div>
+      </div>
+
+      <div class="stat-card cancelled">
+        <div class="stat-icon">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.cancelledOrders}}</div>
+          <div class="stat-label">已取消</div>
+        </div>
+      </div>
+
+      <div class="stat-card amount">
+        <div class="stat-icon">
+          <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">¥{{this.formattedStats.totalAmount}}</div>
+          <div class="stat-label">总收入</div>
+        </div>
+      </div>
+
+      <div class="stat-card points">
+        <div class="stat-icon">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{this.formattedStats.totalPaidCoins}}</div>
+          <div class="stat-label">总付费币</div>
+        </div>
+      </div>
+    </div>
+
+    {{! 操作按钮 }}
+    <div class="admin-actions">
+      <button class="btn btn-danger btn-large" {{on "click" this.clearUnpaidOrders}} disabled={{this.isClearing}}>
+        <i class="fa-solid fa-trash-can"></i>
+        {{#if this.isClearing}}
+          清理中...
+        {{else}}
+          一键删除未付款订单
+        {{/if}}
+      </button>
+    </div>
+
+    {{! 订单列表 }}
+    <div class="orders-section">
+      <div class="section-header-toggle" {{on "click" this.toggleOrders}}>
+        <h2>
+          <i class="fa-solid {{if this.showOrders 'fa-chevron-down' 'fa-chevron-right'}}"></i> 
+          订单列表 ({{this.filteredOrders.length}}条)
+        </h2>
+      </div>
+
+      {{#if this.showOrders}}
+        <div class="orders-filters">
+          <div class="filter-group">
+            <label>
+              <i class="fa-solid fa-calendar"></i> 按日期筛选：
+              <input type="date" value={{this.filterDate}} {{on "change" this.updateFilterDate}} />
+            </label>
+            <span class="filter-info">共 {{this.filteredOrders.length}} 条订单</span>
+          </div>
+        </div>
+
+        {{#if this.hasOrders}}
+        <div class="orders-table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>用户</th>
+                <th>金额</th>
+                <th>积分</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>支付时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.paginatedOrders as |order|}}
+                <tr class="order-row">
+                  <td class="order-no">
+                    <code>{{order.out_trade_no}}</code>
+                  </td>
+                  <td class="username">
+                    <i class="fa-solid fa-user"></i> {{order.username}}
+                  </td>
+                  <td class="amount">
+                    <strong>¥{{order.amount}}</strong>
+                  </td>
+                  <td class="points">
+                    <i class="fa-solid fa-star"></i> {{order.points}}
+                  </td>
+                  <td class="status">
+                    {{#if (eq order.status "paid")}}
+                      <span class="status-badge status-paid">已支付</span>
+                    {{else if (eq order.status "pending")}}
+                      <span class="status-badge status-pending">待支付</span>
+                    {{else if (eq order.status "cancelled")}}
+                      <span class="status-badge status-cancelled">已取消</span>
+                    {{else if (eq order.status "refunded")}}
+                      <span class="status-badge status-refunded">已退款</span>
+                    {{else}}
+                      <span class="status-badge">{{order.status}}</span>
+                    {{/if}}
+                  </td>
+                  <td class="created-at">
+                    {{order.created_at}}
+                  </td>
+                  <td class="paid-at">
+                    {{#if order.paid_at}}
+                      {{order.paid_at}}
+                    {{else}}
+                      <span class="text-muted">-</span>
+                    {{/if}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+
+        {{! 分页 }}
+        {{#if (gt this.totalPages 1)}}
+          <div class="pagination">
+            <button class="btn btn-sm" {{on "click" this.previousPage}} disabled={{(not this.hasPreviousPage)}}>
+              <i class="fa-solid fa-chevron-left"></i> 上一页
+            </button>
+            <span class="page-info">第 {{this.currentPage}} / {{this.totalPages}} 页</span>
+            <button class="btn btn-sm" {{on "click" this.nextPage}} disabled={{(not this.hasNextPage)}}>
+              下一页 <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        {{/if}}
+        {{else}}
+          <div class="no-orders">
+            <i class="fa-solid fa-inbox"></i>
+            <p>暂无订单数据</p>
+          </div>
+        {{/if}}
+      {{/if}}
+    </div>
+
+    {{! 调试模态框 - 调整付费币 }}
+    {{#if this.showDebugModal}}
+      <div class="modal-overlay" {{on "click" this.closeDebugModal}}>
+        <div class="modal-dialog" {{on "click" this.stopPropagation}}>
+          <div class="modal-header">
+            <h3><i class="fa-solid fa-screwdriver-wrench"></i> 调整用户付费币</h3>
+            <button class="close-btn" {{on "click" this.closeDebugModal}}>
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="form-group">
+              <label>用户名</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="请输入用户名" 
+                value={{this.debugUsername}}
+                {{on "input" this.updateDebugUsername}} />
+            </div>
+
+            <div class="form-group">
+              <label>数量（正数=增加，负数=减少）</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                placeholder="100" 
+                value={{this.debugAmount}}
+                {{on "input" this.updateDebugAmount}} />
+            </div>
+
+            <div class="form-group">
+              <label>原因说明（可选）</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="例如：补偿、活动奖励等" 
+                value={{this.debugReason}}
+                {{on "input" this.updateDebugReason}} />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-success" {{on "click" (fn this.adjustCoins "add")}} disabled={{this.isAdjusting}}>
+              <i class="fa-solid fa-plus"></i> 增加付费币
+            </button>
+            <button class="btn btn-danger" {{on "click" (fn this.adjustCoins "reduce")}} disabled={{this.isAdjusting}}>
+              <i class="fa-solid fa-minus"></i> 减少付费币
+            </button>
+            <button class="btn btn-default" {{on "click" this.closeDebugModal}}>
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+  </div>
+</div>

@@ -1,0 +1,853 @@
+<div class="qd-center-admin-page">
+  {{! 顶部导航 }}
+  <div class="admin-header">
+    <div class="header-left">
+      <button class="btn-back" {{on "click" this.goToCenter}}>
+        <i class="fa fa-arrow-left"></i>
+        <span>返回作品墙</span>
+      </button>
+    </div>
+    
+    <div class="header-center">
+      <i class="fa fa-cog"></i>
+      <h1>创作者中心管理</h1>
+    </div>
+    
+    <div class="header-right"></div>
+  </div>
+
+  {{! 统计概览 }}
+  <div class="stats-overview">
+    <div class="stat-box">
+      <i class="fa fa-images"></i>
+      <div>
+        <span class="stat-number">{{if this.stats.total_works this.stats.total_works 0}}</span>
+        <span class="stat-name">总作品数</span>
+      </div>
+    </div>
+    
+    <div class="stat-box">
+      <i class="fa fa-check-circle"></i>
+      <div>
+        <span class="stat-number">{{if this.stats.approved_works this.stats.approved_works 0}}</span>
+        <span class="stat-name">已通过</span>
+      </div>
+    </div>
+    
+    <div class="stat-box">
+      <i class="fa fa-clock"></i>
+      <div>
+        <span class="stat-number">{{if this.stats.pending_works this.stats.pending_works 0}}</span>
+        <span class="stat-name">待审核</span>
+      </div>
+    </div>
+    
+    <div class="stat-box">
+      <i class="fa fa-users"></i>
+      <div>
+        <span class="stat-number">{{if this.stats.creator_count this.stats.creator_count 0}}</span>
+        <span class="stat-name">创作人数量</span>
+      </div>
+    </div>
+    
+    <div class="stat-box">
+      <i class="fa fa-store"></i>
+      <div>
+        <span class="stat-number">{{if this.stats.shop_product_count this.stats.shop_product_count 0}}</span>
+        <span class="stat-name">已上架商品</span>
+      </div>
+    </div>
+  </div>
+
+  {{! 标签页 }}
+  <div class="admin-tabs">
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'pending') 'active'}}"
+      {{on "click" (fn this.switchTab "pending")}}
+    >
+      <i class="fa fa-clock"></i> 待审核作品 ({{this.pendingWorks.length}})
+    </button>
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'approved') 'active'}}"
+      {{on "click" (fn this.switchTab "approved")}}
+    >
+      <i class="fa fa-check-circle"></i> 已通过作品 ({{this.approvedWorks.length}})
+    </button>
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'shop') 'active'}}"
+      {{on "click" (fn this.switchTab "shop")}}
+    >
+      <i class="fa fa-store"></i> 待审核上架 ({{this.pendingShopApplications.length}})
+    </button>
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'applications') 'active'}}"
+      {{on "click" (fn this.switchTab "applications")}}
+    >
+      <i class="fa fa-user-plus"></i> 待审核创作者申请 ({{this.pendingApplications.length}})
+    </button>
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'creators') 'active'}}"
+      {{on "click" (fn this.switchTab "creators")}}
+    >
+      <i class="fa fa-user-tie"></i> 创作人管理 ({{this.creatorsList.length}})
+    </button>
+    <button 
+      class="admin-tab {{if (eq this.activeTab 'settings') 'active'}}"
+      {{on "click" (fn this.switchTab "settings")}}
+    >
+      <i class="fa fa-sliders-h"></i> 系统设置
+    </button>
+  </div>
+
+  {{! 待审核作品 }}
+  {{#if (eq this.activeTab "pending")}}
+    <div class="pending-works">
+      {{#if this.pendingWorks.length}}
+        {{#each this.pendingWorks as |work|}}
+          <div class="review-item">
+            <img src={{work.image_url}} alt={{work.title}} class="review-thumb" />
+            
+            <div class="review-info">
+              <h3>{{if work.title work.title (concat "作品 #" work.id)}}</h3>
+              <div class="review-meta">
+                <span><i class="fa fa-user"></i> {{work.username}}</span>
+                <span><i class="fa fa-calendar"></i> {{format-date work.created_at}}</span>
+              </div>
+              <div class="review-link">
+                <a href={{work.post_url}} target="_blank">
+                  <i class="fa fa-external-link-alt"></i> 查看帖子
+                </a>
+              </div>
+            </div>
+            
+            <div class="review-actions">
+              <button class="btn-approve" {{on "click" (fn this.approveWork work)}}>
+                <i class="fa fa-check"></i> 通过
+              </button>
+              <button class="btn-reject" {{on "click" (fn this.openRejectModal work)}}>
+                <i class="fa fa-times"></i> 驳回
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-check-circle"></i>
+          <p>暂无待审核作品</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 已通过作品管理 }}
+  {{#if (eq this.activeTab "approved")}}
+    <div class="approved-works">
+      {{#if this.approvedWorks.length}}
+        {{#each this.approvedWorks as |work|}}
+          <div class="review-item">
+            <img src={{work.image_url}} alt={{work.title}} class="review-thumb" />
+            
+            <div class="review-info">
+              <h3>
+                {{if work.title work.title (concat "作品 #" work.id)}}
+                {{#if work.is_shop_product}}
+                  <span class="shop-badge">
+                    <i class="fa fa-store"></i> 已上架
+                  </span>
+                {{/if}}
+              </h3>
+              <div class="review-meta">
+                <span><i class="fa fa-user"></i> {{work.username}}</span>
+                <span><i class="fa fa-heart"></i> 点赞: {{work.likes_count}}</span>
+                <span><i class="fa fa-eye"></i> 浏览: {{work.clicks_count}}</span>
+                <span><i class="fa fa-fire"></i> 热度: {{work.heat_score}}</span>
+                <span><i class="fa fa-coins"></i> 打赏: {{work.total_donations}}</span>
+              </div>
+              <div class="review-link">
+                <a href={{work.post_url}} target="_blank">
+                  <i class="fa fa-external-link-alt"></i> 查看帖子
+                </a>
+              </div>
+            </div>
+            
+            <div class="review-actions">
+              <button class="btn-update-status" {{on "click" (fn this.openStatusModal work)}}>
+                <i class="fa fa-edit"></i> 更新状态
+              </button>
+              <button class="btn-delete" {{on "click" (fn this.deleteWork work)}}>
+                <i class="fa fa-trash"></i> 删除
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-check-circle"></i>
+          <p>暂无已通过作品</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 待审核上架申请 }}
+  {{#if (eq this.activeTab "shop")}}
+    <div class="pending-shops">
+      {{#if this.pendingShopApplications.length}}
+        {{#each this.pendingShopApplications as |work|}}
+          <div class="review-item">
+            <img src={{work.image_url}} alt={{work.title}} class="review-thumb" />
+            
+            <div class="review-info">
+              <h3>{{if work.title work.title (concat "作品 #" work.id)}}</h3>
+              <div class="review-meta">
+                <span><i class="fa fa-user"></i> {{work.username}}</span>
+                <span><i class="fa fa-heart"></i> 点赞: {{work.likes_count}}</span>
+                <span><i class="fa fa-eye"></i> 浏览: {{work.clicks_count}}</span>
+                <span><i class="fa fa-coins"></i> 打赏: {{work.total_donations}}</span>
+              </div>
+              <div class="review-link">
+                <a href={{work.post_url}} target="_blank">
+                  <i class="fa fa-external-link-alt"></i> 查看帖子
+                </a>
+              </div>
+            </div>
+            
+            <div class="review-actions">
+              <button class="btn-approve" {{on "click" (fn this.approveShop work)}}>
+                <i class="fa fa-check"></i> 批准上架
+              </button>
+              <button class="btn-reject" {{on "click" (fn this.rejectShop work)}}>
+                <i class="fa fa-times"></i> 驳回
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-check-circle"></i>
+          <p>暂无待审核上架申请</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 待审核创作者申请 }}
+  {{#if (eq this.activeTab "applications")}}
+    <div class="pending-applications">
+      {{#if this.pendingApplications.length}}
+        {{#each this.pendingApplications as |application|}}
+          <div class="application-item">
+            <div class="application-header">
+              <div class="applicant-info">
+                <i class="fa fa-user-circle"></i>
+                <span class="username">{{application.username}}</span>
+              </div>
+              <div class="application-meta">
+                <span class="submit-time">
+                  <i class="fa fa-clock"></i>
+                  {{application.submitted_at}}
+                </span>
+                <span class="fee-badge">
+                  <i class="fa fa-coins"></i>
+                  申请费：{{application.application_fee}} 积分
+                </span>
+              </div>
+            </div>
+            
+            <div class="application-body">
+              <div class="application-field">
+                <label><i class="fa fa-palette"></i> 创作领域</label>
+                <p>{{application.creative_field}}</p>
+              </div>
+              
+              <div class="application-field">
+                <label><i class="fa fa-history"></i> 创作经历</label>
+                <p class="multiline">{{application.creative_experience}}</p>
+              </div>
+              
+              {{#if application.portfolio_images.length}}
+                <div class="application-field">
+                  <label><i class="fa fa-images"></i> 代表作品</label>
+                  <div class="portfolio-images">
+                    {{#each application.portfolio_images as |imageUrl|}}
+                      <a href={{imageUrl}} target="_blank" class="portfolio-image">
+                        <img src={{imageUrl}} alt="作品" />
+                      </a>
+                    {{/each}}
+                  </div>
+                </div>
+              {{/if}}
+            </div>
+            
+            <div class="application-actions">
+              <button 
+                class="btn-approve"
+                {{on "click" (fn this.approveApplication application)}}
+              >
+                <i class="fa fa-check"></i> 通过申请
+              </button>
+              <button 
+                class="btn-reject"
+                {{on "click" (fn this.openRejectApplicationModal application)}}
+              >
+                <i class="fa fa-times"></i> 拒绝申请
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-check-circle"></i>
+          <p>暂无待审核的创作者申请</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 创作人管理 }}
+  {{#if (eq this.activeTab "creators")}}
+    <div class="creators-management">
+      {{#if this.creatorsList.length}}
+        <div class="creators-table-wrapper">
+          <table class="creators-table">
+            <thead>
+              <tr>
+                <th>用户名</th>
+                <th>获得资格时间</th>
+                <th>已发布作品</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each this.creatorsList as |creator|}}
+                <tr>
+                  <td class="creator-username">
+                    <i class="fa fa-user-circle"></i>
+                    {{creator.username}}
+                  </td>
+                  <td>{{creator.approved_at}}</td>
+                  <td class="works-count">{{creator.works_count}} 个</td>
+                  <td>
+                    <button 
+                      class="btn-revoke"
+                      {{on "click" (fn this.openRevokeCreatorModal creator)}}
+                    >
+                      <i class="fa fa-user-times"></i> 撤销资格
+                    </button>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <div class="no-data">
+          <i class="fa fa-users"></i>
+          <p>暂无创作者</p>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{! 系统设置 }}
+  {{#if (eq this.activeTab "settings")}}
+    <div class="settings-panel">
+      {{! 上架标准 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-store"></i> 上架标准设置</h2>
+        
+        <div class="setting-item">
+          <label>最低点赞数</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updateMinLikes}}
+            value={{this.minLikes}}
+          />
+          <small>作品需要达到此点赞数才能申请上架</small>
+        </div>
+        
+        <div class="setting-item">
+          <label>最低点击数</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updateMinClicks}}
+            value={{this.minClicks}}
+          />
+          <small>作品需要达到此点击数才能申请上架</small>
+        </div>
+        
+        <button 
+          class="btn-save"
+          {{on "click" this.saveShopStandards}}
+          disabled={{this.savingSettings}}
+        >
+          {{#if this.savingSettings}}
+            <i class="fa fa-spinner fa-spin"></i> 保存中...
+          {{else}}
+            <i class="fa fa-save"></i> 保存标准
+          {{/if}}
+        </button>
+      </div>
+
+      {{! 抽成设置 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-percentage"></i> 打赏抽成设置</h2>
+        
+        <div class="setting-item">
+          <label>抽成比例 (%)</label>
+          <input 
+            type="number" 
+            min="0"
+            max="100"
+            step="0.1"
+            {{on "input" this.updateCommissionRate}}
+            value={{this.commissionRate}}
+          />
+          <small>平台从每笔打赏中抽取的比例（0-100%）</small>
+        </div>
+        
+        <button 
+          class="btn-save"
+          {{on "click" this.saveCommissionRate}}
+          disabled={{this.savingSettings}}
+        >
+          {{#if this.savingSettings}}
+            <i class="fa fa-spinner fa-spin"></i> 保存中...
+          {{else}}
+            <i class="fa fa-save"></i> 保存比例
+          {{/if}}
+        </button>
+      </div>
+
+      {{! 打赏次数限制 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-shield-alt"></i> 打赏次数限制（防刷分）</h2>
+        <p class="section-desc">限制单个用户对单个作品的打赏次数，防止恶意刷分</p>
+        
+        <div class="setting-item">
+          <label>单作品最大打赏次数</label>
+          <input 
+            type="number" 
+            min="0"
+            step="1"
+            {{on "input" this.updateMaxDonations}}
+            value={{this.maxDonationsPerWork}}
+          />
+          <small>设置为 0 表示不限制次数，建议设置为 3-10 次</small>
+        </div>
+        
+        <button 
+          class="btn-save"
+          {{on "click" this.saveMaxDonations}}
+          disabled={{this.savingSettings}}
+        >
+          {{#if this.savingSettings}}
+            <i class="fa fa-spinner fa-spin"></i> 保存中...
+          {{else}}
+            <i class="fa fa-save"></i> 保存限制
+          {{/if}}
+        </button>
+      </div>
+
+      {{! 白名单管理 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-users"></i> 创作者白名单管理</h2>
+        
+        <div class="setting-item">
+          <label>白名单用户 (每行一个用户名)</label>
+          <textarea 
+            rows="6"
+            {{on "input" this.updateWhitelist}}
+            placeholder="admin&#10;user1&#10;user2&#10;..."
+          >{{this.whitelistText}}</textarea>
+          <small>只有白名单中的用户才能访问 /qd/center/make 上传作品</small>
+        </div>
+        
+        <button 
+          class="btn-save"
+          {{on "click" this.saveWhitelist}}
+          disabled={{this.savingSettings}}
+        >
+          {{#if this.savingSettings}}
+            <i class="fa fa-spinner fa-spin"></i> 保存中...
+          {{else}}
+            <i class="fa fa-save"></i> 保存白名单
+          {{/if}}
+        </button>
+      </div>
+
+      {{! 热度规则配置 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-fire"></i> 热度计算规则</h2>
+        
+        <div class="setting-item">
+          <label>点赞权重</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updateLikeWeight}}
+            value={{this.likeWeight}}
+          />
+          <small>每个点赞增加的热度值（默认: 1）</small>
+        </div>
+        
+        <div class="setting-item">
+          <label>浏览权重</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updateClickWeight}}
+            value={{this.clickWeight}}
+          />
+          <small>每次浏览增加的热度值（默认: 1）</small>
+        </div>
+        
+        <div class="setting-item">
+          <label>付费币阈值</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updatePaidCoinThreshold}}
+            value={{this.paidCoinThreshold}}
+          />
+          <small>每满多少付费币打赏，基础热度翻一倍（默认: 100）</small>
+        </div>
+        
+        <div class="setting-item">
+          <label>付费币基础倍率</label>
+          <input 
+            type="number" 
+            min="1"
+            {{on "input" this.updatePaidCoinMultiplier}}
+            value={{this.paidCoinMultiplier}}
+          />
+          <small>满足阈值时的初始倍数（默认: 2，即满100币从×2开始）</small>
+        </div>
+        
+        <div class="setting-item">
+          <label>积分权重</label>
+          <input 
+            type="number" 
+            min="0"
+            {{on "input" this.updateJifenWeight}}
+            value={{this.jifenWeight}}
+          />
+          <small>1积分打赏增加的热度值（默认: 1）</small>
+        </div>
+        
+        <div class="button-group">
+          <button 
+            class="btn-save"
+            {{on "click" this.saveHeatRules}}
+            disabled={{this.savingSettings}}
+          >
+            {{#if this.savingSettings}}
+              <i class="fa fa-spinner fa-spin"></i> 保存中...
+            {{else}}
+              <i class="fa fa-save"></i> 保存热度规则
+            {{/if}}
+          </button>
+          
+          <button 
+            class="btn-recalculate"
+            {{on "click" this.recalculateAllHeat}}
+            disabled={{this.recalculating}}
+          >
+            {{#if this.recalculating}}
+              <i class="fa fa-spinner fa-spin"></i> 计算中...
+            {{else}}
+              <i class="fa fa-calculator"></i> 重新计算所有热度
+            {{/if}}
+          </button>
+        </div>
+      </div>
+
+      {{! 火苗颜色配置 }}
+      <div class="settings-section">
+        <h2><i class="fa fa-fire"></i> 火苗热度阈值配置</h2>
+        <p class="section-desc">设置不同热度级别的阈值，颜色自动对应</p>
+        
+        <div class="heat-thresholds">
+          <div class="threshold-item">
+            <div class="threshold-color" style="background: linear-gradient(135deg, #52C41A, #73D13D);">
+              <i class="fa fa-fire"></i>
+            </div>
+            <div class="threshold-info">
+              <label>1 ~ {{get this.heatThresholds "0"}}</label>
+              <input 
+                type="number" 
+                min="1"
+                max="999"
+                {{on "input" (fn this.updateThreshold 0)}}
+                value={{get this.heatThresholds "0"}}
+              />
+              <small>绿色火苗（新作品）</small>
+            </div>
+          </div>
+          
+          <div class="threshold-item">
+            <div class="threshold-color" style="background: linear-gradient(135deg, #EB2F96, #F759AB);">
+              <i class="fa fa-fire"></i>
+            </div>
+            <div class="threshold-info">
+              <label>{{get this.heatThresholds "0"}} ~ {{get this.heatThresholds "1"}}</label>
+              <input 
+                type="number" 
+                min="1"
+                max="999"
+                {{on "input" (fn this.updateThreshold 1)}}
+                value={{get this.heatThresholds "1"}}
+              />
+              <small>粉色火苗（受欢迎）</small>
+            </div>
+          </div>
+          
+          <div class="threshold-item">
+            <div class="threshold-color" style="background: linear-gradient(135deg, #FAAD14, #FFC53D);">
+              <i class="fa fa-fire"></i>
+            </div>
+            <div class="threshold-info">
+              <label>{{get this.heatThresholds "1"}} ~ {{get this.heatThresholds "2"}}</label>
+              <input 
+                type="number" 
+                min="1"
+                max="999"
+                {{on "input" (fn this.updateThreshold 2)}}
+                value={{get this.heatThresholds "2"}}
+              />
+              <small>黄橙火苗（热门）</small>
+            </div>
+          </div>
+          
+          <div class="threshold-item">
+            <div class="threshold-color" style="background: linear-gradient(135deg, #FF7875, #FFA39E);">
+              <i class="fa fa-fire"></i>
+            </div>
+            <div class="threshold-info">
+              <label>{{get this.heatThresholds "2"}} ~ {{get this.heatThresholds "3"}}</label>
+              <input 
+                type="number" 
+                min="1"
+                max="9999"
+                {{on "input" (fn this.updateThreshold 3)}}
+                value={{get this.heatThresholds "3"}}
+              />
+              <small>淡红火苗（火爆）</small>
+            </div>
+          </div>
+          
+          <div class="threshold-item">
+            <div class="threshold-color" style="background: linear-gradient(135deg, #FF4D4F, #F5222D);">
+              <i class="fa fa-fire"></i>
+            </div>
+            <div class="threshold-info">
+              <label>{{get this.heatThresholds "3"}} +</label>
+              <span class="threshold-max">∞</span>
+              <small>赤红火苗（爆款）</small>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          class="btn-save"
+          {{on "click" this.saveHeatConfig}}
+          disabled={{this.savingSettings}}
+        >
+          {{#if this.savingSettings}}
+            <i class="fa fa-spinner fa-spin"></i> 保存中...
+          {{else}}
+            <i class="fa fa-save"></i> 保存热度阈值
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 驳回原因弹窗 }}
+  {{#if this.showRejectModal}}
+    <div class="modal-backdrop" {{on "click" this.closeRejectModal}}>
+      <div class="reject-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-exclamation-triangle"></i> 驳回作品</h3>
+          <button class="btn-close" {{on "click" this.closeRejectModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <label>驳回原因 <span class="required-mark">*</span></label>
+          <textarea 
+            {{on "input" this.updateRejectReason}}
+            placeholder="请说明驳回原因，以便创作者改进..."
+            rows="5"
+          >{{this.rejectReason}}</textarea>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeRejectModal}}>
+            取消
+          </button>
+          <button class="btn-confirm-reject" {{on "click" this.confirmReject}}>
+            <i class="fa fa-check"></i> 确认驳回
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 更新状态弹窗 }}
+  {{#if this.showStatusModal}}
+    <div class="modal-backdrop" {{on "click" this.closeStatusModal}}>
+      <div class="status-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-edit"></i> 更新作品状态</h3>
+          <button class="btn-close" {{on "click" this.closeStatusModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="status-options">
+            <label>选择新状态</label>
+            <div class="status-buttons">
+              <button 
+                class="status-btn {{if (eq this.newStatus 'pending') 'active'}}"
+                {{on "click" (fn this.selectStatus "pending")}}
+              >
+                <i class="fa fa-clock"></i> 待审核
+              </button>
+              <button 
+                class="status-btn {{if (eq this.newStatus 'approved') 'active'}}"
+                {{on "click" (fn this.selectStatus "approved")}}
+              >
+                <i class="fa fa-check-circle"></i> 已通过
+              </button>
+              <button 
+                class="status-btn {{if (eq this.newStatus 'rejected') 'active'}}"
+                {{on "click" (fn this.selectStatus "rejected")}}
+              >
+                <i class="fa fa-times-circle"></i> 已驳回
+              </button>
+            </div>
+          </div>
+          
+          {{#if (eq this.newStatus "rejected")}}
+            <div class="reject-reason-input">
+              <label>驳回原因 <span class="required-mark">*</span></label>
+              <textarea 
+                {{on "input" this.updateRejectReason}}
+                placeholder="请说明驳回原因..."
+                rows="4"
+              >{{this.rejectReason}}</textarea>
+            </div>
+          {{/if}}
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeStatusModal}}>
+            取消
+          </button>
+          <button class="btn-confirm" {{on "click" this.confirmStatusUpdate}}>
+            <i class="fa fa-check"></i> 确认更新
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 拒绝创作者申请弹窗 }}
+  {{#if this.showRejectApplicationModal}}
+    <div class="modal-backdrop" {{on "click" this.closeRejectApplicationModal}}>
+      <div class="reject-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-user-times"></i> 拒绝创作者申请</h3>
+          <button class="btn-close" {{on "click" this.closeRejectApplicationModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <label>拒绝理由 <span class="required-mark">*</span></label>
+          <textarea 
+            {{on "input" this.updateApplicationRejectReason}}
+            placeholder="请说明拒绝原因，以便申请人了解..."
+            rows="5"
+          >{{this.applicationRejectReason}}</textarea>
+          
+          <div class="refund-option">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                checked={{this.applicationRefund}}
+                {{on "change" this.toggleApplicationRefund}}
+              />
+              <span>退还申请费用（{{this.model.application_fee}} 积分）</span>
+            </label>
+            <p class="hint">勾选后将退还申请人支付的申请费用</p>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeRejectApplicationModal}}>
+            取消
+          </button>
+          <button class="btn-confirm btn-danger" {{on "click" this.confirmRejectApplication}}>
+            <i class="fa fa-times"></i> 确认拒绝
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 撤销创作者资格弹窗 }}
+  {{#if this.showRevokeCreatorModal}}
+    <div class="modal-backdrop" {{on "click" this.closeRevokeCreatorModal}}>
+      <div class="reject-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h3><i class="fa fa-exclamation-triangle"></i> 撤销创作者资格</h3>
+          <button class="btn-close" {{on "click" this.closeRevokeCreatorModal}}>
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="warning-notice">
+            <i class="fa fa-exclamation-circle"></i>
+            <div>
+              <strong>警告：此操作将</strong>
+              <ul>
+                <li>从白名单中移除该用户</li>
+                <li>撤销其创作者权限</li>
+                <li>删除其所有申请记录</li>
+                <li>发送系统通知给该用户</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="revoke-user-info">
+            <label>撤销用户：</label>
+            <strong>{{this.revokingCreator.username}}</strong>
+          </div>
+          
+          <label>撤销理由 <span class="required-mark">*</span></label>
+          <textarea 
+            {{on "input" this.updateRevokeReason}}
+            placeholder="请详细说明撤销理由，该理由将发送给用户..."
+            rows="5"
+          >{{this.revokeReason}}</textarea>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-cancel" {{on "click" this.closeRevokeCreatorModal}}>
+            取消
+          </button>
+          <button class="btn-confirm btn-danger" {{on "click" this.confirmRevokeCreator}}>
+            <i class="fa fa-user-times"></i> 确认撤销
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

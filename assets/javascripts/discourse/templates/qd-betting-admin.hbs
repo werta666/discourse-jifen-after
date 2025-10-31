@@ -1,0 +1,555 @@
+<div class="qd-betting-admin-container">
+  {{! 管理头部 }}
+  <div class="admin-header">
+    <div class="header-left">
+      <h1><i class="fa-solid fa-screwdriver-wrench"></i> 竞猜管理中心</h1>
+      <p class="subtitle">管理电竞竞猜事件和决斗</p>
+    </div>
+    
+    <div class="header-right">
+      <button 
+        class="tab-btn {{unless this.showDuels 'active'}}" 
+        {{on "click" (fn (mut this.showDuels) false)}}
+      >
+        <i class="fa-solid fa-trophy"></i> 竞猜事件
+      </button>
+      <button 
+        class="tab-btn {{if this.showDuels 'active'}}" 
+        {{on "click" this.switchToDuels}}
+      >
+        <i class="fa-solid fa-swords"></i> 决斗管理
+      </button>
+      <a href="/qd/betting" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> 返回前台
+      </a>
+    </div>
+  </div>
+
+  {{! 竞猜事件管理 }}
+  {{#unless this.showDuels}}
+  {{! 统计卡片 }}
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-icon pending">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.pendingEvents.length}}</div>
+        <div class="stat-label">待开始</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon active">
+        <i class="fa-solid fa-circle-play"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.activeEvents.length}}</div>
+        <div class="stat-label">进行中</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon finished">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.finishedEvents.length}}</div>
+        <div class="stat-label">已结束</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="fa-solid fa-chart-simple"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">{{this.model.events.length}}</div>
+        <div class="stat-label">总事件数</div>
+      </div>
+    </div>
+  </div>
+
+  {{! 待开始事件 }}
+  {{#if this.pendingEvents.length}}
+    <div class="events-section">
+      <h2><i class="fa-solid fa-hourglass-half"></i> 待开始事件</h2>
+      <div class="admin-events-list">
+        {{#each this.pendingEvents as |event|}}
+          <div class="admin-event-card">
+            <div class="event-info">
+              <div class="event-header">
+                <h3>{{event.title}}</h3>
+                <span class="event-type-tag {{event.event_type}}">
+                  {{#if (eq event.event_type "bet")}}
+                    <i class="fa-solid fa-trophy"></i> 积分竞猜
+                  {{else}}
+                    <i class="fa-solid fa-square-poll-vertical"></i> 普通投票
+                  {{/if}}
+                </span>
+              </div>
+              <div class="event-meta">
+                <span><i class="fa-solid fa-clock"></i> {{event.start_time}}</span>
+                {{#if (eq event.event_type "bet")}}
+                  <span><i class="fa-solid fa-coins"></i> 最低 {{event.min_bet_amount}}</span>
+                {{/if}}
+                <span><i class="fa-solid fa-list"></i> {{event.options.length}} 个选项</span>
+              </div>
+            </div>
+            <div class="event-actions">
+              <button class="btn-activate" {{on "click" (fn this.activateEvent event)}}>
+                <i class="fa-solid fa-play"></i> 激活
+              </button>
+              <button class="btn-cancel" {{on "click" (fn this.cancelEvent event)}}>
+                <i class="fa-solid fa-xmark"></i> 取消
+              </button>
+              {{#unless event.total_bets}}
+                <button class="btn-delete" {{on "click" (fn this.deleteEvent event)}}>
+                  <i class="fa-solid fa-trash"></i> 删除
+                </button>
+              {{/unless}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 进行中事件 }}
+  {{#if this.activeEvents.length}}
+    <div class="events-section">
+      <h2><i class="fa-solid fa-circle-play"></i> 进行中事件</h2>
+      <div class="admin-events-list">
+        {{#each this.activeEvents as |event|}}
+          <div class="admin-event-card active-card">
+            <div class="event-info">
+              <div class="event-header">
+                <h3>{{event.title}}</h3>
+                <span class="event-type-tag {{event.event_type}}">
+                  {{#if (eq event.event_type "bet")}}
+                    <i class="fa-solid fa-trophy"></i> 积分竞猜
+                  {{else}}
+                    <i class="fa-solid fa-square-poll-vertical"></i> 普通投票
+                  {{/if}}
+                </span>
+              </div>
+              <div class="event-stats">
+                <span><i class="fa-solid fa-users"></i> {{event.total_participants}} 人参与</span>
+                {{#if (eq event.event_type "bet")}}
+                  <span><i class="fa-solid fa-coins"></i> 奖池 {{event.total_pool}}</span>
+                {{/if}}
+                <span><i class="fa-solid fa-ticket"></i> {{event.total_bets}} 次投注</span>
+              </div>
+            </div>
+            <div class="event-actions">
+              <button class="btn-finish" {{on "click" (fn this.finishEvent event)}}>
+                <i class="fa-solid fa-flag-checkered"></i> 结束
+              </button>
+              <button class="btn-cancel" {{on "click" (fn this.cancelEvent event)}}>
+                <i class="fa-solid fa-ban"></i> 取消
+              </button>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 已结束事件 }}
+  {{#if this.finishedEvents.length}}
+    <div class="events-section">
+      <h2><i class="fa-solid fa-circle-check"></i> 已结束事件（待结算）</h2>
+      <div class="admin-events-list">
+        {{#each this.finishedEvents as |event|}}
+          <div class="admin-event-card finished-card">
+            <div class="event-info">
+              <div class="event-header">
+                <h3>{{event.title}}</h3>
+                {{#if event.settled_at}}
+                  <span class="settled-badge">
+                    <i class="fa-solid fa-check-double"></i> 已结算
+                  </span>
+                {{else}}
+                  <span class="unsettled-badge">
+                    <i class="fa-solid fa-exclamation-triangle"></i> 待结算
+                  </span>
+                {{/if}}
+              </div>
+              <div class="event-stats">
+                <span><i class="fa-solid fa-users"></i> {{event.total_participants}} 人</span>
+                {{#if (eq event.event_type "bet")}}
+                  <span><i class="fa-solid fa-coins"></i> 奖池 {{event.total_pool}}</span>
+                {{/if}}
+              </div>
+            </div>
+            <div class="event-actions">
+              {{#unless event.settled_at}}
+                <button class="btn-settle" {{on "click" (fn this.openSettleModal event)}}>
+                  <i class="fa-solid fa-calculator"></i> 结算
+                </button>
+              {{/unless}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 空状态 }}
+  {{#unless this.model.events.length}}
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fa-solid fa-inbox"></i>
+      </div>
+      <h3>还没有任何事件</h3>
+      <p>用户可以在前台页面创建投票事件</p>
+    </div>
+  {{/unless}}
+  {{/unless}}
+
+  {{! 决斗管理 }}
+  {{#if this.showDuels}}
+    <div class="duels-section">
+      <h2><i class="fa-solid fa-swords"></i> 决斗列表</h2>
+      
+      {{! 决斗筛选 }}
+      <div class="duel-filters">
+        <button 
+          class="filter-btn {{if (eq this.duelStatusFilter 'all') 'active'}}"
+          {{on "click" (fn this.setDuelFilter "all")}}
+        >
+          <i class="fa-solid fa-list"></i> 全部
+        </button>
+        <button 
+          class="filter-btn {{if (eq this.duelStatusFilter 'pending') 'active'}}"
+          {{on "click" (fn this.setDuelFilter "pending")}}
+        >
+          <i class="fa-solid fa-clock"></i> 待接受
+        </button>
+        <button 
+          class="filter-btn {{if (eq this.duelStatusFilter 'accepted') 'active'}}"
+          {{on "click" (fn this.setDuelFilter "accepted")}}
+        >
+          <i class="fa-solid fa-handshake"></i> 已接受
+        </button>
+        <button 
+          class="filter-btn {{if (eq this.duelStatusFilter 'settled') 'active'}}"
+          {{on "click" (fn this.setDuelFilter "settled")}}
+        >
+          <i class="fa-solid fa-trophy"></i> 已结算
+        </button>
+      </div>
+
+      {{! 决斗卡片列表 }}
+      <div class="duels-list">
+        {{#each this.filteredDuels as |duel|}}
+          <div class="duel-card status-{{duel.status}}">
+            <div class="duel-header">
+              <h3>{{duel.title}}</h3>
+              <span class="duel-status-badge {{duel.status}}">
+                {{#if (eq duel.status "pending")}}
+                  <i class="fa-solid fa-clock"></i> 待接受
+                {{else if (eq duel.status "accepted")}}
+                  <i class="fa-solid fa-handshake"></i> 已接受
+                {{else if (eq duel.status "settled")}}
+                  <i class="fa-solid fa-check-circle"></i> 已结算
+                {{else if (eq duel.status "rejected")}}
+                  <i class="fa-solid fa-times-circle"></i> 已拒绝
+                {{/if}}
+              </span>
+            </div>
+
+            <div class="duel-participants">
+              <div class="participant challenger">
+                <i class="fa-solid fa-user"></i>
+                <span class="username">{{duel.challenger.username}}</span>
+                <span class="role">(发起者)</span>
+                {{#if (eq duel.winner_id duel.challenger.id)}}
+                  <i class="fa-solid fa-crown winner-badge"></i>
+                {{/if}}
+              </div>
+              <div class="vs-divider">
+                <i class="fa-solid fa-swords"></i> VS
+              </div>
+              <div class="participant opponent">
+                <i class="fa-solid fa-user"></i>
+                <span class="username">{{duel.opponent.username}}</span>
+                <span class="role">(对手)</span>
+                {{#if (eq duel.winner_id duel.opponent.id)}}
+                  <i class="fa-solid fa-crown winner-badge"></i>
+                {{/if}}
+              </div>
+            </div>
+
+            {{#if duel.description}}
+              <div class="duel-description">
+                <strong>达成条件：</strong>
+                <p>{{duel.description}}</p>
+              </div>
+            {{/if}}
+
+            <div class="duel-info">
+              <div class="info-item">
+                <i class="fa-solid fa-coins"></i>
+                <span>赌注：{{duel.stake_amount}} 积分</span>
+              </div>
+              <div class="info-item">
+                <i class="fa-solid fa-calendar"></i>
+                <span>{{duel.created_at}}</span>
+              </div>
+            </div>
+
+            <div class="duel-actions">
+              {{#if (eq duel.status "accepted")}}
+                <button 
+                  class="btn-settle-duel" 
+                  {{on "click" (fn this.openDuelSettleModal duel)}}
+                >
+                  <i class="fa-solid fa-gavel"></i> 结算决斗
+                </button>
+                <button 
+                  class="btn-cancel-duel" 
+                  {{on "click" (fn this.openDuelCancelModal duel)}}
+                >
+                  <i class="fa-solid fa-ban"></i> 取消决斗
+                </button>
+              {{/if}}
+              <button 
+                class="btn-delete-duel" 
+                {{on "click" (fn this.deleteDuel duel)}}
+              >
+                <i class="fa-solid fa-trash"></i> 删除决斗
+              </button>
+            </div>
+
+            {{#if (eq duel.status "settled")}}
+              <div class="settlement-info">
+                <i class="fa-solid fa-trophy"></i>
+                <span>获胜者：<strong>{{duel.winner.username}}</strong></span>
+                {{#if duel.settlement_note}}
+                  <p class="settlement-note">{{duel.settlement_note}}</p>
+                {{/if}}
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>暂无决斗记录</p>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{! 结算模态框 }}
+  {{#if this.showSettleModal}}
+    <div class="modal-overlay" {{on "click" this.closeSettleModal}}>
+      <div class="settle-modal" {{on "click" this.stopPropagation}}>
+        <div class="modal-header">
+          <h2><i class="fa-solid fa-calculator"></i> 结算事件</h2>
+          <button class="close-btn" {{on "click" this.closeSettleModal}}>
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-content">
+          <div class="event-title-display">
+            <h3>{{this.selectedEvent.title}}</h3>
+            <div class="event-pool">
+              <i class="fa-solid fa-coins"></i>
+              总奖池: {{this.selectedEvent.total_pool}} 积分
+            </div>
+          </div>
+
+          <div class="winner-selection">
+            <label>选择获胜选项：</label>
+            <div class="winner-options">
+              {{#each this.selectedEvent.options as |option|}}
+                <div 
+                  class="winner-option {{if (eq this.selectedWinnerOptionId option.id) 'selected'}}"
+                  {{on "click" (fn this.selectWinner option.id)}}
+                >
+                  <div class="option-logo"><i class={{option.logo}}></i></div>
+                  <div class="option-info">
+                    <div class="option-name">{{option.name}}</div>
+                    <div class="option-stats">
+                      投注: {{option.total_amount}} | 人数: {{option.total_votes}}
+                    </div>
+                  </div>
+                  {{#if (eq this.selectedWinnerOptionId option.id)}}
+                    <i class="fa-solid fa-circle-check check-icon"></i>
+                  {{/if}}
+                </div>
+              {{/each}}
+            </div>
+          </div>
+
+          <div class="settle-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>结算后将按照获胜选项分配奖池，此操作不可撤销！</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" {{on "click" this.closeSettleModal}}>
+            <i class="fa-solid fa-xmark"></i> 取消
+          </button>
+          <button 
+            class="btn-settle-confirm" 
+            {{on "click" this.settleEvent}}
+            disabled={{or this.isLoading (not this.selectedWinnerOptionId)}}
+          >
+            {{#if this.isLoading}}
+              <i class="fa-solid fa-spinner fa-spin"></i> 结算中...
+            {{else}}
+              <i class="fa-solid fa-check"></i> 确认结算
+            {{/if}}
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+{{! 决斗结算模态框 }}
+{{#if this.showDuelSettleModal}}
+  <div class="settle-modal-overlay" {{on "click" this.closeDuelSettleModal}}>
+    <div class="settle-modal" {{on "click" this.stopPropagation}}>
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-gavel"></i> 结算决斗</h3>
+        <button class="close-btn" {{on "click" this.closeDuelSettleModal}}>
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="duel-settle-info">
+          <h4>{{this.selectedDuel.title}}</h4>
+          {{#if this.selectedDuel.description}}
+            <p class="description">{{this.selectedDuel.description}}</p>
+          {{/if}}
+          <div class="stake-info">
+            <i class="fa-solid fa-coins"></i>
+            <span>赌注：{{this.selectedDuel.stake_amount}} 积分</span>
+          </div>
+        </div>
+
+        <div class="winner-selection">
+          <label>选择获胜者：</label>
+          <div class="winner-options">
+            <div 
+              class="winner-option {{if (eq this.selectedDuelWinnerId this.selectedDuel.challenger.id) 'selected'}}"
+              {{on "click" (fn this.selectDuelWinner this.selectedDuel.challenger.id)}}
+            >
+              <i class="fa-solid fa-user"></i>
+              <span class="username">{{this.selectedDuel.challenger.username}}</span>
+              <span class="role">(发起者)</span>
+              {{#if (eq this.selectedDuelWinnerId this.selectedDuel.challenger.id)}}
+                <i class="fa-solid fa-circle-check check-icon"></i>
+              {{/if}}
+            </div>
+
+            <div 
+              class="winner-option {{if (eq this.selectedDuelWinnerId this.selectedDuel.opponent.id) 'selected'}}"
+              {{on "click" (fn this.selectDuelWinner this.selectedDuel.opponent.id)}}
+            >
+              <i class="fa-solid fa-user"></i>
+              <span class="username">{{this.selectedDuel.opponent.username}}</span>
+              <span class="role">(对手)</span>
+              {{#if (eq this.selectedDuelWinnerId this.selectedDuel.opponent.id)}}
+                <i class="fa-solid fa-circle-check check-icon"></i>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+
+        <div class="settle-note">
+          <label>结算备注（可选）：</label>
+          <textarea 
+            placeholder="输入结算理由或备注..."
+            value={{this.duelSettleNote}}
+            {{on "input" this.updateDuelSettleNote}}
+          ></textarea>
+        </div>
+
+        <div class="settle-warning">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <p>结算后将扣除失败者的赌注积分并发放给获胜者，此操作不可撤销！</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" {{on "click" this.closeDuelSettleModal}}>
+          <i class="fa-solid fa-xmark"></i> 取消
+        </button>
+        <button 
+          class="btn-settle-confirm" 
+          {{on "click" this.settleDuel}}
+          disabled={{or this.isLoading (not this.selectedDuelWinnerId)}}
+        >
+          {{#if this.isLoading}}
+            <i class="fa-solid fa-spinner fa-spin"></i> 结算中...
+          {{else}}
+            <i class="fa-solid fa-check"></i> 确认结算
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+{{! 取消决斗模态框 }}
+{{#if this.showDuelCancelModal}}
+  <div class="settle-modal-overlay" {{on "click" this.closeDuelCancelModal}}>
+    <div class="settle-modal" {{on "click" this.stopPropagation}}>
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-ban"></i> 取消决斗（审核失败）</h3>
+        <button class="close-btn" {{on "click" this.closeDuelCancelModal}}>
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="duel-settle-info">
+          <h4>{{this.selectedDuel.title}}</h4>
+          <div class="stake-info">
+            <i class="fa-solid fa-coins"></i>
+            <span>赌注：{{this.selectedDuel.stake_amount}} 积分</span>
+          </div>
+          <div class="cancel-warning-box">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span>取消后将退还双方赌注，并发送通知给双方</span>
+          </div>
+        </div>
+
+        <div class="cancel-reason-input">
+          <label>取消理由（必填，至少5个字符）：</label>
+          <textarea 
+            placeholder="请输入取消决斗的理由..."
+            value={{this.duelCancelReason}}
+            {{on "input" this.updateDuelCancelReason}}
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" {{on "click" this.closeDuelCancelModal}}>
+          <i class="fa-solid fa-arrow-left"></i> 返回
+        </button>
+        <button 
+          class="btn-danger" 
+          {{on "click" this.cancelDuel}}
+          disabled={{this.isLoading}}
+        >
+          {{#if this.isLoading}}
+            <i class="fa-solid fa-spinner fa-spin"></i> 处理中...
+          {{else}}
+            <i class="fa-solid fa-ban"></i> 确认取消
+          {{/if}}
+        </button>
+      </div>
+    </div>
+  </div>
+{{/if}}
+</div>

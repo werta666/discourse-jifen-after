@@ -1,0 +1,1067 @@
+.qd-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 60vh;
+  padding: 20px;
+  background: var(--primary-very-low);
+  position: relative; /* 为弹窗定位提供参考 */
+}
+
+.qd-container {
+  max-width: 400px;
+  width: 100%;
+}
+
+.qd-card {
+  background: var(--secondary-very-high);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--primary-low);
+  position: relative;
+}
+
+.qd-header {
+  text-align: center;
+  margin-bottom: 20px;
+  
+  .qd-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .qd-subtitle {
+    font-size: 14px;
+    color: var(--primary-medium);
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.qd-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.qd-stat-item {
+  background: var(--primary-very-low);
+  border-radius: 8px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 1px solid var(--primary-low);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .qd-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  
+  .qd-stat-label {
+    font-size: 12px;
+    color: var(--primary-medium);
+    font-weight: 500;
+  }
+}
+
+.qd-quick-nav {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+  justify-content: space-between;
+}
+
+.qd-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 10px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  height: 95px;
+
+  // 背景渐变层
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 16px;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .qd-nav-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .qd-nav-text {
+      color: white;
+    }
+  }
+
+  .qd-nav-icon {
+    font-size: 30px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+
+    i {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .qd-nav-text {
+    font-size: 13px;
+    font-weight: 700;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  // 积分充值 - 紫色渐变
+  &.qd-nav-recharge {
+    &::before {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      color: #667eea;
+    }
+
+    .qd-nav-text {
+      color: #667eea;
+    }
+
+    &:hover {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+
+  // 排行榜 - 金色渐变
+  &.qd-nav-board {
+    &::before {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+      color: #f59e0b;
+    }
+
+    .qd-nav-text {
+      color: #f59e0b;
+    }
+
+    &:hover {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+      }
+    }
+  }
+
+  // 积分商店 - 绿色渐变
+  &.qd-nav-shop {
+    &::before {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .qd-nav-icon {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+      color: #10b981;
+    }
+
+    .qd-nav-text {
+      color: #10b981;
+    }
+
+    &:hover {
+      .qd-nav-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .qd-quick-nav {
+    gap: 12px;
+  }
+
+  .qd-nav-btn {
+    padding: 10px 8px;
+    height: 90px;
+
+    .qd-nav-icon {
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 5px;
+    }
+
+    .qd-nav-text {
+      font-size: 12px;
+    }
+  }
+}
+
+.qd-consecutive-info {
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  color: white;
+  text-align: center;
+  
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+  }
+  
+  .qd-reward-tips {
+    font-size: 12px;
+    opacity: 0.9;
+    
+    small {
+      display: block;
+    }
+  }
+}
+
+.qd-sign-section {
+  text-align: center;
+  
+  .qd-sign-btn {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+    
+    &.btn-primary {
+      background: var(--tertiary);
+      color: var(--secondary);
+      
+      &:hover {
+        background: var(--tertiary-hover);
+        transform: translateY(-1px);
+      }
+    }
+    
+    &.btn-default {
+      background: var(--primary-low);
+      color: var(--primary-medium);
+      cursor: not-allowed;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+  
+  .qd-login-btn {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+  
+  .qd-status-message {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    
+    &.success {
+      background: var(--success-low);
+      color: var(--success);
+      border: 1px solid var(--success-medium);
+    }
+    
+    &.info {
+      background: var(--primary-very-low);
+      color: var(--primary-medium);
+      border: 1px solid var(--primary-low);
+    }
+  }
+}
+
+.qd-install-info {
+  text-align: center;
+  font-size: 12px;
+  color: var(--primary-medium);
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--primary-very-low);
+  border-radius: 6px;
+  border: 1px solid var(--primary-low);
+  line-height: 1.4;
+}
+
+// 补签功能样式
+.qd-makeup-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--primary-very-low);
+  border-radius: 8px;
+  border: 1px solid var(--primary-low);
+  
+  .qd-makeup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    
+    h4 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--primary);
+    }
+    
+    .qd-makeup-cards {
+      font-size: 12px;
+      color: var(--primary-medium);
+      background: var(--secondary-very-high);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--primary-low);
+    }
+  }
+  
+  .qd-missed-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+    
+    .qd-missed-day {
+      background: var(--secondary-very-high);
+      border: 1px solid var(--primary-low);
+      border-radius: 6px;
+      padding: 8px 4px;
+      text-align: center;
+      position: relative;
+      
+      .qd-day-date {
+        font-size: 11px;
+        color: var(--primary-medium);
+        margin-bottom: 4px;
+      }
+      
+      .qd-makeup-btn {
+        background: var(--tertiary);
+        color: var(--secondary);
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        
+        &:hover {
+          background: var(--tertiary-hover);
+        }
+        
+        &:disabled {
+          background: var(--primary-low);
+          color: var(--primary-medium);
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
+  .qd-no-missed {
+    text-align: center;
+    color: var(--primary-medium);
+    font-size: 14px;
+    padding: 20px;
+  }
+}
+
+// 补签卡商店样式
+.qd-shop-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  color: white;
+  
+  .qd-shop-header {
+    text-align: center;
+    margin-bottom: 16px;
+    
+    h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+  }
+  
+  .qd-shop-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .qd-item-info {
+      .qd-item-name {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      
+      .qd-item-price {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+    }
+    
+    .qd-buy-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  // 购买结果反馈
+  .qd-buy-message {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+    
+    &.success {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid rgba(76, 175, 80, 0.4);
+    }
+    
+    &.error {
+      background: rgba(244, 67, 54, 0.2);
+      border: 1px solid rgba(244, 67, 54, 0.4);
+    }
+    
+    .qd-buy-icon {
+      margin-right: 8px;
+      font-size: 14px;
+    }
+    
+    .qd-buy-text {
+      font-size: 12px;
+    }
+  }
+}
+
+// 管理员调试按钮
+.qd-admin-debug {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  
+  .debug-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 500;
+    
+    &:hover {
+      background: var(--danger-hover);
+    }
+  }
+}
+
+// 调试弹窗样式
+.debug-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  
+  .debug-content {
+    background: var(--secondary-very-high);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    
+    h3 {
+      margin: 0 0 20px 0;
+      color: var(--primary);
+      font-size: 18px;
+    }
+    
+    .debug-section {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--primary-very-low);
+      border-radius: 6px;
+      border: 1px solid var(--primary-low);
+      
+      h4 {
+        margin: 0 0 12px 0;
+        color: var(--primary);
+        font-size: 14px;
+      }
+      
+      .debug-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        
+        input {
+          padding: 8px 12px;
+          border: 1px solid var(--primary-low);
+          border-radius: 4px;
+          font-size: 14px;
+        }
+        
+        button {
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          
+          &.btn-warning {
+            background: var(--tertiary);
+            color: var(--secondary);
+          }
+          
+          &.btn-success {
+            background: var(--success);
+            color: white;
+          }
+          
+          &.btn-danger {
+            background: var(--danger);
+            color: white;
+          }
+        }
+      }
+    }
+    
+    .debug-close {
+      text-align: center;
+      margin-top: 20px;
+      
+      button {
+        padding: 8px 24px;
+        background: var(--primary-medium);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// 新增：签到记录列表样式
+.qd-records-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--secondary-very-high);
+  border-radius: 8px;
+  border: 1px solid var(--primary-low);
+
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: var(--primary);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .qd-no-records {
+    text-align: center;
+    color: var(--primary-medium);
+    font-size: 13px;
+    padding: 8px 0;
+  }
+}
+
+.qd-records-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  .qd-record-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--primary-low);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .qd-record-date {
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .qd-record-points {
+      font-size: 12px;
+      color: var(--success);
+      justify-self: end;
+    }
+
+    .qd-record-makeup {
+      font-size: 12px;
+      color: var(--primary-medium);
+      justify-self: end;
+    }
+
+    .qd-record-streak {
+      font-size: 12px;
+      color: var(--primary-medium);
+      justify-self: end;
+    }
+
+    .qd-record-time {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      color: var(--primary-medium);
+    }
+  }
+}
+
+/* 全局反馈条样式（成功/失败），用于补签/购买等操作 */
+.qd-buy-message {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.qd-buy-message.success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: var(--success);
+}
+.qd-buy-message.error {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: var(--danger);
+}
+.qd-buy-icon { margin-right: 8px; font-size: 14px; }
+.qd-buy-text { font-size: 12px; }
+
+// 购买确认弹窗
+.qd-confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.qd-confirm-content {
+  background: var(--secondary-very-high);
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  
+  h3 {
+    margin: 0 0 16px 0;
+    color: var(--primary);
+    font-size: 18px;
+    text-align: center;
+  }
+  
+  p {
+    margin: 0 0 8px 0;
+    color: var(--primary);
+    font-size: 14px;
+    text-align: center;
+    
+    strong {
+      color: var(--tertiary);
+    }
+  }
+  
+  .qd-confirm-note {
+    font-size: 12px;
+    color: var(--primary-medium);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .qd-confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    
+    button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &.qd-confirm-cancel {
+        background: var(--primary-low);
+        color: var(--primary);
+        border: 1px solid var(--primary-low-mid);
+        
+        &:hover {
+          background: var(--primary-low-mid);
+        }
+      }
+      
+      &.qd-confirm-ok {
+        background: var(--tertiary);
+        color: white;
+        border: none;
+        
+        &:hover {
+          background: var(--tertiary-hover);
+        }
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 480px) {
+  .qd-page {
+    padding: 16px;
+  }
+  
+  .qd-card {
+    padding: 20px;
+  }
+  
+  .qd-stats-grid {
+    gap: 8px;
+  }
+  
+  .qd-stat-item {
+    padding: 12px 8px;
+    
+    .qd-stat-value {
+      font-size: 18px;
+    }
+    
+    .qd-stat-label {
+      font-size: 11px;
+    }
+  }
+
+  .qd-records-list .qd-record-item {
+    grid-template-columns: 1fr auto;
+    .qd-record-streak,
+    .qd-record-makeup {
+      display: none;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// VIP签到奖励提示模态框
+.vip-bonus-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s;
+}
+
+.vip-signin-bonus-modal {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
+  overflow: hidden;
+  animation: bounceIn 0.5s;
+  
+  .vip-bonus-header {
+    background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      
+      i {
+        font-size: 24px;
+        animation: pulse 1.5s infinite;
+      }
+    }
+    
+    .btn-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+      }
+    }
+  }
+  
+  .vip-bonus-body {
+    padding: 30px;
+    text-align: center;
+    
+    .vip-bonus-icon {
+      font-size: 64px;
+      color: #b8860b;
+      margin-bottom: 20px;
+      animation: bounce 1s infinite;
+      
+      i {
+        filter: drop-shadow(0 4px 8px rgba(184, 134, 11, 0.3));
+      }
+    }
+    
+    .vip-bonus-message {
+      .vip-level {
+        font-size: 16px;
+        font-weight: 600;
+        color: #b8860b;
+        margin: 0 0 10px 0;
+      }
+      
+      .vip-bonus-points {
+        font-size: 24px;
+        font-weight: 800;
+        color: #333;
+        margin: 10px 0;
+        
+        .highlight {
+          color: #b8860b;
+          font-size: 32px;
+          text-shadow: 0 2px 4px rgba(184, 134, 11, 0.3);
+        }
+      }
+      
+      .vip-bonus-desc {
+        font-size: 14px;
+        color: #666;
+        margin: 10px 0 0 0;
+      }
+    }
+  }
+  
+  .vip-bonus-footer {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    
+    .btn-confirm {
+      width: 100%;
+      background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+      }
+      
+      i {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-100px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// 引入订单页面样式
+@import "qd-shop-orders";

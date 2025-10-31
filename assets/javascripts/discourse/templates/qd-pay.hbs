@@ -1,0 +1,171 @@
+<div class="qd-page qd-pay-page">
+  <div class="qd-pay-container">
+    {{! 页面标题 }}
+    <div class="qd-pay-header">
+      <h1><i class="fa-solid fa-coins"></i> {{this.model.paidCoinName}}充值</h1>
+      <p class="user-points">当前{{this.model.paidCoinName}}：<span class="points-value"><i class="fa-solid fa-gem"></i> {{this.model.userPaidCoins}}</span></p>
+    </div>
+
+    {{#if this.alipayEnabled}}
+      {{#unless this.qrCode}}
+        {{! 充值套餐选择 }}
+        <div class="qd-pay-packages">
+          <h2><i class="fa-solid fa-box-open"></i> 选择充值套餐</h2>
+          <p class="subtitle">选择适合您的充值套餐，即刻获得{{this.model.paidCoinName}}</p>
+          
+          {{#if this.hasPackages}}
+            <div class="packages-grid">
+              {{#each this.model.packages as |pkg|}}
+                <div class="package-card {{if (eq this.selectedPackage pkg) 'selected'}}" {{on "click" (fn this.selectPackage pkg)}}>
+                  <div class="package-icon"><i class="fa-solid fa-gift"></i></div>
+                  <div class="package-amount">¥{{pkg.amount}}</div>
+                  <div class="package-points"><i class="fa-solid fa-star"></i> {{pkg.points}} {{this.model.paidCoinName}}</div>
+                  {{#if pkg.bonus}}
+                    <div class="package-bonus">赠送 {{pkg.bonus}} {{this.model.paidCoinName}}</div>
+                  {{/if}}
+                  {{#if pkg.label}}
+                    <div class="package-label">{{pkg.label}}</div>
+                  {{/if}}
+                </div>
+              {{/each}}
+            </div>
+
+            {{#if this.selectedPackage}}
+              <div class="pay-action">
+                <button class="btn btn-primary btn-large" {{on "click" this.createOrder}} disabled={{this.isCreatingOrder}}>
+                  <i class="fa-solid fa-credit-card"></i>
+                  {{#if this.isCreatingOrder}}
+                    创建订单中...
+                  {{else}}
+                    立即充值 ¥{{this.selectedPackage.amount}}
+                  {{/if}}
+                </button>
+              </div>
+            {{/if}}
+          {{else}}
+            <div class="no-packages">
+              <i class="fa-solid fa-box-open"></i>
+              <p>暂无充值套餐</p>
+            </div>
+          {{/if}}
+        </div>
+      {{else}}
+        {{! 二维码支付界面 }}
+        <div class="qd-pay-qrcode">
+          {{#if this.paymentSuccess}}
+            <div class="payment-success">
+              <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <h2>支付成功！</h2>
+              <p>{{this.model.paidCoinName}}已充值到您的账户</p>
+              <p class="success-points"><i class="fa-solid fa-coins"></i> + {{this.orderInfo.points}} {{this.model.paidCoinName}}</p>
+              <p class="redirect-tip">3秒后自动跳转...</p>
+            </div>
+          {{else if this.orderExpired}}
+            <div class="payment-expired">
+              <div class="expired-icon"><i class="fa-solid fa-clock"></i></div>
+              <h2>订单已过期</h2>
+              <p>请重新创建订单</p>
+              <button class="btn btn-primary" {{on "click" this.cancelOrder}}>重新充值</button>
+            </div>
+          {{else}}
+            <div class="qrcode-display">
+              {{#if (eq this.currentPaymentMethod "wechat")}}
+                <h2><i class="fa-brands fa-weixin"></i> 请使用微信扫码支付</h2>
+                
+                <div class="qrcode-image">
+                  <img id="wechat-qrcode" 
+                       src=""
+                       alt="微信支付二维码"
+                       style="width: 250px; height: 250px; border: 5px solid #09BB07; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);"/>
+                </div>
+              {{else}}
+                <h2><i class="fa-brands fa-alipay"></i> 请使用支付宝扫码支付</h2>
+                
+                <div class="qrcode-image">
+                  <img id="alipay-qrcode" 
+                       src=""
+                       alt="支付宝二维码"
+                       style="width: 250px; height: 250px; border: 5px solid #667eea; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);"/>
+                </div>
+              {{/if}}
+
+              <div class="order-details">
+                <p><strong><i class="fa-solid fa-receipt"></i> 订单号：</strong>{{this.orderInfo.out_trade_no}}</p>
+                <p><strong><i class="fa-solid fa-money-bill"></i> 支付金额：</strong>¥{{this.orderInfo.amount}}</p>
+                <p><strong><i class="fa-solid fa-star"></i> 获得{{this.model.paidCoinName}}：</strong>{{this.orderInfo.points}}</p>
+                <p class="expire-tip"><i class="fa-solid fa-hourglass-half"></i> 订单将在 2 分钟后过期</p>
+              </div>
+
+              <div class="polling-status">
+                {{#if this.isPolling}}
+                  <div class="polling-indicator">
+                    <span class="spinner"></span>
+                    等待支付中...
+                  </div>
+                {{/if}}
+              </div>
+
+              <div class="qrcode-actions">
+                <button class="btn btn-default" {{on "click" this.cancelOrder}}>取消订单</button>
+              </div>
+            </div>
+          {{/if}}
+        </div>
+      {{/unless}}
+    {{else}}
+      {{! 支付宝未启用 }}
+      <div class="alipay-disabled">
+        <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h2>充值功能未开启</h2>
+        <p>管理员尚未配置支付宝支付，请联系管理员开启此功能</p>
+      </div>
+    {{/if}}
+
+    {{! 返回按钮 - 显示二维码时隐藏 }}
+    {{#unless this.qrCode}}
+      <div class="qd-pay-footer">
+        <button class="btn btn-default" {{on "click" this.goBack}}><i class="fa-solid fa-arrow-left"></i> 返回签到页</button>
+      </div>
+    {{/unless}}
+  </div>
+
+  {{! 支付方式选择弹窗 }}
+  {{#if this.showPaymentMethodModal}}
+    <div class="payment-method-modal-overlay" {{on "click" this.closePaymentMethodModal}}>
+      <div class="payment-method-modal" {{on "click" (fn (mut false))}} role="dialog">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-wallet"></i> 选择支付方式</h3>
+          <button class="close-btn" {{on "click" this.closePaymentMethodModal}}>
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <p class="modal-tip">请选择您要使用的支付方式完成充值</p>
+          
+          <div class="payment-methods">
+            {{#if this.alipayEnabled}}
+              <button class="payment-method-btn alipay" {{on "click" (fn this.selectPaymentMethod "alipay")}}>
+                <div class="method-icon">
+                  <i class="fa-brands fa-alipay"></i>
+                </div>
+                <div class="method-name">支付宝支付</div>
+                <div class="method-desc">快速安全，扫码即付</div>
+              </button>
+            {{/if}}
+            
+            {{#if this.wechatEnabled}}
+              <button class="payment-method-btn wechat" {{on "click" (fn this.selectPaymentMethod "wechat")}}>
+                <div class="method-icon">
+                  <i class="fa-brands fa-weixin"></i>
+                </div>
+                <div class="method-name">微信支付</div>
+                <div class="method-desc">微信扫码，便捷支付</div>
+              </button>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>
